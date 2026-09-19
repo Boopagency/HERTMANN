@@ -39,6 +39,13 @@ export type Piece = {
   imageAlt?: PieceImage | null;
   options?: { label: string; values: string[] };
   featured?: boolean;
+  /**
+   * Ligação ao catálogo da Hostinger. Preço, promoção e stock passam a vir de
+   * lá; tudo o resto continua a ser escrito aqui. Sem estes campos, a peça
+   * mantém-se editorial e não é vendável online.
+   */
+  hostingerProductId?: string;
+  hostingerVariantId?: string;
 };
 
 export type Category = {
@@ -354,6 +361,24 @@ export const pieces: Piece[] = [
       cutout: true,
       alt: "Pulseira Noturno usada no pulso, em close-up",
     },
+  },
+  {
+    slug: "anel-solitario",
+    name: "Solitário",
+    category: "aneis",
+    collection: "arquetipo",
+    price: 300,
+    line: "Anel solitário em prata com zircônias",
+    description:
+      "A construção clássica da casa, executada em prata de lei: a pedra erguida acima do aro, sustentada por uma galeria aberta que deixa a luz entrar por baixo. É a peça com que muitos clientes começam.",
+    material: "Prata 925",
+    stone: "Zircônias de talhe brilhante",
+    measures: "Aro 2 mm · Altura da coroa 6 mm",
+    reference: "HM–AR–052",
+    drawing: "solitaire",
+    image: null,
+    hostingerProductId: "prod_01M2XN4RWHN3YSHPJJMMRBF6SD",
+    hostingerVariantId: "variant_01M2XN4RY2MTVB57FTFBQ3BNM7",
   },
 ];
 

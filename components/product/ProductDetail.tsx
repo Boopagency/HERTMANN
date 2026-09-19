@@ -1,18 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { IconHeart } from "@/components/brand/Icons";
 import { useStore } from "@/components/commerce/StoreProvider";
 import { categoryName, collectionName, type Piece } from "@/lib/data/catalogue";
-import { price } from "@/lib/format";
+import type { VariantSnapshot } from "@/lib/hostinger/types";
+import { price, priceFromMinorUnits } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 /* ============================================================================
    Painel da peça — categoria, nome, preço, e o mínimo para decidir.
+
+   Quando a peça está ligada à Hostinger, o preço e o stock vêm de lá. As
+   restantes peças mantêm o preço do catálogo e remetem para atendimento.
    ========================================================================== */
 
-export function ProductDetail({ piece }: { piece: Piece }) {
+export function ProductDetail({
+  piece,
+  commerce,
+}: {
+  piece: Piece;
+  commerce?: VariantSnapshot | null;
+}) {
   const { addToBag, setBagOpen, toggleFavourite, isFavourite, ready } = useStore();
   const [option, setOption] = useState(piece.options?.values[0]);
   const [quantity, setQuantity] = useState(1);
@@ -20,11 +30,19 @@ export function ProductDetail({ piece }: { piece: Piece }) {
 
   const favourite = ready && isFavourite(piece.slug);
 
+  const variantId = piece.hostingerVariantId;
+  /** Só se recusa a venda quando há leitura ao vivo a dizê-lo. */
+  const soldOut = Boolean(commerce && !commerce.available);
+  const maxQuantity =
+    commerce?.manageInventory && typeof commerce.inventoryQuantity === "number"
+      ? Math.max(1, Math.min(9, commerce.inventoryQuantity))
+      : 9;
+
   async function add() {
-    if (state === "loading") return;
+    if (!variantId || state === "loading" || soldOut) return;
     setState("loading");
     await new Promise((resolve) => setTimeout(resolve, 550));
-    addToBag(piece.slug, option, quantity);
+    addToBag({ variantId, slug: piece.slug, option, quantity });
     setState("done");
     setBagOpen(true);
     window.setTimeout(() => setState("idle"), 2200);
@@ -39,7 +57,26 @@ export function ProductDetail({ piece }: { piece: Piece }) {
       <h1 className="t-h1 mt-4">{piece.name}</h1>
       <p className="t-label-sm muted mt-4">{piece.line}</p>
 
-      <p className="t-h4 mt-8">{price(piece.price)}</p>
+      {commerce ? (
+        <p className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <span className="t-h4">
+            {priceFromMinorUnits(
+              commerce.effectiveAmount,
+              commerce.decimalDigits,
+              commerce.currencyCode,
+            )}
+          </span>
+          {commerce.saleAmount !== null && (
+            <span className="t-label-sm muted line-through">
+              {priceFromMinorUnits(commerce.amount, commerce.decimalDigits, commerce.currencyCode)}
+            </span>
+          )}
+        </p>
+      ) : (
+        <p className="t-h4 mt-8">{price(piece.price)}</p>
+      )}
+
+      {soldOut && <p className="t-label-sm muted mt-3">Esgotado de momento.</p>}
 
       <hr className="rule mt-8" />
 
@@ -111,8 +148,8 @@ export function ProductDetail({ piece }: { piece: Piece }) {
           </span>
           <button
             type="button"
-            onClick={() => setQuantity((q) => Math.min(9, q + 1))}
-            disabled={quantity >= 9}
+            onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
+            disabled={quantity >= maxQuantity}
             className="grid h-11 w-11 place-items-center transition-opacity duration-300 hover:opacity-55 disabled:opacity-25"
             aria-label="Aumentar quantidade"
           >
@@ -123,9 +160,20 @@ export function ProductDetail({ piece }: { piece: Piece }) {
 
       {/* — Acções — */}
       <div className="mt-10 flex items-stretch gap-3">
-        <Button onClick={add} loading={state === "loading"} className="flex-1">
-          {state === "done" ? "Adicionado" : "Adicionar à sacola"}
-        </Button>
+        {variantId ? (
+          <Button
+            onClick={add}
+            loading={state === "loading"}
+            disabled={soldOut}
+            className="flex-1"
+          >
+            {soldOut ? "Esgotado" : state === "done" ? "Adicionado" : "Adicionar à sacola"}
+          </Button>
+        ) : (
+          <ButtonLink href="/contato" className="flex-1">
+            Consultar disponibilidade
+          </ButtonLink>
+        )}
 
         <button
           type="button"

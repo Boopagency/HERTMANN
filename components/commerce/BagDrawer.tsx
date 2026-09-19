@@ -1,21 +1,59 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Overlay } from "@/components/layout/Overlay";
 import { PieceFigure } from "@/components/product/PieceFigure";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { IconMinus, IconPlus } from "@/components/brand/Icons";
-import { useStore } from "@/components/commerce/StoreProvider";
+import { useStore, type BagEntry } from "@/components/commerce/StoreProvider";
 import { categoryName } from "@/lib/data/catalogue";
-import { price } from "@/lib/format";
+import { priceFromMinorUnits } from "@/lib/format";
+import { checkoutReturnUrls, createCheckout } from "@/lib/hostinger/client";
 
 /* ============================================================================
    Sacola — uma lista, um total, um botão. Nada de contagens regressivas,
    selos de urgência ou promessas de desconto.
+
+   O pagamento é conduzido pela Hostinger: o botão troca a sacola local por
+   uma sessão de checkout e entrega-lhe o navegador.
    ========================================================================== */
 
 export function BagDrawer() {
-  const { bag, bagOpen, setBagOpen, bagCount, bagTotal, setQuantity, removeFromBag } = useStore();
+  const {
+    bag,
+    bagOpen,
+    setBagOpen,
+    bagCount,
+    bagTotal,
+    bagDecimalDigits,
+    bagCurrencyCode,
+    checkoutItems,
+    setQuantity,
+    removeFromBag,
+  } = useStore();
+
+  const [checkout, setCheckout] = useState<"idle" | "loading" | "error">("idle");
+
+  const money = (amount: number) =>
+    priceFromMinorUnits(amount, bagDecimalDigits, bagCurrencyCode);
+
+  /** O tecto da linha é o stock real, quando a Hostinger o controla. */
+  const maxFor = (line: BagEntry) =>
+    line.snapshot?.manageInventory && typeof line.snapshot.inventoryQuantity === "number"
+      ? Math.max(1, Math.min(9, line.snapshot.inventoryQuantity))
+      : 9;
+
+  async function finish() {
+    if (checkout === "loading" || checkoutItems.length === 0) return;
+    setCheckout("loading");
+    try {
+      const session = await createCheckout(checkoutItems, checkoutReturnUrls());
+      window.location.assign(session.url);
+    } catch {
+      setCheckout("error");
+    }
+  }
 
   return (
     <Overlay
@@ -55,7 +93,7 @@ export function BagDrawer() {
         ) : (
           <ul className="divide-y divide-[var(--color-rule-soft)]">
             {bag.map((line) => (
-              <li key={`${line.slug}-${line.option ?? ""}`} className="flex gap-5 py-6">
+              <li key={`${line.variantId}-${line.option ?? ""}`} className="flex gap-5 py-6">
                 <Link
                   href={`/produto/${line.slug}`}
                   onClick={() => setBagOpen(false)}
@@ -75,7 +113,9 @@ export function BagDrawer() {
                     >
                       {line.piece.name}
                     </Link>
-                    <span className="t-num shrink-0">{price(line.piece.price * line.quantity)}</span>
+                    <span className="t-num shrink-0">
+                      {line.snapshot ? money(line.snapshot.effectiveAmount * line.quantity) : "—"}
+                    </span>
                   </div>
 
                   <p className="t-label-sm muted mt-1">
@@ -87,7 +127,7 @@ export function BagDrawer() {
                     <div className="flex items-center gap-1 border border-[var(--color-rule)]">
                       <button
                         type="button"
-                        onClick={() => setQuantity(line.slug, line.quantity - 1, line.option)}
+                        onClick={() => setQuantity(line.variantId, line.quantity - 1, line.option)}
                         className="grid h-8 w-8 place-items-center transition-opacity duration-300 hover:opacity-55"
                         aria-label={`Reduzir quantidade de ${line.piece.name}`}
                       >
@@ -98,9 +138,9 @@ export function BagDrawer() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => setQuantity(line.slug, line.quantity + 1, line.option)}
+                        onClick={() => setQuantity(line.variantId, line.quantity + 1, line.option)}
                         className="grid h-8 w-8 place-items-center transition-opacity duration-300 hover:opacity-55 disabled:opacity-25"
-                        disabled={line.quantity >= 9}
+                        disabled={line.quantity >= maxFor(line)}
                         aria-label={`Aumentar quantidade de ${line.piece.name}`}
                       >
                         <IconPlus size={14} />
@@ -109,7 +149,7 @@ export function BagDrawer() {
 
                     <button
                       type="button"
-                      onClick={() => removeFromBag(line.slug, line.option)}
+                      onClick={() => removeFromBag(line.variantId, line.option)}
                       className="t-label-sm muted link-nav"
                     >
                       Remover
@@ -126,14 +166,25 @@ export function BagDrawer() {
         <footer className="border-t border-[var(--color-rule)] px-[clamp(1.25rem,3vw,2.25rem)] py-6">
           <div className="flex items-baseline justify-between">
             <span className="t-label">Total</span>
-            <span className="t-h4">{price(bagTotal)}</span>
+            <span className="t-h4">{bagTotal === null ? "—" : money(bagTotal)}</span>
           </div>
           <p className="t-label-sm muted mt-2">
             Envio assegurado e embalagem HERTMANN incluídos.
           </p>
-          <Button className="mt-6 w-full" onClick={() => setBagOpen(false)}>
+          <Button
+            className="mt-6 w-full"
+            onClick={finish}
+            loading={checkout === "loading"}
+            disabled={checkoutItems.length === 0}
+          >
             Finalizar compra
           </Button>
+
+          {checkout === "error" && (
+            <p className="t-label-sm muted mt-3 text-center" role="status">
+              Não foi possível abrir o checkout. Tente de novo dentro de momentos.
+            </p>
+          )}
           <p className="t-label-sm muted mt-4 text-center">
             Prefere falar connosco?{" "}
             <Link

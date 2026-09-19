@@ -13,13 +13,34 @@ import {
   pieceBySlug,
   pieces,
   relatedPieces,
+  type Piece,
 } from "@/lib/data/catalogue";
 import { site } from "@/lib/data/site";
+import { getVariantSnapshot, isStoreConfigured } from "@/lib/hostinger/client";
+import type { VariantSnapshot } from "@/lib/hostinger/types";
 
 type Params = { params: Promise<{ slug: string }> };
 
+/** O catálogo comercial lê-se em runtime: preço e stock mudam sem novo build. */
+export const revalidate = 60;
+
 export function generateStaticParams() {
   return pieces.map((p) => ({ slug: p.slug }));
+}
+
+/** Sem loja configurada ou sem rede, a página serve o conteúdo editorial. */
+async function readCommerce(piece: Piece): Promise<VariantSnapshot | null> {
+  if (!isStoreConfigured || !piece.hostingerProductId || !piece.hostingerVariantId) {
+    return null;
+  }
+
+  try {
+    return await getVariantSnapshot(piece.hostingerProductId, piece.hostingerVariantId, {
+      revalidate,
+    });
+  } catch {
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -46,6 +67,7 @@ export default async function ProductPage({ params }: Params) {
 
   const category = categoryBySlug(piece.category)!;
   const related = relatedPieces(piece, 3);
+  const commerce = await readCommerce(piece);
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -59,9 +81,14 @@ export default async function ProductPage({ params }: Params) {
     image: piece.image ? [`${site.url}${piece.image.src}`] : undefined,
     offers: {
       "@type": "Offer",
-      price: piece.price,
-      priceCurrency: "BRL",
-      availability: "https://schema.org/InStock",
+      price: commerce
+        ? (commerce.effectiveAmount / 10 ** commerce.decimalDigits).toFixed(commerce.decimalDigits)
+        : piece.price,
+      priceCurrency: commerce?.currencyCode ?? "BRL",
+      availability:
+        commerce && !commerce.available
+          ? "https://schema.org/OutOfStock"
+          : "https://schema.org/InStock",
       url: `${site.url}/produto/${piece.slug}`,
       seller: { "@type": "Organization", name: site.name },
     },
@@ -126,7 +153,7 @@ export default async function ProductPage({ params }: Params) {
 
           <div className="col-span-6 md:col-span-4 md:col-start-9">
             <div className="md:sticky md:top-[calc(var(--header-h)+2.5rem)]">
-              <ProductDetail piece={piece} />
+              <ProductDetail piece={piece} commerce={commerce} />
             </div>
           </div>
         </div>
