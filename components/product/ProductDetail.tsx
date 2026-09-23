@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { IconHeart } from "@/components/brand/Icons";
 import { useStore } from "@/components/commerce/StoreProvider";
+import { MetalDot } from "@/components/product/ProductMedia";
 import { categoryName, collectionName, type Piece } from "@/lib/data/catalogue";
 import { price } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -36,20 +37,23 @@ export function ProductDetail({ piece }: { piece: Piece }) {
         {categoryName(piece.category)} · Coleção {collectionName(piece.collection)}
       </p>
 
-      <h1 className="t-h1 mt-4">{piece.name}</h1>
-      <p className="t-label-sm muted mt-4">{piece.line}</p>
+      <h1 className="t-h2 mt-3">{piece.name}</h1>
+      <p className="t-voice soft mt-1.5">{piece.line}</p>
 
-      <p className="t-h4 mt-8">{price(piece.price)}</p>
+      <p className="mt-4 font-[family-name:var(--font-sans)] text-[0.9375rem] tabular-nums tracking-[0.04em]">
+        {price(piece.price)}
+      </p>
+      <p className="t-label-sm muted mt-2 flex items-center gap-2">
+        <MetalDot piece={piece} />
+        {piece.material}
+        {piece.madeToOrder ? " · Sob encomenda" : " · Pronta-entrega"}
+      </p>
 
-      <hr className="rule mt-8" />
+      <hr className="rule mt-6" />
 
-      <p className="t-body mt-8">{piece.description}</p>
+      <p className="t-body mt-6">{piece.description}</p>
 
-      <dl className="mt-8 space-y-3">
-        <div className="flex gap-6">
-          <dt className="t-label-sm muted w-[5.5rem] shrink-0">Material</dt>
-          <dd className="t-label-sm min-w-0 flex-1">{piece.material}</dd>
-        </div>
+      <dl className="mt-6 space-y-2.5">
         {piece.stone && (
           <div className="flex gap-6">
             <dt className="t-label-sm muted w-[5.5rem] shrink-0">Pedra</dt>
@@ -68,7 +72,7 @@ export function ProductDetail({ piece }: { piece: Piece }) {
 
       {/* — Opções — */}
       {piece.options && (
-        <fieldset className="mt-10">
+        <fieldset className="mt-7">
           <legend className="t-label-sm muted">{piece.options.label}</legend>
           <div className="mt-4 flex flex-wrap gap-2">
             {piece.options.values.map((value) => (
@@ -94,7 +98,7 @@ export function ProductDetail({ piece }: { piece: Piece }) {
       )}
 
       {/* — Quantidade — */}
-      <div className="mt-10">
+      <div className="mt-7">
         <p className="t-label-sm muted">Quantidade</p>
         <div className="mt-4 inline-flex items-center border border-[var(--color-rule)]">
           <button
@@ -122,7 +126,7 @@ export function ProductDetail({ piece }: { piece: Piece }) {
       </div>
 
       {/* — Acções — */}
-      <div className="mt-10 flex items-stretch gap-3">
+      <div className="mt-7 flex items-stretch gap-3">
         <Button onClick={add} loading={state === "loading"} className="flex-1">
           {state === "done" ? "Adicionado" : "Adicionar à sacola"}
         </Button>
@@ -140,7 +144,7 @@ export function ProductDetail({ piece }: { piece: Piece }) {
         </button>
       </div>
 
-      <p className="t-label-sm muted mt-5">
+      <p className="t-label-sm muted mt-4">
         Entrega assegurada em todo o Brasil · Prazo de execução de 14 semanas para
         peças sob encomenda
       </p>

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Reveal, RevealGroup, RevealLines, RevealVeil, Parallax } from "@/components/motion/Reveal";
-import { SectionLabel } from "@/components/ui/Label";
-import { ButtonLink } from "@/components/ui/Button";
-import { CrystalMark, PieceDrawing } from "@/components/brand/Marks";
+import { Reveal, RevealGroup } from "@/components/motion/Reveal";
+import { PieceDrawing } from "@/components/brand/Marks";
 
 export const metadata: Metadata = {
   title: "Ateliê",
@@ -60,134 +59,108 @@ export default function AtelierPage() {
         lead="Não há atalhos que se notem. Há atalhos que se notam — e é por isso que não os tomamos."
       />
 
-      <div className="shell">
-        <Parallax distance={28}>
-          <RevealVeil duration={1.5}>
-            <figure className="plate plate-studio relative aspect-[16/10] w-full md:aspect-[16/8]">
-              <Image
-                src="/images/set-packaging.png"
-                alt="Conjunto HERTMANN: estojo lacado, bolsa de veludo, sacola, cartão e peças em ouro"
-                fill
-                priority
-                sizes="100vw"
-                className="object-contain p-[4%]"
-              />
-            </figure>
-          </RevealVeil>
-        </Parallax>
-      </div>
+      {/* — O que sai da bancada, em sangria — */}
+      <figure className="plate plate-studio relative aspect-[4/3] w-full md:aspect-auto md:h-[min(40vw,calc(100svh-var(--header-h)))]">
+        <Image
+          src="/images/set-packaging.png"
+          alt="Conjunto HERTMANN: estojo lacado, bolsa de veludo, sacola, cartão e peças em ouro"
+          fill
+          priority
+          sizes="100vw"
+          className="object-contain p-[5%]"
+        />
+      </figure>
 
       {/* — Etapas — */}
-      <section className="section" aria-labelledby="processo">
-        <div className="shell">
-          <div className="grid12 items-end">
-            <Reveal className="col-span-6 md:col-span-6">
-              <SectionLabel index="01">Processo</SectionLabel>
-              <RevealLines
-                as="h2"
-                id="processo"
-                lines={["Sete etapas."]}
-                className="t-h2 mt-[clamp(1.25rem,2.5vw,2rem)]"
-                delay={0.08}
-              />
-            </Reveal>
-            <Reveal delay={0.2} className="col-span-6 md:col-span-4 md:col-start-9">
-              <p className="t-body">
-                Um só artesão acompanha a peça do princípio ao fim. Não há linha
-                de montagem: há uma bancada, e quem a ocupa responde por tudo o
-                que dela sai.
-              </p>
-            </Reveal>
-          </div>
+      <section className="shell-plp py-[var(--spacing-commerce)]" aria-labelledby="processo">
+        <div className="grid gap-y-6 md:grid-cols-12 md:gap-x-8">
+          <Reveal className="md:col-span-4">
+            <p className="t-label-sm muted">Processo</p>
+            <h2 id="processo" className="t-h2 mt-2">
+              Sete etapas.
+            </h2>
+            <p className="t-body mt-3 max-w-[36ch]">
+              Um só artesão acompanha a peça do princípio ao fim. Não há linha de montagem: há uma
+              bancada, e quem a ocupa responde por tudo o que dela sai.
+            </p>
+          </Reveal>
 
-          <RevealGroup className="mt-[clamp(3rem,7vw,6rem)] flex flex-col" stagger={0.07} y={22}>
+          <RevealGroup className="flex flex-col md:col-span-8" stagger={0.06} y={14}>
             {STEPS.map((step) => (
               <article
                 key={step.index}
-                className="grid12 border-t border-[var(--color-rule)] py-[clamp(1.75rem,3.5vw,3rem)] last:border-b"
+                className="grid grid-cols-[3rem_1fr] gap-x-6 border-t border-[var(--color-rule)] py-4 last:border-b md:grid-cols-[3.5rem_11rem_1fr]"
               >
-                <p className="t-num col-span-6 opacity-45 md:col-span-1">{step.index}</p>
-                <h3 className="t-h3 col-span-6 mt-3 md:col-span-3 md:col-start-3 md:mt-0">
-                  {step.title}
-                </h3>
-                <p className="t-body col-span-6 mt-3 md:col-span-5 md:col-start-8 md:mt-0">
-                  {step.body}
-                </p>
+                <p className="t-num pt-1 opacity-50">{step.index}</p>
+                <h3 className="t-h4">{step.title}</h3>
+                <p className="t-body col-start-2 mt-1.5 md:col-start-3 md:mt-0">{step.body}</p>
               </article>
             ))}
           </RevealGroup>
         </div>
       </section>
 
-      {/* — O desenho — */}
+      {/* — O traço — o momento azul-marinho da página — */}
       <section className="on-ink" aria-labelledby="desenho">
-        <div className="shell section">
-          <div className="grid12 items-center gap-y-[clamp(3rem,6vw,4rem)]">
-            <div className="col-span-6 md:col-span-5">
-              <Reveal>
-                <SectionLabel index="02">O traço</SectionLabel>
-              </Reveal>
-              <RevealLines
-                as="h2"
-                id="desenho"
-                lines={["Antes da joia,", "há uma linha."]}
-                className="t-h2 mt-[clamp(1.25rem,2.5vw,2rem)]"
-                delay={0.08}
-              />
-              <Reveal delay={0.3}>
-                <p className="t-lead mt-8 max-w-[38ch]">
-                  Os desenhos técnicos da casa acompanham cada peça durante toda a
-                  execução, e ficam arquivados com ela. São eles que permitem
-                  refazer, décadas depois, uma peça que já não existe.
-                </p>
-                <ButtonLink href="/joias" variant="line" arrow className="mt-9">
-                  Ver o catálogo
-                </ButtonLink>
-              </Reveal>
-            </div>
+        <div className="grid md:grid-cols-2">
+          <div className="flex flex-col justify-center px-[var(--spacing-gutter)] py-[var(--spacing-commerce)] md:px-[clamp(2rem,6vw,6rem)]">
+            <Reveal>
+              <p className="t-label-sm muted">O traço</p>
+              <h2 id="desenho" className="t-h2 mt-2 max-w-[14ch]">
+                Antes da joia, há uma linha.
+              </h2>
+              <p className="t-body mt-4 max-w-[40ch]">
+                Os desenhos técnicos da casa acompanham cada peça durante toda a execução, e ficam
+                arquivados com ela. São eles que permitem refazer, décadas depois, uma peça que já
+                não existe.
+              </p>
+              <Link href="/joias" className="link-edit mt-5">
+                <span>Ver o catálogo</span>
+                <span aria-hidden="true" className="arrow">
+                  →
+                </span>
+              </Link>
+            </Reveal>
+          </div>
 
-            <div className="col-span-6 md:col-span-6 md:col-start-7">
-              <div className="grid grid-cols-2 gap-[clamp(0.75rem,2vw,1.5rem)]">
-                {(["solitaire", "pendantGem", "hoop", "links"] as const).map((variant) => (
-                  <div
-                    key={variant}
-                    className="grid aspect-square place-items-center border border-[var(--color-rule-invert)]"
-                  >
-                    <PieceDrawing
-                      variant={variant}
-                      className="h-[62%] w-auto text-[var(--color-paper)] opacity-70"
-                    />
-                  </div>
-                ))}
+          <div className="grid grid-cols-2">
+            {(["solitaire", "pendantGem", "hoop", "links"] as const).map((variant) => (
+              <div
+                key={variant}
+                className="grid aspect-square place-items-center border-l border-t border-[var(--color-rule-invert)]"
+              >
+                <PieceDrawing
+                  variant={variant}
+                  className="h-[58%] w-auto text-[var(--color-paper)] opacity-70"
+                />
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* — Visita — */}
-      <section className="section-lg" aria-labelledby="visita-atelie">
-        <div className="shell flex flex-col items-center text-center">
-          <Reveal>
-            <CrystalMark className="h-[clamp(3rem,5vw,4.5rem)] w-auto opacity-55" />
-          </Reveal>
-          <RevealLines
-            as="h2"
-            id="visita-atelie"
-            lines={["O ateliê recebe visitas."]}
-            className="t-h2 mt-[clamp(2rem,4vw,3rem)]"
-            delay={0.1}
-          />
-          <Reveal delay={0.3}>
-            <p className="t-lead mt-8 max-w-[42ch]">
-              Marque uma hora e suba. Verá a bancada onde a sua peça vai ser
-              feita, e conhecerá quem a vai fazer.
-            </p>
-            <ButtonLink href="/contato" variant="solid" arrow className="mt-10">
-              Marcar visita
-            </ButtonLink>
-          </Reveal>
-        </div>
+      <section
+        className="shell-plp grid items-end gap-y-5 py-[var(--spacing-commerce)] md:grid-cols-12 md:gap-x-8"
+        aria-labelledby="visita-atelie"
+      >
+        <Reveal className="md:col-span-7">
+          <h2 id="visita-atelie" className="t-h2">
+            O ateliê recebe visitas.
+          </h2>
+          <p className="t-body mt-3 max-w-[46ch]">
+            Marque uma hora e suba. Verá a bancada onde a sua peça vai ser feita, e conhecerá quem a
+            vai fazer.
+          </p>
+        </Reveal>
+        <Reveal delay={0.1} className="md:col-span-4 md:col-start-9 md:text-right">
+          <Link href="/contato" className="link-edit">
+            <span>Marcar visita</span>
+            <span aria-hidden="true" className="arrow">
+              →
+            </span>
+          </Link>
+        </Reveal>
       </section>
     </>
   );

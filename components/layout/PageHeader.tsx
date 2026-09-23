@@ -1,10 +1,10 @@
-import { SectionLabel } from "@/components/ui/Label";
-import { Reveal, RevealLines } from "@/components/motion/Reveal";
+import { Reveal } from "@/components/motion/Reveal";
 import { cn } from "@/lib/utils";
 
 /* ============================================================================
-   Abertura de página — o mesmo gesto em todo o site: rótulo, título que se
-   levanta, e uma coluna estreita de texto à direita.
+   Abertura de página interna — o mesmo gesto das páginas de catálogo:
+   rótulo, título de tamanho médio, e a linha de voz à direita. Pouca
+   altura: o conteúdo começa logo a seguir.
    ========================================================================== */
 
 export function PageHeader({
@@ -22,28 +22,29 @@ export function PageHeader({
 }) {
   return (
     <header
-      className={cn("shell pb-[clamp(3rem,7vw,6rem)]", className)}
-      style={{ paddingTop: "calc(var(--header-h) + clamp(3.5rem, 9vw, 8rem))" }}
+      className={cn(
+        "shell-plp grid items-end gap-x-10 gap-y-4 pb-[clamp(1.5rem,3vw,2.5rem)] md:grid-cols-12",
+        className,
+      )}
+      style={{ paddingTop: "calc(var(--header-h) + clamp(1.75rem, 3.3vw, 3rem))" }}
     >
-      <Reveal>
-        <SectionLabel>{label}</SectionLabel>
+      <Reveal className="md:col-span-7">
+        <p className="t-label-sm muted">{label}</p>
+        <h1 className="t-h1 mt-2">
+          {title.map((line) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
+        </h1>
       </Reveal>
 
-      <div className="grid12 mt-[clamp(1.5rem,3vw,2.5rem)] items-end">
-        <RevealLines
-          as="h1"
-          lines={title}
-          className="t-h1 col-span-6 md:col-span-7"
-          delay={0.06}
-        />
-
-        {(lead || aside) && (
-          <Reveal delay={0.25} className="col-span-6 mt-8 md:col-span-4 md:col-start-9 md:mt-0">
-            {lead && <p className="t-lead max-w-[42ch]">{lead}</p>}
-            {aside}
-          </Reveal>
-        )}
-      </div>
+      {(lead || aside) && (
+        <Reveal delay={0.15} className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9">
+          {lead && <p className="t-body max-w-[46ch]">{lead}</p>}
+          {aside}
+        </Reveal>
+      )}
     </header>
   );
 }

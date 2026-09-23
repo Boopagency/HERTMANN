@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 /* ============================================================================
    Camada modal — véu, foco preso, Escape fecha, rolagem bloqueada.
-   Serve o menu móvel, a busca e a sacola.
+   Serve o menu lateral, a busca, a sacola e os filtros no móvel.
    ========================================================================== */
 
 const FOCUSABLE =
@@ -23,14 +23,17 @@ export function Overlay({
   label,
   className,
   panelClassName,
+  closeClassName,
 }: {
   open: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  from?: "right" | "top";
+  from?: "right" | "left" | "top" | "bottom";
   label: string;
   className?: string;
   panelClassName?: string;
+  /** Posição do botão de fechar; por omissão, canto superior direito. */
+  closeClassName?: string;
 }) {
   const reduced = useReducedMotion();
   const panel = useRef<HTMLDivElement>(null);
@@ -78,10 +81,12 @@ export function Overlay({
     };
   }, [open, onClose]);
 
-  const panelMotion =
-    from === "right"
-      ? { initial: { x: "100%" }, animate: { x: 0 }, exit: { x: "100%" } }
-      : { initial: { y: "-100%" }, animate: { y: 0 }, exit: { y: "-100%" } };
+  const panelMotion = {
+    right: { initial: { x: "100%" }, animate: { x: 0 }, exit: { x: "100%" } },
+    left: { initial: { x: "-100%" }, animate: { x: 0 }, exit: { x: "-100%" } },
+    top: { initial: { y: "-100%" }, animate: { y: 0 }, exit: { y: "-100%" } },
+    bottom: { initial: { y: "100%" }, animate: { y: 0 }, exit: { y: "100%" } },
+  }[from];
 
   return (
     <AnimatePresence>
@@ -91,7 +96,7 @@ export function Overlay({
             type="button"
             aria-label="Fechar"
             onClick={onClose}
-            className="absolute inset-0 h-full w-full cursor-default bg-[var(--color-ink)]/25"
+            className="absolute inset-0 h-full w-full cursor-default bg-[var(--color-ink)]/20"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -100,19 +105,23 @@ export function Overlay({
 
           <motion.div
             ref={panel}
+            data-lenis-prevent
             className={cn("absolute", panelClassName)}
             initial={reduced ? false : panelMotion.initial}
             animate={panelMotion.animate}
             exit={reduced ? undefined : panelMotion.exit}
-            transition={{ duration: reduced ? 0 : 0.72, ease: EASE_VEIL }}
+            transition={{ duration: reduced ? 0 : 0.62, ease: EASE_VEIL }}
           >
             <button
               type="button"
               onClick={onClose}
-              className="tap absolute right-[clamp(1rem,3vw,2.5rem)] top-[clamp(1rem,2.4vw,2rem)] z-10 grid h-11 w-11 place-items-center"
+              className={cn(
+                "tap absolute z-10 grid h-11 w-11 place-items-center",
+                closeClassName ?? "right-[clamp(0.5rem,2vw,1.75rem)] top-[clamp(0.5rem,1.4vw,1.25rem)]",
+              )}
               aria-label="Fechar"
             >
-              <IconClose size={20} />
+              <IconClose size={18} />
             </button>
             {children}
           </motion.div>

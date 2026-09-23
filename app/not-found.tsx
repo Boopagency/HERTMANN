@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { ButtonLink } from "@/components/ui/Button";
-import { CrystalMark } from "@/components/brand/Marks";
+import Link from "next/link";
+import { ProductRail } from "@/components/product/ProductRail";
+import { featuredPieces } from "@/lib/data/catalogue";
 
 export const metadata: Metadata = {
   title: "Página não encontrada",
@@ -9,25 +10,39 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <section
-      className="shell flex min-h-[70svh] flex-col items-center justify-center text-center"
-      style={{ paddingTop: "var(--header-h)" }}
-    >
-      <CrystalMark className="h-[clamp(3rem,5vw,4.5rem)] w-auto opacity-50" />
-      <p className="t-num mt-10 opacity-45">404</p>
-      <h1 className="t-h1 mt-5">Esta página não existe.</h1>
-      <p className="t-lead mt-6 max-w-[38ch]">
-        O endereço mudou, ou a peça que procurava saiu de exposição. O catálogo
-        continua aqui.
-      </p>
-      <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <ButtonLink href="/joias" variant="solid" arrow>
-          Ver as joias
-        </ButtonLink>
-        <ButtonLink href="/" variant="line">
-          Página inicial
-        </ButtonLink>
-      </div>
-    </section>
+    <>
+      <section
+        className="shell-plp grid items-end gap-y-4 pb-[clamp(1.5rem,3vw,2.5rem)] md:grid-cols-12 md:gap-x-10"
+        style={{ paddingTop: "calc(var(--header-h) + clamp(2.5rem, 6vw, 5rem))" }}
+      >
+        <div className="md:col-span-7">
+          <p className="t-num opacity-50">404</p>
+          <h1 className="t-h1 mt-2">Esta página não existe.</h1>
+        </div>
+        <div className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9">
+          <p className="t-body max-w-[40ch]">
+            O endereço mudou, ou a peça que procurava saiu de exposição. O catálogo continua aqui.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-6">
+            <Link href="/joias" className="link-edit">
+              <span>Ver as joias</span>
+              <span aria-hidden="true" className="arrow">
+                →
+              </span>
+            </Link>
+            <Link href="/" className="link-edit">
+              <span>Página inicial</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <ProductRail
+        id="talvez"
+        title="Talvez procure"
+        pieces={featuredPieces()}
+        className="border-t border-[var(--color-rule-soft)]"
+      />
+    </>
   );
 }

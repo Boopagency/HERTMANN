@@ -14,9 +14,15 @@ export type CategorySlug = "aneis" | "colares" | "brincos" | "pulseiras";
 
 export type PieceImage = {
   src: string;
-  /** Recorte com fundo transparente — assenta sobre a prancha de estúdio. */
+  /**
+   * `true` — recorte ou packshot: a joia é centrada, com respiro, sobre a
+   * névoa de estúdio. `false` — fotografia de enquadramento completo, que
+   * preenche o tile em sangria.
+   */
   cutout: boolean;
   alt: string;
+  /** Ponto focal (`object-position`) usado nos enquadramentos quadrados. */
+  focus?: string;
 };
 
 export type Piece = {
@@ -37,6 +43,15 @@ export type Piece = {
   image: PieceImage | null;
   /** Segunda fotografia, revelada no hover. */
   imageAlt?: PieceImage | null;
+  /**
+   * Packshot de catálogo — a joia isolada, centrada, sobre fundo off-white
+   * (ou PNG recortado). Quando existe, é a imagem das vitrines e da grelha
+   * e a fotografia `image` passa a ser revelada no hover. Ver
+   * docs/REDESIGN.md para a especificação de produção.
+   */
+  packshot?: PieceImage | null;
+  /** Executada sob encomenda — fica fora do filtro "pronta-entrega". */
+  madeToOrder?: boolean;
   options?: { label: string; values: string[] };
   featured?: boolean;
 };
@@ -123,7 +138,8 @@ export const pieces: Piece[] = [
     drawing: "band",
     image: {
       src: "/images/alianca-perene.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 50%",
       alt: "Aliança Perene, em close-up",
     },
     options: { label: "Aro", values: ["12", "14", "16", "18", "20", "22"] },
@@ -144,7 +160,8 @@ export const pieces: Piece[] = [
     drawing: "band",
     image: {
       src: "/images/par-vertente.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 50%",
       alt: "Par de aros Vertente, em close-up",
     },
     options: { label: "Aro", values: ["12", "14", "16", "18", "20"] },
@@ -165,7 +182,8 @@ export const pieces: Piece[] = [
     drawing: "pendant",
     image: {
       src: "/images/colar-meridiano.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 100%",
       alt: "Colar Meridiano usado, em close-up sobre o colo",
     },
     options: { label: "Comprimento", values: ["40 cm", "42 cm", "45 cm"] },
@@ -185,9 +203,11 @@ export const pieces: Piece[] = [
     measures: "Corrente 45 cm · Pedra 8 × 6 mm",
     reference: "HM–CL–031",
     drawing: "pendantGem",
+    madeToOrder: true,
     image: {
       src: "/images/colar-noturn.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 80%",
       alt: "Colar Noturno usado, em close-up sobre o colo",
     },
     featured: false,
@@ -207,7 +227,8 @@ export const pieces: Piece[] = [
     drawing: "hoop",
     image: {
       src: "/images/brinco-circunferencia.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 22%",
       alt: "Brinco Circunferência usado, em close-up",
     },
     options: { label: "Diâmetro", values: ["16 mm", "22 mm", "30 mm"] },
@@ -229,7 +250,8 @@ export const pieces: Piece[] = [
     drawing: "drop",
     image: {
       src: "/images/brinco-solsticio.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 39%",
       alt: "Brinco Solstício usado, em close-up",
     },
     featured: true,
@@ -249,7 +271,8 @@ export const pieces: Piece[] = [
     drawing: "links",
     image: {
       src: "/images/pulseira-cadencia.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 45%",
       alt: "Pulseira Cadência usada no pulso, em close-up",
     },
     options: { label: "Comprimento", values: ["17 cm", "18 cm", "19 cm"] },
@@ -270,7 +293,8 @@ export const pieces: Piece[] = [
     drawing: "bangle",
     image: {
       src: "/images/pulseira-arquetipo.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 50%",
       alt: "Pulseira Arquétipo usada no pulso, em close-up",
     },
     featured: false,
@@ -289,9 +313,11 @@ export const pieces: Piece[] = [
     measures: "Aro 2,2 mm · Altura da coroa 7 mm",
     reference: "HM–AR–040",
     drawing: "solitaire",
+    madeToOrder: true,
     image: {
       src: "/images/anel-noturno.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 30%",
       alt: "Anel Noturno usado na mão, em close-up",
     },
     options: { label: "Aro", values: ["12", "14", "16", "18"] },
@@ -312,7 +338,8 @@ export const pieces: Piece[] = [
     drawing: "choker",
     image: {
       src: "/images/colar-solsticio.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 96%",
       alt: "Colar Solstício usado, em close-up",
     },
   },
@@ -331,7 +358,8 @@ export const pieces: Piece[] = [
     drawing: "stud",
     image: {
       src: "/images/brinco-ponto.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 45%",
       alt: "Brinco Ponto usado, em close-up",
     },
   },
@@ -349,9 +377,11 @@ export const pieces: Piece[] = [
     measures: "Comprimento 17,5 cm",
     reference: "HM–PL–035",
     drawing: "links",
+    madeToOrder: true,
     image: {
       src: "/images/pulseira-noturno.jpg",
-      cutout: true,
+      cutout: false,
+      focus: "50% 100%",
       alt: "Pulseira Noturno usada no pulso, em close-up",
     },
   },
@@ -456,4 +486,34 @@ export function relatedPieces(piece: Piece, count = 3): Piece[] {
     (p) => p.slug !== piece.slug && !sameCollection.includes(p) && !sameCategory.includes(p),
   );
   return [...sameCollection, ...sameCategory, ...rest].slice(0, count);
+}
+
+/* --------------------------------------------------------------------------
+   Atributos derivados — alimentam amostras de metal, filtros e ordenação
+   sem duplicar informação que o catálogo já declara.
+   -------------------------------------------------------------------------- */
+
+export type Metal = "amarelo" | "branco";
+
+export const metalName: Record<Metal, string> = {
+  amarelo: "Ouro amarelo 18k",
+  branco: "Ouro branco 18k",
+};
+
+export function pieceMetal(piece: Piece): Metal {
+  return /branco/i.test(piece.material) ? "branco" : "amarelo";
+}
+
+export type Stone = "diamante" | "safira" | "sem-pedra";
+
+export function pieceStone(piece: Piece): Stone {
+  if (!piece.stone) return "sem-pedra";
+  return /safira/i.test(piece.stone) ? "safira" : "diamante";
+}
+
+const latestYear = Math.max(...collections.map((c) => Number(c.year)));
+
+/** Peças das coleções mais recentes — alimentam "Novidades". */
+export function isNewPiece(piece: Piece): boolean {
+  return Number(collectionBySlug(piece.collection)?.year) === latestYear;
 }

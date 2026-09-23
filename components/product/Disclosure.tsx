@@ -28,7 +28,7 @@ export function Disclosure({
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          className="flex w-full items-center justify-between gap-6 py-6 text-left"
+          className="flex w-full items-center justify-between gap-6 py-4 text-left"
         >
           <span className="t-label">{title}</span>
           <span aria-hidden="true" className="relative h-3 w-3 shrink-0">
@@ -50,7 +50,7 @@ export function Disclosure({
             transition={{ duration: reduced ? 0 : 0.6, ease: EASE }}
             className="overflow-hidden"
           >
-            <div className="t-body max-w-[52ch] pb-8">{children}</div>
+            <div className="t-body max-w-[52ch] pb-6">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>

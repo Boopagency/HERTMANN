@@ -3,10 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductDetail } from "@/components/product/ProductDetail";
-import { ProductGrid } from "@/components/product/ProductGrid";
+import { ProductRail } from "@/components/product/ProductRail";
 import { Disclosure } from "@/components/product/Disclosure";
 import { Reveal } from "@/components/motion/Reveal";
-import { SectionLabel } from "@/components/ui/Label";
 import {
   categoryBySlug,
   collectionName,
@@ -45,7 +44,7 @@ export default async function ProductPage({ params }: Params) {
   if (!piece) notFound();
 
   const category = categoryBySlug(piece.category)!;
-  const related = relatedPieces(piece, 3);
+  const related = relatedPieces(piece, 8);
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -94,8 +93,8 @@ export default async function ProductPage({ params }: Params) {
       />
 
       <div
-        className="shell"
-        style={{ paddingTop: "calc(var(--header-h) + clamp(2rem, 5vw, 4rem))" }}
+        className="shell-plp"
+        style={{ paddingTop: "calc(var(--header-h) + clamp(1rem, 2vw, 1.5rem))" }}
       >
         {/* — Rasto — */}
         <nav aria-label="Trilho de navegação">
@@ -119,26 +118,26 @@ export default async function ProductPage({ params }: Params) {
         </nav>
 
         {/* — Peça — */}
-        <div className="grid12 mt-[clamp(2rem,4vw,3.5rem)] gap-y-[clamp(2.5rem,5vw,4rem)]">
-          <div className="col-span-6 md:col-span-7">
+        <div className="mt-[clamp(0.75rem,1.6vw,1.25rem)] grid gap-y-8 md:grid-cols-12 md:gap-x-[clamp(1rem,2vw,2rem)]">
+          <div className="min-w-0 md:col-span-7">
             <ProductGallery piece={piece} />
           </div>
 
-          <div className="col-span-6 md:col-span-4 md:col-start-9">
-            <div className="md:sticky md:top-[calc(var(--header-h)+2.5rem)]">
+          <div className="md:col-span-5 lg:col-span-4 lg:col-start-9">
+            <div className="md:sticky md:top-[calc(var(--header-h)+1.5rem)]">
               <ProductDetail piece={piece} />
             </div>
           </div>
         </div>
 
         {/* — Informação secundária — */}
-        <div className="grid12 mt-[clamp(4rem,9vw,8rem)]">
-          <div className="col-span-6 md:col-span-7">
+        <div className="mt-[var(--spacing-commerce)] grid gap-y-8 md:grid-cols-12 md:gap-x-[clamp(1rem,2vw,2rem)]">
+          <div className="md:col-span-7">
             <Reveal>
-              <SectionLabel>Detalhes</SectionLabel>
+              <p className="t-label-sm muted">Detalhes</p>
             </Reveal>
 
-            <Reveal delay={0.08} className="mt-8">
+            <Reveal delay={0.08} className="mt-4">
               <div className="border-t border-[var(--color-rule)]">
                 <Disclosure title="A peça" defaultOpen>
                   <p>{piece.description}</p>
@@ -205,29 +204,30 @@ export default async function ProductPage({ params }: Params) {
             </Reveal>
           </div>
 
-          <Reveal delay={0.16} className="col-span-6 md:col-span-3 md:col-start-10">
+          <Reveal delay={0.16} className="md:col-span-4 md:col-start-9 lg:col-span-3 lg:col-start-10">
             <p className="t-h4">Atendimento privado</p>
-            <p className="t-body mt-4">
+            <p className="t-body mt-3">
               Pode marcar uma visita à boutique para ver a peça, experimentar
               medidas e falar com quem a executa.
             </p>
-            <Link href="/contato" className="t-label-sm link-nav mt-6 inline-block">
-              Marcar visita
+            <Link href="/contato" className="link-edit mt-4">
+              <span>Marcar visita</span>
+              <span aria-hidden="true" className="arrow">
+                →
+              </span>
             </Link>
           </Reveal>
         </div>
 
-        {/* — Relacionadas — */}
-        <section className="section" aria-labelledby="relacionadas">
-          <Reveal>
-            <SectionLabel>Também da casa</SectionLabel>
-            <h2 id="relacionadas" className="t-h2 mt-[clamp(1.25rem,2.5vw,2rem)]">
-              Pode também gostar
-            </h2>
-          </Reveal>
-          <ProductGrid pieces={related} columns={3} className="mt-[clamp(2.5rem,5vw,4rem)]" />
-        </section>
       </div>
+
+      {/* — Relacionadas — */}
+      <ProductRail
+        id="relacionadas"
+        title="Também da casa"
+        pieces={related}
+        className="mt-[var(--spacing-commerce)] border-t border-[var(--color-rule-soft)]"
+      />
     </>
   );
 }

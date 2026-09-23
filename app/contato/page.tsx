@@ -21,20 +21,20 @@ export default function ContactPage() {
         lead="Respondemos em até um dia útil. Para ver uma peça, experimentar medidas ou encomendar um projecto, marque uma visita — o atendimento é sempre privado."
       />
 
-      <div className="shell pb-[var(--spacing-section)]">
-        <div className="grid12 gap-y-[clamp(3rem,6vw,5rem)]">
-          <div className="col-span-6 md:col-span-6">
+      <div className="shell-plp border-t border-[var(--color-rule-soft)] pb-[var(--spacing-commerce)] pt-[clamp(1.75rem,3vw,2.5rem)]">
+        <div className="grid gap-y-10 md:grid-cols-12 md:gap-x-8">
+          <div className="md:col-span-7 lg:col-span-6">
             <ContactForm />
           </div>
 
-          <Reveal delay={0.12} className="col-span-6 md:col-span-4 md:col-start-9">
-            <div className="border-t border-[var(--color-rule)] pt-6">
+          <Reveal delay={0.12} className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9">
+            <div className="border-t border-[var(--color-rule)] pt-5">
               <p className="t-label-sm muted">Boutique</p>
               <p className="t-label mt-3">{site.contact.address}</p>
               <p className="t-body mt-3">{site.contact.hours}</p>
             </div>
 
-            <div className="mt-10 border-t border-[var(--color-rule)] pt-6">
+            <div className="mt-7 border-t border-[var(--color-rule)] pt-5">
               <p className="t-label-sm muted">Directo</p>
               <ul className="mt-3 space-y-2.5">
                 <li>
@@ -60,7 +60,7 @@ export default function ContactPage() {
               </ul>
             </div>
 
-            <div className="mt-10 border-t border-[var(--color-rule)] pt-6">
+            <div className="mt-7 border-t border-[var(--color-rule)] pt-5">
               <p className="t-label-sm muted">Ateliê</p>
               <p className="t-body mt-3">
                 Visitas ao ateliê são feitas mediante marcação, de terça a
@@ -68,7 +68,7 @@ export default function ContactPage() {
               </p>
             </div>
 
-            <Parallax distance={18} className="mt-10">
+            <Parallax distance={12} className="mt-8">
               <figure>
                 <RevealVeil>
                   <div className="plate relative aspect-[4/5] w-full">

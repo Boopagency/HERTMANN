@@ -17,17 +17,17 @@ export function LegalPage({
     <>
       <PageHeader label={label} title={title} lead={lead} />
 
-      <div className="shell pb-[var(--spacing-section)]">
-        <div className="grid12">
-          <div className="col-span-6 md:col-span-7 md:col-start-5">
+      <div className="shell-plp pb-[var(--spacing-commerce)]">
+        <div className="grid md:grid-cols-12 md:gap-x-8">
+          <div className="md:col-span-8 md:col-start-5 lg:col-span-7">
             {sections.map((section, i) => (
               <Reveal
                 key={section.heading}
                 delay={i * 0.05}
-                className="border-t border-[var(--color-rule)] py-[clamp(2rem,4vw,3rem)]"
+                className="border-t border-[var(--color-rule)] py-[clamp(1.5rem,2.6vw,2.25rem)]"
               >
                 <h2 className="t-h3">{section.heading}</h2>
-                <div className="mt-5 space-y-4">
+                <div className="mt-3 space-y-3">
                   {section.body.map((paragraph, j) => (
                     <p key={j} className="t-body max-w-[62ch]">
                       {paragraph}

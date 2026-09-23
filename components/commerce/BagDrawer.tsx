@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Overlay } from "@/components/layout/Overlay";
-import { PieceFigure } from "@/components/product/PieceFigure";
+import { ProductThumb } from "@/components/product/ProductThumb";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { IconMinus, IconPlus } from "@/components/brand/Icons";
 import { useStore } from "@/components/commerce/StoreProvider";
@@ -25,14 +25,13 @@ export function BagDrawer() {
       label="Sacola"
       panelClassName="right-0 top-0 h-[100dvh] w-full max-w-[30rem] bg-[var(--color-paper)] flex flex-col"
     >
-      <header className="px-[clamp(1.25rem,3vw,2.25rem)] pt-[clamp(1.5rem,3vw,2.25rem)]">
+      <header className="flex h-[var(--header-h)] shrink-0 items-center border-b border-[var(--color-rule)] px-[clamp(1.25rem,3vw,2.25rem)]">
         <p className="t-label">Sacola</p>
-        <p className="t-label-sm muted mt-1">
+        <p className="t-label-sm muted ml-3">
           {bagCount === 0
             ? "Ainda vazia"
             : `${bagCount} ${bagCount === 1 ? "peça" : "peças"}`}
         </p>
-        <hr className="rule mt-6" />
       </header>
 
       <div className="no-scrollbar flex-1 overflow-y-auto px-[clamp(1.25rem,3vw,2.25rem)]">
@@ -55,7 +54,7 @@ export function BagDrawer() {
         ) : (
           <ul className="divide-y divide-[var(--color-rule-soft)]">
             {bag.map((line) => (
-              <li key={`${line.slug}-${line.option ?? ""}`} className="flex gap-5 py-6">
+              <li key={`${line.slug}-${line.option ?? ""}`} className="flex gap-4 py-5">
                 <Link
                   href={`/produto/${line.slug}`}
                   onClick={() => setBagOpen(false)}
@@ -63,7 +62,7 @@ export function BagDrawer() {
                   tabIndex={-1}
                   aria-hidden="true"
                 >
-                  <PieceFigure piece={line.piece} sizes="88px" still showReference={false} />
+                  <ProductThumb piece={line.piece} sizes="88px" />
                 </Link>
 
                 <div className="flex min-w-0 flex-1 flex-col">
@@ -71,7 +70,7 @@ export function BagDrawer() {
                     <Link
                       href={`/produto/${line.slug}`}
                       onClick={() => setBagOpen(false)}
-                      className="t-h4 link-nav"
+                      className="t-name link-nav"
                     >
                       {line.piece.name}
                     </Link>

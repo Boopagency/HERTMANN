@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { PageHeader } from "@/components/layout/PageHeader";
-import { Reveal, RevealGroup } from "@/components/motion/Reveal";
-import { PieceFigure } from "@/components/product/PieceFigure";
-import { IconArrow } from "@/components/brand/Icons";
-import { collectionPieces, collections } from "@/lib/data/catalogue";
+import { EditorialPair } from "@/components/sections/EditorialPair";
+import { ProductRail } from "@/components/product/ProductRail";
+import { collections, pieces, type Collection } from "@/lib/data/catalogue";
+import { collectionMedia, type Chapter } from "@/lib/data/editorial";
 
 export const metadata: Metadata = {
   title: "Coleções",
@@ -13,69 +11,34 @@ export const metadata: Metadata = {
   alternates: { canonical: "/colecoes" },
 };
 
+const chapter = (collection: Collection): Chapter => ({
+  media: collectionMedia[collection.slug][0],
+  title: collection.name,
+  link: { label: `${collection.year} · ${collection.line}`, href: `/colecoes/${collection.slug}` },
+  place: "bottom",
+  tone: "light",
+});
+
 export default function CollectionsPage() {
+  const [a, b, c, d] = collections.map(chapter);
+
   return (
     <>
-      <PageHeader
-        label="Coleções"
-        title={["Quatro", "coleções"]}
-        lead="A casa não trabalha por estações. Cada coleção é uma família de peças com uma construção comum — e todas continuam em produção."
-      />
-
-      <div className="shell pb-[var(--spacing-section)]">
-        <RevealGroup className="flex flex-col" stagger={0.1} y={26}>
-          {collections.map((collection, i) => {
-            const items = collectionPieces(collection).slice(0, 3);
-            return (
-              <Link
-                key={collection.slug}
-                href={`/colecoes/${collection.slug}`}
-                className="group block border-t border-[var(--color-rule)] py-[clamp(2.5rem,5vw,4rem)] last:border-b"
-              >
-                <div className="grid12 items-center gap-y-8">
-                  <div className="col-span-6 md:col-span-5">
-                    <p className="t-num opacity-45">
-                      {String(i + 1).padStart(2, "0")} — {collection.year}
-                    </p>
-                    <h2 className="t-h1 mt-4">{collection.name}</h2>
-                    <p className="t-label-sm muted mt-4">{collection.line}</p>
-                  </div>
-
-                  <p className="t-body col-span-6 md:col-span-3 md:col-start-6">
-                    {collection.note}
-                  </p>
-
-                  {/* Três miniaturas, como as provas de contacto de uma sessão */}
-                  <div className="col-span-6 flex items-center justify-start gap-3 md:col-span-3 md:col-start-10 md:justify-end">
-                    {items.map((piece) => (
-                      <span key={piece.slug} className="block w-[6.5rem] shrink-0">
-                        <PieceFigure
-                          piece={piece}
-                          sizes="104px"
-                          still
-                          ratio="1 / 1"
-                          showReference={false}
-                        />
-                      </span>
-                    ))}
-                    <IconArrow
-                      size={18}
-                      className="ml-2 shrink-0 transition-transform duration-[650ms] [transition-timing-function:var(--ease-editorial)] group-hover:translate-x-1.5"
-                    />
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </RevealGroup>
-
-        <Reveal delay={0.1}>
-          <p className="t-body mt-[clamp(2.5rem,5vw,4rem)] max-w-[52ch]">
-            As peças de alta joalheria são executadas sob encomenda, a partir de
-            pedras seleccionadas com o cliente. O prazo médio é de catorze semanas.
-          </p>
-        </Reveal>
+      <div className="shell-plp flex flex-wrap items-end justify-between gap-x-10 gap-y-3 pb-[clamp(1.25rem,2.2vw,2rem)] pt-[calc(var(--header-h)+clamp(1.75rem,3.3vw,3rem))]">
+        <div>
+          <p className="t-label-sm muted">A casa</p>
+          <h1 className="t-h1 mt-2">Coleções</h1>
+        </div>
+        <p className="t-voice soft max-w-[46ch] md:text-right">
+          A casa não trabalha por estações. Cada coleção é uma família de peças com uma construção
+          comum — e todas continuam em produção.
+        </p>
       </div>
+
+      <EditorialPair chapters={[a, b]} mobile="stack" />
+      <EditorialPair chapters={[c, d]} mobile="stack" />
+
+      <ProductRail id="todas-as-pecas" title="Todas as peças" pieces={pieces} />
     </>
   );
 }

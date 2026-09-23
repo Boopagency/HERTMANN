@@ -83,7 +83,7 @@ export function ContactForm() {
       </fieldset>
       <input type="hidden" name="subject" value={subject} />
 
-      <div className="mt-10 space-y-8">
+      <div className="mt-7 space-y-6">
         <Field id="name" label="Nome" autoComplete="name" error={errors.name} />
         <Field id="email" label="E-mail" type="email" autoComplete="email" error={errors.email} />
 
@@ -107,7 +107,7 @@ export function ContactForm() {
         </label>
       </div>
 
-      <Button type="submit" loading={status === "loading"} className="mt-10 w-full sm:w-auto">
+      <Button type="submit" loading={status === "loading"} className="mt-8 w-full sm:w-auto">
         Enviar mensagem
       </Button>
     </form>
