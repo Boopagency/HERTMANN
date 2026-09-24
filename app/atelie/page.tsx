@@ -60,14 +60,15 @@ export default function AtelierPage() {
       />
 
       {/* — O que sai da bancada, em sangria — */}
-      <figure className="plate plate-studio relative aspect-[4/3] w-full md:aspect-auto md:h-[min(40vw,calc(100svh-var(--header-h)))]">
+      <figure className="plate relative aspect-[4/3] w-full md:aspect-auto md:h-[min(40vw,calc(100svh-var(--header-h)))]">
         <Image
-          src="/images/set-packaging.png"
-          alt="Conjunto HERTMANN: estojo lacado, bolsa de veludo, sacola, cartão e peças em ouro"
+          src="/images/hertmann/atelier/macarico-solda.jpg"
+          alt="Solda a maçarico sobre o bloco de fundição, na penumbra da bancada"
           fill
           priority
           sizes="100vw"
-          className="object-contain p-[5%]"
+          className="object-cover"
+          style={{ objectPosition: "50% 45%" }}
         />
       </figure>
 

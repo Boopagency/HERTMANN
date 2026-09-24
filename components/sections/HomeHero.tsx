@@ -33,11 +33,16 @@ export function HomeHero() {
         />
       )}
 
-      {/* Em ecrãs de pé, o cabeçalho claro precisa de um sopro de sombra no topo */}
-      {home.hero.headerTonePortrait === "light" && (
+      {/* Cabeçalho claro sobre a fotografia: um sopro de sombra no topo,
+          em ecrãs deitados e/ou de pé, conforme o tom definido para cada um. */}
+      {(home.hero.headerTone === "light" || home.hero.headerTonePortrait === "light") && (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 hidden h-[32%] portrait:block"
+          className={cn(
+            "pointer-events-none absolute inset-x-0 top-0 hidden",
+            home.hero.headerTone === "light" && "landscape:block landscape:h-[26%]",
+            home.hero.headerTonePortrait === "light" && "portrait:block portrait:h-[32%]",
+          )}
           style={{
             background:
               "linear-gradient(to bottom, rgba(0,0,0,0.34) 0%, rgba(0,0,0,0.1) 45%, rgba(0,0,0,0) 100%)",

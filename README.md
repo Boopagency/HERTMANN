@@ -95,15 +95,21 @@ editoriais, aberturas de categoria e de coleção, capítulo da grelha).
 
 | Ficheiro | Onde aparece |
 | --- | --- |
-| `campaign-portrait.png` | Hero da home (Vertente), capítulo da grelha "Todas as joias" |
-| `campaign-hero.jpg` | Par editorial Vertente, abertura da coleção Vertente, Sobre, Open Graph |
-| `video-forma-colares.mp4` | Capítulo "Use do seu jeito" (Solstício) |
-| `colar-noturn.jpg` + `hero-ring.png` | Capítulo Noturno + "Sob encomenda" (o anel em escala, sobre a névoa) |
-| `brinco-circunferencia.jpg` + `boutique-tall.jpg` | Capítulos Brincos e Atendimento |
-| `boutique-wide.jpg` | Sobre |
-| `set-packaging.png` | Ateliê |
+| `hertmann/hero/vertente-argola-texturada.jpg` | Hero da home (Vertente) |
+| `hertmann/editorial/vertente-colar-malha-blazer.jpg` + `use-do-seu-jeito-pulseira-elos.jpg` | Primeiro par editorial |
+| `hertmann/editorial/noturno-anel-safira.jpg` + `hertmann/atelier/sob-encomenda-cravacao-bancada.jpg` | Noturno + Sob encomenda |
+| `hertmann/editorial/brincos-ponto-de-luz.jpg` + `hertmann/boutique/sala-privada.jpg` | Brincos + Atendimento (e Contato) |
+| `hertmann/heritage/maos-bigorna.jpg` + `anel-que-atravessa-geracoes.jpg` | Sobre |
+| `hertmann/atelier/macarico-solda.jpg` | Ateliê |
+| `campaign-portrait.png` · `campaign-hero.jpg` | Capítulo da grelha "Todas as joias", abertura da coleção Vertente, Open Graph |
+| `colar-noturn.jpg` + `hero-ring.png` | Abertura da coleção Noturno |
 | `piece-bag.png` | Vista "Como chega" na página de produto |
 | Fotografias das peças | Tiles, página de produto, aberturas de categoria e de coleção |
+
+As fotografias em `public/images/hertmann/` vêm da curadoria `ASSETS-SHORT`
+(licença Unsplash, uso comercial livre) e são **editoriais**: as joias que
+mostram não são peças do catálogo e nunca aparecem em tiles de produto. Origem,
+autor e licença de cada uma estão em `docs/REDESIGN.md`, secção 5.
 
 ### Recortar uma fotografia nova
 

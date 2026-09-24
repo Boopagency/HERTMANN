@@ -38,6 +38,52 @@ export type Chapter = {
    -------------------------------------------------------------------------- */
 
 const img = {
+  /* --- Direcção fotográfica de campanha (ASSETS-SHORT, licença Unsplash) ---
+     São fotografias editoriais: as joias que mostram NÃO são peças do
+     catálogo HERTMANN e por isso nunca aparecem em tiles de produto nem
+     são nomeadas como tal. Temporárias até à produção própria. */
+  heroHoop: {
+    kind: "image",
+    src: "/images/hertmann/hero/vertente-argola-texturada.jpg",
+    alt: "Argola em ouro texturado, em luz de janela, num retrato de perfil",
+    focus: "70% 22%",
+  },
+  herringbone: {
+    kind: "image",
+    src: "/images/hertmann/editorial/vertente-colar-malha-blazer.jpg",
+    alt: "Colar de malha em ouro sobre um blazer preto",
+    focus: "50% 38%",
+  },
+  everydayBracelet: {
+    kind: "image",
+    src: "/images/hertmann/editorial/use-do-seu-jeito-pulseira-elos.jpg",
+    alt: "Pulseira de elos em ouro usada no dia a dia, sobre o punho de um trench",
+    focus: "50% 50%",
+  },
+  sapphireNight: {
+    kind: "image",
+    src: "/images/hertmann/editorial/noturno-anel-safira.jpg",
+    alt: "Anel em ouro branco com pedra azul, usado na mão, em fundo azul-noite",
+    focus: "50% 52%",
+  },
+  benchSetting: {
+    kind: "image",
+    src: "/images/hertmann/atelier/sob-encomenda-cravacao-bancada.jpg",
+    alt: "Mãos de joalheiro a cravar pedras numa pulseira, sobre a bancada de madeira",
+    focus: "62% 50%",
+  },
+  earStud: {
+    kind: "image",
+    src: "/images/hertmann/editorial/brincos-ponto-de-luz.jpg",
+    alt: "Brinco de pressão com diamante, em grande plano",
+    focus: "50% 42%",
+  },
+  privateSalon: {
+    kind: "image",
+    src: "/images/hertmann/boutique/sala-privada.jpg",
+    alt: "Sala de atendimento privado: mesa de mármore, luz baixa e madeira escura",
+    focus: "50% 58%",
+  },
   campaign: {
     kind: "image",
     src: "/images/campaign-hero.jpg",
@@ -62,23 +108,10 @@ const img = {
     alt: "Brinco Circunferência em ouro, em close-up sobre fundo escuro",
     focus: "50% 30%",
   },
-  boutique: {
-    kind: "image",
-    src: "/images/boutique-tall.jpg",
-    alt: "Boutique HERTMANN no Batel, em Curitiba: vitrinas em latão e painel azul-marinho",
-    focus: "50% 100%",
-  },
   ring: {
     kind: "cutout",
     src: "/images/hero-ring.png",
     alt: "Anel HERTMANN em ouro branco, com diamante central de talhe oval",
-  },
-  solsticioFilm: {
-    kind: "video",
-    src: "/images/video-forma-colares.mp4",
-    poster: "/images/posters/video-forma-colares.jpg",
-    alt: "Colar fino em ouro usado no dia a dia, durante a leitura",
-    focus: "50% 55%",
   },
   handRing: {
     kind: "image",
@@ -144,11 +177,11 @@ export const home = {
   hero: {
     /* O retrato de campanha em enquadramento largo: rosto, brinco e anel
        livres; o texto assenta sobre o fundo e o blazer. */
-    media: { ...img.portrait, focus: "50% 20%" },
+    media: img.heroHoop,
     /** Cor do cabeçalho transparente sobre a fotografia do hero —
         em ecrãs deitados e em ecrãs de pé (onde o topo da fotografia
         muda: no retrato, o cabeçalho cai sobre o cabelo). */
-    headerTone: "dark" as "light" | "dark",
+    headerTone: "light" as "light" | "dark",
     headerTonePortrait: "light" as "light" | "dark",
     /** Cor do texto do hero, no canto inferior esquerdo. */
     tone: "light" as "light" | "dark",
@@ -173,14 +206,14 @@ export const home = {
 
   pairOne: [
     {
-      media: { ...img.campaign, focus: "50% 30%" },
+      media: img.herringbone,
       title: "Vertente",
       link: { label: "Descobrir coleção", href: "/colecoes/vertente" },
       place: "bottom",
       tone: "light",
     },
     {
-      media: img.solsticioFilm,
+      media: img.everydayBracelet,
       title: "Use do seu jeito",
       link: { label: "Descobrir Solstício", href: "/colecoes/solsticio" },
       place: "top",
@@ -190,18 +223,18 @@ export const home = {
 
   pairTwo: [
     {
-      media: img.noturno,
+      media: img.sapphireNight,
       title: "Noturno",
       link: { label: "Ouro branco e safira", href: "/colecoes/noturno" },
       place: "top",
       tone: "light",
     },
     {
-      media: img.ring,
+      media: img.benchSetting,
       title: "Sob encomenda",
       link: { label: "Desenhe a sua peça com o ateliê", href: "/contato" },
       place: "top",
-      tone: "dark",
+      tone: "light",
     },
   ] satisfies [Chapter, Chapter],
 
@@ -221,17 +254,17 @@ export const home = {
 
   pairThree: [
     {
-      media: img.hoop,
+      media: img.earStud,
       title: "Brincos",
       link: { label: "O detalhe que se vê primeiro", href: "/joias/brincos" },
       place: "top",
       tone: "light",
     },
     {
-      media: img.boutique,
+      media: img.privateSalon,
       title: "Atendimento Hertmann",
       link: { label: "Na boutique ou por vídeo, sempre privado", href: "/contato" },
-      place: "bottom",
+      place: "top",
       tone: "light",
     },
   ] satisfies [Chapter, Chapter],

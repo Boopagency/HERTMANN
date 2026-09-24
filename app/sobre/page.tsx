@@ -70,12 +70,13 @@ export default function AboutPage() {
       {/* — A casa vista de dentro, em sangria — */}
       <figure className="plate relative aspect-[4/3] w-full md:aspect-auto md:h-[min(46vw,calc(100svh-var(--header-h)))]">
         <Image
-          src="/images/boutique-wide.jpg"
-          alt="Interior da boutique HERTMANN, com vitrinas em latão e painel em azul-marinho"
+          src="/images/hertmann/heritage/maos-bigorna.jpg"
+          alt="Mãos de uma artesã, com anéis e pulseiras, a trabalhar uma peça sobre a bigorna"
           fill
           priority
           sizes="100vw"
           className="object-cover"
+          style={{ objectPosition: "62% 48%" }}
         />
       </figure>
 
@@ -134,12 +135,12 @@ export default function AboutPage() {
       <section className="grid md:grid-cols-2" aria-labelledby="hoje">
         <figure className="plate relative aspect-[4/5] md:aspect-auto md:h-[min(50vw,calc(100svh-var(--header-h)))]">
           <Image
-            src="/images/campaign-hero.jpg"
-            alt="Campanha HERTMANN: peças em ouro 18k usadas em conjunto"
+            src="/images/hertmann/heritage/anel-que-atravessa-geracoes.jpg"
+            alt="Mão madura com um anel de pedra azul, pousada sobre um livro aberto"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover"
-            style={{ objectPosition: "50% 30%" }}
+            style={{ objectPosition: "50% 42%" }}
           />
         </figure>
         <div className="flex flex-col justify-center px-[var(--spacing-gutter)] py-[var(--spacing-commerce)] md:px-[clamp(2rem,6vw,6rem)]">

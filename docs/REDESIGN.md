@@ -189,3 +189,34 @@ as quatro coleções — hoje reutilizam as fotografias das peças.
 
 Mãos na bancada, cravação, polimento, desenhos técnicos — para a página Ateliê e
 para o bloco "a casa" da home, que hoje é só tipográfico.
+
+---
+
+## 5. Direcção fotográfica — ronda ASSETS-SHORT
+
+Fonte: `ASSETS-SHORT/` (branch `claude/hertmann-luxury-jewelry-site-16i3h4`).
+Só entraram imagens com **licença Unsplash** (uso comercial livre). As 29
+prévias Unsplash+ (`_plus-preview`) têm marca d'água "Unsplash+" em toda a
+imagem e só podem ser usadas depois de licenciadas e descarregadas em original.
+
+Todas são editoriais e temporárias até à produção própria: as joias não são
+peças HERTMANN, não aparecem em tiles de produto e os textos alternativos não as
+nomeiam como tal. As vitrines e as PLPs mantêm as fotografias das peças reais.
+
+| Ficheiro final | Origem (ASSETS-SHORT) | Autor · página | Tratamento |
+| --- | --- | --- | --- |
+| `hertmann/hero/vertente-argola-texturada.jpg` | editorial-02-textured-gold-hoop-warm-window-light | @pablomerchanm · unsplash.com/photos/k4C71tqkOZ4 | Reexportado (2800 px) |
+| `hertmann/editorial/vertente-colar-malha-blazer.jpg` | closeup-necklace-02-herringbone-black-blazer | @figmentprints · unsplash.com/photos/Ks6wd1Zyf1o | 2000 px |
+| `hertmann/editorial/use-do-seu-jeito-pulseira-elos.jpg` | closeup-bracelet-01-paperclip-chain-wrist | @zeralton · unsplash.com/photos/mF6CWKalodk | 2000 px |
+| `hertmann/editorial/noturno-anel-safira.jpg` | noturno-03-sapphire-halo-ring-hand-blue | @prahantstudio · unsplash.com/photos/4yJ2C66gPdc | Fundo escurecido e dessaturado para o azul-marinho, pele e metal preservados; 2400 px |
+| `hertmann/atelier/sob-encomenda-cravacao-bancada.jpg` | atelier-hands-01-diamond-bracelet-bench-peg | @sour_moha · unsplash.com/photos/XQ2uxrIZn94 | 2400 px |
+| `hertmann/editorial/brincos-ponto-de-luz.jpg` | closeup-earring-05-diamond-stud-deep-skin | @norouzipic · unsplash.com/photos/SJuYKMejM14 | 2400 px |
+| `hertmann/boutique/sala-privada.jpg` | boutique-interior-02-private-salon-marble-table | @davidkristianto · unsplash.com/photos/cI_e7GUK4ck | 2400 px |
+| `hertmann/heritage/maos-bigorna.jpg` | heritage-01-senior-artisan-hands-anvil | @weareambitious · unsplash.com/photos/O9BznaWPO2M | 2800 px |
+| `hertmann/heritage/anel-que-atravessa-geracoes.jpg` | heritage-02-elder-hand-sapphire-ring-book | @roberts_richie · unsplash.com/photos/qke519O2JHI | 2400 px |
+| `hertmann/atelier/macarico-solda.jpg` | atelier-02-torch-soldering-warm-dark | @luciopatoneph · unsplash.com/photos/ssJoxTDiUPg | 2800 px |
+
+Recomendações que dependem de licença Unsplash+ (preferidas pelo ASSET-MAP):
+hero-04 (hero), editorial-04 (Vertente), closeup-bracelet-03 ("Use do seu
+jeito"), noturno-01 (Noturno), closeup-earring-07 (Brincos), boutique-interior-01
+(Atendimento).

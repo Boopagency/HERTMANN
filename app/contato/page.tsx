@@ -73,8 +73,8 @@ export default function ContactPage() {
                 <RevealVeil>
                   <div className="plate relative aspect-[4/5] w-full">
                     <Image
-                      src="/images/boutique-tall.jpg"
-                      alt="Vitrina da boutique HERTMANN, no Batel, em Curitiba"
+                      src="/images/hertmann/boutique/sala-privada.jpg"
+                      alt="Sala de atendimento privado: mesa de mármore, luz baixa e madeira escura"
                       fill
                       sizes="(max-width: 900px) 100vw, 30vw"
                       className="object-cover"
@@ -82,7 +82,7 @@ export default function ContactPage() {
                   </div>
                 </RevealVeil>
                 <figcaption className="t-label-sm muted mt-5">
-                  A boutique, ao nível da rua. O ateliê ocupa o piso acima.
+                  O atendimento é sempre privado — na boutique ou por vídeo.
                 </figcaption>
               </figure>
             </Parallax>
