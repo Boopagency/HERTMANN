@@ -18,7 +18,7 @@ O Manual de Marca é a fonte de verdade. As decisões que dele decorrem:
 | Elemento | Decisão |
 | --- | --- |
 | Paleta | `#051D41` azul-marinho, `#000000`, `#EBEBEB`, `#FFFFFF`. Nenhuma cor fora destas. As derivadas (`--color-ink-70`, `--color-rule`, …) são opacidades do azul-marinho, não cores novas. |
-| Azul-marinho | É a cor do texto, dos fios e dos botões. Como superfície, aparece só no bloco "O traço" do ateliê — e, pela fotografia, no capítulo Noturno. O rodapé é claro. |
+| Azul-marinho | O coração da marca. Superfície da barra superior, do menu aberto, do rodapé e do bloco "O traço" do ateliê; cor do texto, dos fios e dos botões em tudo o resto; e presente na fotografia (hero, Noturno). Texto sobre azul: branco, e nunca abaixo de 62 % de opacidade (≈ 7:1). |
 | Tipografia | **Cormorant SC** para a marca, títulos, manifestos e nomes de coleções. **Inter** para navegação, preços, rótulos e informação técnica. Duas famílias, nada mais. |
 | Logotipo | Monograma HM servido como máscara CSS (`/public/brand/monogram-white.png`), pelo que herda a cor do contexto. A assinatura "Hertmann" é **texto vivo** em Cormorant SC — nítida em qualquer densidade e legível por leitores de ecrã. Restrições da p.14 respeitadas: sem rotação, recorte, sombra ou alteração de cor. |
 | Ícones | "Linha Heritage" (p.15): traço fino de espessura constante, geometria sóbria, vazados, grid de 24×24. Ver `components/brand/Icons.tsx`. |
@@ -95,7 +95,7 @@ editoriais, aberturas de categoria e de coleção, capítulo da grelha).
 
 | Ficheiro | Onde aparece |
 | --- | --- |
-| `hertmann/hero/vertente-argola-texturada.jpg` | Hero da home (Vertente) |
+| `hertmann/hero/campanha-safira-seda.jpg` | Hero da home — fotografia enviada pela HERTMANN |
 | `hertmann/editorial/vertente-colar-malha-blazer.jpg` + `use-do-seu-jeito-pulseira-elos.jpg` | Primeiro par editorial |
 | `hertmann/editorial/noturno-anel-safira.jpg` + `hertmann/atelier/sob-encomenda-cravacao-bancada.jpg` | Noturno + Sob encomenda |
 | `hertmann/editorial/brincos-ponto-de-luz.jpg` + `hertmann/boutique/sala-privada.jpg` | Brincos + Atendimento (e Contato) |
@@ -106,7 +106,7 @@ editoriais, aberturas de categoria e de coleção, capítulo da grelha).
 | `piece-bag.png` | Vista "Como chega" na página de produto |
 | Fotografias das peças | Tiles, página de produto, aberturas de categoria e de coleção |
 
-As fotografias em `public/images/hertmann/` vêm da curadoria `ASSETS-SHORT`
+As fotografias em `public/images/hertmann/` (excepto o hero) vêm da curadoria `ASSETS-SHORT`
 (licença Unsplash, uso comercial livre) e são **editoriais**: as joias que
 mostram não são peças do catálogo e nunca aparecem em tiles de produto. Origem,
 autor e licença de cada uma estão em `docs/REDESIGN.md`, secção 5.

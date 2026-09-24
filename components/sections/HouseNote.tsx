@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Monogram } from "@/components/brand/Logo";
+import { CrystalMark } from "@/components/brand/Marks";
 import { site } from "@/lib/data/site";
 
 /* ============================================================================
@@ -23,7 +23,7 @@ export function HouseNote() {
     >
       <div className="shell-rail grid items-center gap-y-8 py-[var(--spacing-commerce)] md:grid-cols-12 md:gap-x-8">
         <div className="md:col-span-7 lg:col-span-6">
-          <Monogram className="w-9 text-[var(--color-ink)] opacity-80" />
+          <CrystalMark className="h-14 w-auto text-[var(--color-ink)] opacity-70" />
           <h2 id="a-casa" className="t-h3 mt-5 max-w-[26ch]">
             Joias executadas à mão em Curitiba desde {site.founded}.
           </h2>

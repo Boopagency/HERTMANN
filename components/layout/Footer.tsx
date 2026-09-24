@@ -1,14 +1,16 @@
 import Link from "next/link";
-import { Monogram } from "@/components/brand/Logo";
+import { Monogram, Wordmark } from "@/components/brand/Logo";
+import { CrystalMark } from "@/components/brand/Marks";
 import { IconInstagram, IconWhatsApp } from "@/components/brand/Icons";
 import { Newsletter } from "@/components/sections/Newsletter";
 import { categories, collections } from "@/lib/data/catalogue";
 import { nav, site } from "@/lib/data/site";
 
 /* ============================================================================
-   Rodapé — claro e denso. Colunas de links comerciais e de serviço, a
-   newsletter à direita, um fio de 1 px, e por baixo as redes, os legais
-   e a morada. Pouca altura, nenhuma assinatura gigante.
+   Rodapé — o fecho em azul-marinho, a cor da casa. Uma assinatura compacta
+   (monograma, nome, o cristal desenhado), colunas de loja e serviço, a
+   newsletter à direita, fios de 1 px, e por baixo as redes e os legais.
+   Denso: a assinatura não é gigante.
    ========================================================================== */
 
 const COLUMNS: { title: string; links: { label: string; href: string; external?: boolean }[] }[] = [
@@ -49,8 +51,30 @@ const COLUMNS: { title: string; links: { label: string; href: string; external?:
 
 export function Footer() {
   return (
-    <footer className="border-t border-[var(--color-rule)] bg-[var(--color-paper)]">
-      <div className="shell-rail pb-[clamp(1.25rem,2vw,2rem)] pt-[clamp(2.5rem,3.7vw,3.75rem)]">
+    <footer className="on-ink">
+      <div className="shell-rail pb-[clamp(1.25rem,2vw,2rem)] pt-[clamp(2.25rem,3.3vw,3.25rem)]">
+        {/* — Assinatura — */}
+        <div className="flex items-end justify-between gap-6">
+          <Link
+            href="/"
+            className="inline-flex items-end gap-4"
+            aria-label="HERTMANN — página inicial"
+          >
+            <Monogram className="w-11" />
+            <Wordmark className="text-[clamp(1.35rem,2vw,1.9rem)]" />
+          </Link>
+          <div className="flex items-end gap-5">
+            <p className="t-label-sm muted hidden text-right sm:block">
+              {site.signature}
+              <br />
+              {site.city}, Brasil
+            </p>
+            <CrystalMark className="h-12 w-auto shrink-0 opacity-40" />
+          </div>
+        </div>
+
+        <hr className="rule mb-[clamp(2rem,3.3vw,3rem)] mt-[clamp(1.5rem,2.4vw,2.25rem)]" />
+
         <div className="grid grid-cols-2 gap-x-6 gap-y-9 sm:grid-cols-4 lg:grid-cols-12 lg:gap-x-8">
           {COLUMNS.map((column) => (
             <nav key={column.title} aria-label={column.title} className="lg:col-span-2">
@@ -87,7 +111,7 @@ export function Footer() {
             <Link href="/" aria-label="HERTMANN — página inicial">
               <Monogram className="w-7" />
             </Link>
-            <span aria-hidden="true" className="h-4 w-px bg-[var(--color-rule)]" />
+            <span aria-hidden="true" className="h-4 w-px bg-[var(--color-rule-invert)]" />
             {site.social.map((s) => (
               <a
                 key={s.href}
@@ -95,7 +119,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label={s.label}
-                className="opacity-70 transition-opacity duration-300 hover:opacity-100"
+                className="opacity-75 transition-opacity duration-300 hover:opacity-100"
               >
                 <IconInstagram size={16} />
               </a>
@@ -105,7 +129,7 @@ export function Footer() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="WhatsApp"
-              className="opacity-70 transition-opacity duration-300 hover:opacity-100"
+              className="opacity-75 transition-opacity duration-300 hover:opacity-100"
             >
               <IconWhatsApp size={16} />
             </a>

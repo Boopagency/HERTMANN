@@ -6,6 +6,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Overlay } from "@/components/layout/Overlay";
 import { ProductThumb } from "@/components/product/ProductThumb";
 import { IconSearch } from "@/components/brand/Icons";
+import { Wordmark } from "@/components/brand/Logo";
+import { CrystalMark } from "@/components/brand/Marks";
 import { EASE } from "@/components/motion/Reveal";
 import { categories, categoryName, collections, piecesByCategory } from "@/lib/data/catalogue";
 import { searchPieces } from "@/lib/search";
@@ -16,10 +18,11 @@ import { cn } from "@/lib/utils";
 /* ============================================================================
    Menu lateral
    ----------------------------------------------------------------------------
-   Um painel claro que entra pela esquerda; a página continua visível por
-   trás de um véu leve. Busca no topo, depois a lista comercial — cada
-   destino separado por um fio. Os destinos com "+" abrem-se no lugar.
-   Nada de cartões: tipografia, fios e silêncio.
+   Um painel em azul-marinho — a cor da casa — que entra pela esquerda; a
+   página continua visível por trás de um véu leve. A assinatura no topo,
+   a busca, e depois a lista comercial: cada destino separado por um fio e
+   a levantar-se um a um, como uma frase que se compõe. Os destinos com "+"
+   abrem-se no lugar. Ao pé, o serviço e o cristal desenhado da casa.
    ========================================================================== */
 
 type Child = { label: string; href: string; aside?: string; lead?: boolean };
@@ -79,20 +82,20 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
       onClose={close}
       from="left"
       label="Menu"
-      panelClassName="left-0 top-0 h-[100dvh] w-[min(88vw,32rem)] overflow-y-auto bg-[var(--color-paper-warm)] lg:w-[max(26rem,33vw)] lg:max-w-[38rem]"
+      panelClassName="on-ink left-0 top-0 h-[100dvh] w-[min(88vw,32rem)] overflow-y-auto lg:w-[max(26rem,33vw)] lg:max-w-[38rem]"
       closeClassName="left-[calc(var(--spacing-gutter)-0.625rem)] top-[calc((var(--header-h)-2.75rem)/2)]"
     >
       <div id="menu-lateral" className="flex min-h-full flex-col px-[var(--spacing-gutter)]">
         {/* — Linha do cabeçalho: o botão de fechar ocupa o lugar do menu — */}
-        <div className="flex h-[var(--header-h)] shrink-0 items-center justify-end border-b border-[var(--color-rule)]">
-          <Link href="/" onClick={close} className="t-label-sm muted link-nav">
-            {site.name}
+        <div className="flex h-[var(--header-h)] shrink-0 items-center justify-end border-b border-[var(--color-rule-invert)]">
+          <Link href="/" onClick={close} aria-label="HERTMANN — página inicial">
+            <Wordmark className="text-[1.05rem]" />
           </Link>
         </div>
 
         {/* — Busca — */}
-        <label className="flex shrink-0 items-center gap-3 border-b border-[var(--color-rule)]">
-          <IconSearch size={15} className="shrink-0 opacity-60" />
+        <label className="flex shrink-0 items-center gap-3 border-b border-[var(--color-rule-invert)]">
+          <IconSearch size={15} className="shrink-0 opacity-70" />
           <span className="sr-only">Procurar no catálogo</span>
           <input
             type="search"
@@ -100,7 +103,7 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Procurar peças, coleções, materiais"
             autoComplete="off"
-            className="h-14 w-full appearance-none bg-transparent font-[family-name:var(--font-text)] text-[1.0625rem] italic outline-none placeholder:text-[var(--color-ink-50)] [&::-webkit-search-cancel-button]:appearance-none"
+            className="h-14 w-full appearance-none bg-transparent font-[family-name:var(--font-text)] text-[1.0625rem] italic outline-none placeholder:text-[rgba(255,255,255,0.6)] [&::-webkit-search-cancel-button]:appearance-none"
           />
         </label>
 
@@ -112,7 +115,7 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
                 <Link
                   href="/contato"
                   onClick={close}
-                  className="link-underline text-[var(--color-ink)]"
+                  className="link-underline text-[var(--color-paper)]"
                 >
                   Fale com a casa
                 </Link>
@@ -121,7 +124,7 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
             ) : (
               <ul>
                 {results.map((piece) => (
-                  <li key={piece.slug} className="border-b border-[var(--color-rule)]">
+                  <li key={piece.slug} className="border-b border-[var(--color-rule-invert)]">
                     <Link
                       href={`/produto/${piece.slug}`}
                       onClick={close}
@@ -143,12 +146,18 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
           ) : (
             <nav aria-label="Navegação principal">
               <ul>
-                {MENU.map((item) => {
+                {MENU.map((item, index) => {
                   const isOpen = expanded === item.label;
                   const row =
                     "flex w-full items-center justify-between py-[0.95rem] text-left font-[family-name:var(--font-display)] text-[1.1875rem] leading-none tracking-[0.05em]";
                   return (
-                    <li key={item.label} className="border-b border-[var(--color-rule)]">
+                    <motion.li
+                      key={item.label}
+                      className="border-b border-[var(--color-rule-invert)]"
+                      initial={reduced ? false : { opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.7, ease: EASE, delay: 0.18 + index * 0.04 }}
+                    >
                       {item.children ? (
                         <>
                           <button
@@ -210,7 +219,7 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
                           <span>{item.label}</span>
                         </Link>
                       )}
-                    </li>
+                    </motion.li>
                   );
                 })}
               </ul>
@@ -218,38 +227,44 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
           )}
         </div>
 
-        {/* — Serviço — */}
+        {/* — Serviço e o cristal da casa — */}
         <div className="mt-auto pb-8 pt-10">
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            <li>
-              <a
-                href={site.contact.whatsappUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="t-label-sm link-nav"
-              >
-                WhatsApp
-              </a>
-            </li>
-            <li>
-              <a href={`mailto:${site.contact.email}`} className="t-label-sm link-nav">
-                E-mail
-              </a>
-            </li>
-            {site.social.map((s) => (
-              <li key={s.href}>
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="t-label-sm link-nav"
-                >
-                  {s.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <p className="t-label-sm muted mt-4">{site.contact.address}</p>
+          <hr className="rule rule-invert" />
+          <div className="mt-5 flex items-end justify-between gap-6">
+            <div>
+              <ul className="flex flex-wrap gap-x-6 gap-y-2">
+                <li>
+                  <a
+                    href={site.contact.whatsappUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="t-label-sm link-nav"
+                  >
+                    WhatsApp
+                  </a>
+                </li>
+                <li>
+                  <a href={`mailto:${site.contact.email}`} className="t-label-sm link-nav">
+                    E-mail
+                  </a>
+                </li>
+                {site.social.map((s) => (
+                  <li key={s.href}>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="t-label-sm link-nav"
+                    >
+                      {s.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <p className="t-label-sm muted mt-4">{site.contact.address}</p>
+            </div>
+            <CrystalMark className="h-14 w-auto shrink-0 opacity-30" />
+          </div>
         </div>
       </div>
     </Overlay>

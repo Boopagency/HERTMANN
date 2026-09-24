@@ -205,7 +205,6 @@ nomeiam como tal. As vitrines e as PLPs mantêm as fotografias das peças reais.
 
 | Ficheiro final | Origem (ASSETS-SHORT) | Autor · página | Tratamento |
 | --- | --- | --- | --- |
-| `hertmann/hero/vertente-argola-texturada.jpg` | editorial-02-textured-gold-hoop-warm-window-light | @pablomerchanm · unsplash.com/photos/k4C71tqkOZ4 | Reexportado (2800 px) |
 | `hertmann/editorial/vertente-colar-malha-blazer.jpg` | closeup-necklace-02-herringbone-black-blazer | @figmentprints · unsplash.com/photos/Ks6wd1Zyf1o | 2000 px |
 | `hertmann/editorial/use-do-seu-jeito-pulseira-elos.jpg` | closeup-bracelet-01-paperclip-chain-wrist | @zeralton · unsplash.com/photos/mF6CWKalodk | 2000 px |
 | `hertmann/editorial/noturno-anel-safira.jpg` | noturno-03-sapphire-halo-ring-hand-blue | @prahantstudio · unsplash.com/photos/4yJ2C66gPdc | Fundo escurecido e dessaturado para o azul-marinho, pele e metal preservados; 2400 px |
@@ -220,3 +219,15 @@ Recomendações que dependem de licença Unsplash+ (preferidas pelo ASSET-MAP):
 hero-04 (hero), editorial-04 (Vertente), closeup-bracelet-03 ("Use do seu
 jeito"), noturno-01 (Noturno), closeup-earring-07 (Brincos), boutique-interior-01
 (Atendimento).
+
+### Ronda seguinte — o azul de volta
+
+- Hero: fotografia de campanha enviada pela HERTMANN
+  (`hertmann/hero/campanha-safira-seda.jpg`, 1774 × 887). O cabeçalho sobre
+  ela usa azul à esquerda e ao centro (parede clara) e branco nos acessos da
+  direita (cabelo escuro); em ecrãs de pé, todo em branco.
+- Azul-marinho como superfície na barra superior, no menu aberto (a partir do
+  menu da `main`: painel azul, destinos que se levantam um a um, assinatura
+  no topo e o cristal ao pé) e no rodapé (assinatura com monograma, nome e
+  cristal). Texto sobre azul nunca abaixo de 62 % de branco (≈ 7:1).
+- O cristal desenhado (Fine Line) volta ao menu, ao rodapé e ao bloco "a casa".

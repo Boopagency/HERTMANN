@@ -47,6 +47,7 @@ export function Header() {
         data-glass={!atTop}
         data-tone={atTop ? home.hero.headerTone : "dark"}
         data-tone-portrait={atTop ? home.hero.headerTonePortrait : "dark"}
+        data-tone-right={atTop ? home.hero.headerToneRight : undefined}
       >
         <div className="relative flex h-full items-center px-[var(--spacing-gutter)]">
           {/* — Menu — */}
@@ -69,7 +70,7 @@ export function Header() {
           </Link>
 
           {/* — Acessos — */}
-          <div className="-mr-2.5 flex flex-1 items-center justify-end">
+          <div className="header-right -mr-2.5 flex flex-1 items-center justify-end">
             <Link
               href="/contato"
               className="t-label-sm link-nav mr-3 hidden lg:inline-block"
@@ -112,7 +113,7 @@ export function Header() {
           <nav
             aria-label="Serviços"
             className={cn(
-              "absolute right-[var(--spacing-gutter)] top-full mt-3 hidden gap-2 lg:flex",
+              "header-right absolute right-[var(--spacing-gutter)] top-full mt-3 hidden gap-2 lg:flex",
               "transition-[opacity,transform] duration-500 [transition-timing-function:var(--ease-editorial)]",
               atTop ? "opacity-100" : "pointer-events-none -translate-y-1 opacity-0",
             )}
@@ -126,9 +127,8 @@ export function Header() {
                 className={cn(
                   "t-label-sm flex h-7 items-center border px-3 text-[0.5625rem]",
                   "transition-[background-color,color] duration-500 [transition-timing-function:var(--ease-editorial)]",
-                  home.hero.headerTone === "light"
-                    ? "border-white/60 hover:bg-white hover:text-[var(--color-ink)]"
-                    : "border-[var(--color-ink)]/35 hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)]",
+                  "border-[color-mix(in_srgb,currentColor_55%,transparent)]",
+                  "hover:border-[var(--color-ink)] hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)]",
                 )}
               >
                 {item.label}

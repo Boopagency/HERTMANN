@@ -30,7 +30,7 @@
   --color-ink-30: #a9b2be;
   --color-rule: rgba(5, 29, 65, 0.14);
   --color-rule-soft: rgba(5, 29, 65, 0.08);
-  --color-rule-invert: rgba(255, 255, 255, 0.28);
+  --color-rule-invert: rgba(255, 255, 255, 0.22);
 
   /* --- Tipografia --------------------------------------------------------- */
   --font-display: var(--font-cormorant-sc), "Cormorant SC", "Cormorant Garamond",
@@ -423,8 +423,9 @@
     color: rgba(255, 255, 255, 0.7);
   }
 
+  /* 62 % de branco sobre #051D41 ≈ 7:1 — AA mesmo nos rótulos de 10 px */
   .on-ink .muted {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.62);
   }
 
   /* ============================================================================
@@ -574,6 +575,12 @@
 
   .site-header[data-tone="light"] {
     color: var(--color-paper);
+  }
+
+  @media (orientation: landscape) {
+    .site-header[data-tone-right="light"] .header-right {
+      color: var(--color-paper);
+    }
   }
 
   @media (orientation: portrait) {
@@ -783,7 +790,7 @@
   }
 
   .on-ink .field input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.6);
   }
 
   .on-ink .field input:focus {

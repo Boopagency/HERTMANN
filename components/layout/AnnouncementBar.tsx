@@ -5,9 +5,9 @@ import { IconClose } from "@/components/brand/Icons";
 import { announcements } from "@/lib/data/editorial";
 
 /* ============================================================================
-   Barra superior — uma linha fina que desliza muito devagar.
-   Informa sem competir com o conteúdo: letra pequena, fio inferior quase
-   invisível, pausa ao passar o cursor, imóvel com movimento reduzido.
+   Barra superior — uma linha fina em azul-marinho, a cor da casa, que
+   desliza muito devagar. Letra pequena em branco, pausa ao passar o
+   cursor, imóvel com movimento reduzido.
    Pode ser fechada; a escolha dura a sessão.
    ========================================================================== */
 
@@ -42,7 +42,7 @@ export function AnnouncementBar() {
 
   return (
     <div
-      className="relative z-[61] overflow-x-clip border-b border-[var(--color-rule-soft)] bg-[var(--color-paper)] text-[var(--color-ink-70)]"
+      className="on-ink relative z-[61] overflow-x-clip text-[rgba(255,255,255,0.86)]"
       style={{ height: "var(--bar-h)" }}
       role="region"
       aria-label="Informações da casa"
@@ -74,7 +74,7 @@ export function AnnouncementBar() {
       <button
         type="button"
         onClick={() => close()}
-        className="tap absolute right-[calc(var(--spacing-gutter)-0.5rem)] top-0 grid h-full w-7 place-items-center opacity-60 transition-opacity duration-300 hover:opacity-100"
+        className="tap absolute right-[calc(var(--spacing-gutter)-0.5rem)] top-0 grid h-full w-7 place-items-center opacity-70 transition-opacity duration-300 hover:opacity-100"
         aria-label="Fechar a barra de informações"
       >
         <IconClose size={11} strokeWidth={1.2} />

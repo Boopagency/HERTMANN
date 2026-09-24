@@ -33,7 +33,7 @@ export function Newsletter({ className }: { className?: string }) {
   return (
     <div className={className}>
       <p className="t-h4">O círculo HERTMANN</p>
-      <p className="t-body mt-2 max-w-[40ch] text-[0.8125rem]">
+      <p className="t-body mt-2 max-w-[40ch] !text-[0.8125rem]">
         Novas peças, coleções e convites para a boutique — antes de chegarem ao
         catálogo.
       </p>
@@ -63,9 +63,9 @@ export function Newsletter({ className }: { className?: string }) {
         <button
           type="submit"
           className={cn(
-            "t-label-sm h-10 shrink-0 border border-[var(--color-ink)] px-5",
+            "t-label-sm h-10 shrink-0 border border-current px-5",
             "transition-[background-color,color,opacity] duration-500 [transition-timing-function:var(--ease-editorial)]",
-            "hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] disabled:opacity-35",
+            "hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] disabled:opacity-35",
           )}
           disabled={status === "loading"}
         >
