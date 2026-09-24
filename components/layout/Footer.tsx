@@ -119,7 +119,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label={s.label}
-                className="opacity-75 transition-opacity duration-300 hover:opacity-100"
+                className="opacity-75 transition-opacity duration-(--dur-fast) hover:opacity-100"
               >
                 <IconInstagram size={16} />
               </a>
@@ -129,7 +129,7 @@ export function Footer() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="WhatsApp"
-              className="opacity-75 transition-opacity duration-300 hover:opacity-100"
+              className="opacity-75 transition-opacity duration-(--dur-fast) hover:opacity-100"
             >
               <IconWhatsApp size={16} />
             </a>

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CatalogueGrid } from "@/components/product/CatalogueGrid";
 import { FilterBar } from "@/components/product/FilterBar";
@@ -17,6 +18,7 @@ import {
 } from "@/lib/filters";
 import type { CategorySlug, Piece } from "@/lib/data/catalogue";
 import type { Chapter } from "@/lib/data/editorial";
+import { DUR, EASE, EASE_EXIT } from "@/components/motion/tokens";
 
 /* ============================================================================
    Vista de catálogo — barra de filtros + grelha
@@ -38,6 +40,30 @@ type Props = {
 };
 
 const EMPTY: Selection = { values: {}, novidades: false, ordem: "destaques" };
+
+/**
+ * Troca de resultados — quando a selecção muda, a nova grelha entra num
+ * fade curto no mesmo lugar. Só opacidade: a grelha não se desloca nem
+ * salta. A primeira pintura (HTML estático) nunca é animada.
+ */
+function Results({ id, children }: { id: string; children: React.ReactNode }) {
+  const reduced = useReducedMotion();
+  const first = useRef(true);
+  useEffect(() => {
+    first.current = false;
+  }, []);
+
+  return (
+    <motion.div
+      key={id}
+      initial={first.current || reduced ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: DUR.normal, ease: EASE }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export function Catalogue(props: Props) {
   return (
@@ -73,6 +99,7 @@ function CatalogueLayout({
   selection,
   onChange,
 }: Props & { selection: Selection; onChange?: (next: Selection) => void }) {
+  const reduced = useReducedMotion();
   const list = useMemo(() => applySelection(pieces, selection), [pieces, selection]);
   const active = activeCount(selection);
   const heading = title ? (presetTitle(selection) ?? title) : null;
@@ -121,50 +148,74 @@ function CatalogueLayout({
       />
 
       <div className="shell-plp pb-[var(--spacing-commerce)] pt-[clamp(1rem,2.2vw,2rem)]">
-        {chips.length > 0 && (
-          <ul className="mb-[clamp(1rem,2vw,1.75rem)] flex flex-wrap items-center gap-2">
-            {chips.map((chip) => (
-              <li key={chip.key}>
-                <button
-                  type="button"
-                  onClick={() => remove(chip.key)}
-                  className="t-label-sm flex h-8 items-center gap-2 border border-[var(--color-rule)] px-3 transition-colors duration-300 hover:border-[var(--color-ink)]"
-                  aria-label={`Remover filtro ${chip.label}`}
-                >
-                  {chip.label}
-                  <span aria-hidden="true" className="text-[0.75rem] leading-none">
-                    ×
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {list.length > 0 ? (
-          <CatalogueGrid
-            pieces={list}
-            insert={active === 0 && selection.ordem === "destaques" ? insert : undefined}
-          />
-        ) : (
-          <div className="border-b border-[var(--color-rule)] py-16 text-center">
-            <p className="t-h3">Nenhuma peça corresponde a esta selecção.</p>
-            <p className="t-body mt-3">
-              Retire um filtro, ou{" "}
-              <Link href="/contato" className="link-underline text-[var(--color-ink)]">
-                fale com a casa
-              </Link>{" "}
-              — muitas peças são feitas sob encomenda.
-            </p>
-            <button
-              type="button"
-              onClick={() => onChange?.(EMPTY)}
-              className="t-label-sm mt-6 h-11 border border-[var(--color-ink)] px-6 transition-colors duration-500 hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)]"
+        {/* Os filtros activos abrem espaço em altura — a grelha desce
+            suavemente em vez de saltar. */}
+        <AnimatePresence initial={false}>
+          {chips.length > 0 && (
+            <motion.div
+              key="chips"
+              className="overflow-hidden"
+              initial={reduced ? false : { height: 0, opacity: 0 }}
+              animate={{
+                height: "auto",
+                opacity: 1,
+                transition: { duration: reduced ? 0 : DUR.normal, ease: EASE },
+              }}
+              exit={{
+                height: 0,
+                opacity: 0,
+                transition: { duration: reduced ? 0 : 0.26, ease: EASE_EXIT },
+              }}
             >
-              Limpar filtros
-            </button>
-          </div>
-        )}
+              <div className="pb-[clamp(1rem,2vw,1.75rem)]">
+                <ul className="flex flex-wrap items-center gap-2">
+                  {chips.map((chip) => (
+                    <li key={chip.key}>
+                      <button
+                        type="button"
+                        onClick={() => remove(chip.key)}
+                        className="t-label-sm flex h-8 items-center gap-2 border border-[var(--color-rule)] px-3 transition-colors duration-(--dur-fast) hover:border-[var(--color-ink)]"
+                        aria-label={`Remover filtro ${chip.label}`}
+                      >
+                        {chip.label}
+                        <span aria-hidden="true" className="text-[0.75rem] leading-none">
+                          ×
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <Results id={writeSelection(selection)}>
+          {list.length > 0 ? (
+            <CatalogueGrid
+              pieces={list}
+              insert={active === 0 && selection.ordem === "destaques" ? insert : undefined}
+            />
+          ) : (
+            <div className="border-b border-[var(--color-rule)] py-16 text-center">
+              <p className="t-h3">Nenhuma peça corresponde a esta selecção.</p>
+              <p className="t-body mt-3">
+                Retire um filtro, ou{" "}
+                <Link href="/contato" className="link-underline text-[var(--color-ink)]">
+                  fale com a casa
+                </Link>{" "}
+                — muitas peças são feitas sob encomenda.
+              </p>
+              <button
+                type="button"
+                onClick={() => onChange?.(EMPTY)}
+                className="t-label-sm mt-6 h-11 border border-[var(--color-ink)] px-6 transition-colors duration-(--dur-normal) hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)]"
+              >
+                Limpar filtros
+              </button>
+            </div>
+          )}
+        </Results>
       </div>
     </>
   );

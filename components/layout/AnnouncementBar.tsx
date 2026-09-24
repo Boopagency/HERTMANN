@@ -74,7 +74,7 @@ export function AnnouncementBar() {
       <button
         type="button"
         onClick={() => close()}
-        className="tap absolute right-[calc(var(--spacing-gutter)-0.5rem)] top-0 grid h-full w-7 place-items-center opacity-70 transition-opacity duration-300 hover:opacity-100"
+        className="tap absolute right-[calc(var(--spacing-gutter)-0.5rem)] top-0 grid h-full w-7 place-items-center opacity-70 transition-opacity duration-(--dur-fast) hover:opacity-100"
         aria-label="Fechar a barra de informações"
       >
         <IconClose size={11} strokeWidth={1.2} />

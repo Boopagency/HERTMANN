@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { FadeImage } from "@/components/ui/FadeImage";
 import { PieceDrawing } from "@/components/brand/Marks";
 import { metalName, pieceMetal, type Piece, type PieceImage } from "@/lib/data/catalogue";
 import { cn } from "@/lib/utils";
@@ -36,7 +36,7 @@ export function PieceImg({
   inset?: string;
 }) {
   return (
-    <Image
+    <FadeImage
       src={image.src}
       alt={image.alt}
       fill

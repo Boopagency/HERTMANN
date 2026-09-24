@@ -8,7 +8,7 @@ import { ProductThumb } from "@/components/product/ProductThumb";
 import { IconSearch } from "@/components/brand/Icons";
 import { Wordmark } from "@/components/brand/Logo";
 import { CrystalMark } from "@/components/brand/Marks";
-import { EASE } from "@/components/motion/Reveal";
+import { DUR, EASE, EASE_EXIT, STAGGER } from "@/components/motion/tokens";
 import { categories, categoryName, collections, piecesByCategory } from "@/lib/data/catalogue";
 import { searchPieces } from "@/lib/search";
 import { price } from "@/lib/format";
@@ -21,8 +21,10 @@ import { cn } from "@/lib/utils";
    Um painel em azul-marinho — a cor da casa — que entra pela esquerda; a
    página continua visível por trás de um véu leve. A assinatura no topo,
    a busca, e depois a lista comercial: cada destino separado por um fio e
-   a levantar-se um a um, como uma frase que se compõe. Os destinos com "+"
-   abrem-se no lugar. Ao pé, o serviço e o cristal desenhado da casa.
+   a levantar-se um a um, como uma frase que se compõe (8 px, 30 ms entre
+   cada, a começar quando o painel já vai a meio). Os destinos com "+"
+   abrem-se no lugar, em altura e opacidade. Ao fechar, a lista sai com o
+   painel — sem cascata inversa, para que fechar seja imediato.
    ========================================================================== */
 
 type Child = { label: string; href: string; aside?: string; lead?: boolean };
@@ -107,7 +109,13 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
           />
         </label>
 
-        <div aria-live="polite">
+        <motion.div
+          key={searching ? "busca" : "menu"}
+          aria-live="polite"
+          initial={reduced ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: reduced ? 0 : DUR.fast, ease: EASE }}
+        >
           {searching ? (
             results.length === 0 ? (
               <p className="t-body py-6">
@@ -154,9 +162,9 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
                     <motion.li
                       key={item.label}
                       className="border-b border-[var(--color-rule-invert)]"
-                      initial={reduced ? false : { opacity: 0, y: 14 }}
+                      initial={reduced ? false : { opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.7, ease: EASE, delay: 0.18 + index * 0.04 }}
+                      transition={{ duration: DUR.normal, ease: EASE, delay: 0.14 + index * STAGGER }}
                     >
                       {item.children ? (
                         <>
@@ -170,7 +178,7 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
                             <span aria-hidden="true" className="relative h-2.5 w-2.5 shrink-0">
                               <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-current" />
                               <span
-                                className="absolute left-1/2 top-0 h-full w-px bg-current transition-transform duration-500 [transition-timing-function:var(--ease-editorial)]"
+                                className="absolute left-1/2 top-0 h-full w-px bg-current transition-transform duration-(--dur-normal) ease-(--ease-editorial)"
                                 style={{
                                   transform: `translateX(-50%) scaleY(${isOpen ? 0 : 1})`,
                                 }}
@@ -182,9 +190,16 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
                             {isOpen && (
                               <motion.div
                                 initial={reduced ? false : { height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={reduced ? undefined : { height: 0, opacity: 0 }}
-                                transition={{ duration: reduced ? 0 : 0.5, ease: EASE }}
+                                animate={{
+                                  height: "auto",
+                                  opacity: 1,
+                                  transition: { duration: reduced ? 0 : DUR.normal, ease: EASE },
+                                }}
+                                exit={{
+                                  height: 0,
+                                  opacity: 0,
+                                  transition: { duration: reduced ? 0 : 0.26, ease: EASE_EXIT },
+                                }}
                                 className="overflow-hidden"
                               >
                                 <ul className="pb-4">
@@ -225,7 +240,7 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
               </ul>
             </nav>
           )}
-        </div>
+        </motion.div>
 
         {/* — Serviço e o cristal da casa — */}
         <div className="mt-auto pb-8 pt-10">

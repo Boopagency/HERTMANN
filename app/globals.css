@@ -52,8 +52,14 @@
   --spacing-section-lg: clamp(3.5rem, 6.5vw, 6rem);
 
   /* --- Movimento ---------------------------------------------------------- */
-  --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Uma só curva para toda a loja (ver components/motion/tokens.ts). */
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-veil: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Qualquer utilitário transition-* sem duração explícita herda o ritmo
+     e a curva da casa, em vez dos 150 ms genéricos. */
+  --default-transition-duration: 340ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ============================================================================
@@ -61,6 +67,11 @@
    ========================================================================== */
 
 :root {
+  /* Escala de durações — fast: estados; normal: trocas; slow: painéis e
+     crossfades. Espelhada em components/motion/tokens.ts. */
+  --dur-fast: 200ms;
+  --dur-normal: 340ms;
+  --dur-slow: 560ms;
   --container: 2400px;
   --bar-h: 30px;
   --header-h: 64px;
@@ -177,7 +188,7 @@
     font-size: 0.6875rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    transition: transform 0.3s var(--ease-editorial);
+    transition: transform var(--dur-fast) var(--ease-editorial);
   }
 
   .skip-link:focus-visible {
@@ -460,7 +471,7 @@
     background-position: 0 100%;
     background-repeat: no-repeat;
     padding-bottom: 1px;
-    transition: background-size 0.6s var(--ease-editorial);
+    transition: background-size var(--dur-slow) var(--ease-editorial);
   }
 
   .link-edit:hover > span:first-child,
@@ -470,12 +481,13 @@
   }
 
   .link-edit .arrow {
-    transition: transform 0.6s var(--ease-editorial);
+    display: inline-block;
+    transition: transform var(--dur-normal) var(--ease-editorial);
   }
 
   .link-edit:hover .arrow,
   .group:hover .link-edit .arrow {
-    transform: translateX(4px);
+    transform: translateX(3px);
   }
 
   .link-underline {
@@ -494,13 +506,13 @@
     background: currentColor;
     transform-origin: right;
     transform: scaleX(1);
-    transition: transform 0.55s var(--ease-editorial);
+    transition: transform var(--dur-normal) var(--ease-editorial);
   }
 
   .link-underline:hover::after,
   .link-underline:focus-visible::after {
     transform-origin: left;
-    animation: rule-redraw 0.7s var(--ease-editorial);
+    animation: rule-redraw var(--dur-slow) var(--ease-editorial);
   }
 
   @keyframes rule-redraw {
@@ -539,7 +551,7 @@
     background: currentColor;
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 0.5s var(--ease-editorial);
+    transition: transform var(--dur-normal) var(--ease-editorial);
   }
 
   .link-nav:hover::after,
@@ -562,11 +574,13 @@
     /* As áreas de toque ampliadas dos ícones da borda não podem alargar
        a página no telemóvel. */
     overflow-x: clip;
+    /* A passagem transparente → vidro é gradual: fundo e desfoque no
+       ritmo lento, a cor dos ícones no normal. */
     transition:
-      background-color 0.5s var(--ease-editorial),
-      color 0.5s var(--ease-editorial),
-      -webkit-backdrop-filter 0.5s var(--ease-editorial),
-      backdrop-filter 0.5s var(--ease-editorial);
+      background-color var(--dur-slow) var(--ease-editorial),
+      color var(--dur-normal) var(--ease-editorial),
+      -webkit-backdrop-filter var(--dur-slow) var(--ease-editorial),
+      backdrop-filter var(--dur-slow) var(--ease-editorial);
   }
 
   .site-header[data-glass="true"] {
@@ -603,20 +617,24 @@
   }
 
   /* O fio do cabeçalho — inset, alinhado com as margens */
+  /* O fio atravessa sempre a largura; o recorte (clip-path) é que o
+     encosta às margens — assim abre-se para as bordas sem mexer no layout. */
   .site-header .header-rule {
     position: absolute;
-    left: var(--spacing-gutter);
-    right: var(--spacing-gutter);
+    left: 0;
+    right: 0;
     bottom: 0;
     height: 1px;
     background: currentColor;
     opacity: 0.2;
-    transition: opacity 0.5s var(--ease-editorial);
+    clip-path: inset(0 var(--spacing-gutter));
+    transition:
+      opacity var(--dur-slow) var(--ease-editorial),
+      clip-path var(--dur-slow) var(--ease-editorial);
   }
 
   .site-header[data-glass="true"] .header-rule {
-    left: 0;
-    right: 0;
+    clip-path: inset(0 0);
     opacity: 0.1;
   }
 
@@ -675,12 +693,26 @@
 
   /* Zoom de hover: apenas transform, jamais layout */
   .zoom {
-    transition: transform 1.2s var(--ease-editorial);
-    will-change: transform;
+    transition: transform var(--dur-slow) var(--ease-editorial);
   }
 
-  .group:hover .zoom {
-    transform: scale(1.035);
+  @media (hover: hover) {
+    .group:hover .zoom {
+      transform: scale(1.02);
+    }
+  }
+
+  /* Imagens que carregam fora do primeiro ecrã assentam num fade curto,
+     no instante em que chegam — sem atraso artificial. Só com JS activo
+     (html[data-js]); as prioritárias nunca esperam. */
+  html[data-js] img[data-fade] {
+    transition:
+      opacity var(--dur-slow) var(--ease-editorial),
+      transform var(--dur-slow) var(--ease-editorial);
+  }
+
+  html[data-js] img[data-fade]:not([data-loaded]) {
+    opacity: 0;
   }
 
   /* Vitrines: faixa horizontal com a margem das setas.
@@ -764,7 +796,7 @@
     font-size: 0.875rem;
     font-weight: 300;
     letter-spacing: 0.02em;
-    transition: border-color 0.45s var(--ease-editorial);
+    transition: border-color var(--dur-normal) var(--ease-editorial);
   }
 
   .field input::placeholder {

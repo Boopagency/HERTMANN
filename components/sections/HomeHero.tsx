@@ -5,7 +5,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import { useRef } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { IconArrowDown } from "@/components/brand/Icons";
-import { EASE } from "@/components/motion/Reveal";
+import { EASE_HERO as EASE } from "@/components/motion/Reveal";
 
 /* ============================================================================
    HERO — o da versão oficial (main), trazido intacto para esta versão.

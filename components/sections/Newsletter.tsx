@@ -64,7 +64,7 @@ export function Newsletter({ className }: { className?: string }) {
           type="submit"
           className={cn(
             "t-label-sm h-10 shrink-0 border border-current px-5",
-            "transition-[background-color,color,opacity] duration-500 [transition-timing-function:var(--ease-editorial)]",
+            "transition-[background-color,color,opacity] duration-(--dur-normal)",
             "hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] disabled:opacity-35",
           )}
           disabled={status === "loading"}
@@ -77,7 +77,7 @@ export function Newsletter({ className }: { className?: string }) {
         id="newsletter-status"
         aria-live="polite"
         className={cn(
-          "t-label-sm mt-3 transition-opacity duration-500",
+          "t-label-sm mt-3 transition-opacity duration-(--dur-normal)",
           status === "idle" ? "opacity-0" : "opacity-100",
         )}
       >

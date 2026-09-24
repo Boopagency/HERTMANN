@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { FadeImage } from "@/components/ui/FadeImage";
 import { PieceDrawing } from "@/components/brand/Marks";
 import { PieceImg } from "@/components/product/ProductMedia";
 import type { Piece } from "@/lib/data/catalogue";
@@ -67,7 +67,7 @@ export function ProductGallery({ piece }: { piece: Piece }) {
 
       {/* III — como chega */}
       <figure className={cn(slide, "plate-studio md:aspect-square")}>
-        <Image
+        <FadeImage
           src="/images/piece-bag.png"
           alt="Sacola e cartão HERTMANN, tal como a peça é entregue"
           fill

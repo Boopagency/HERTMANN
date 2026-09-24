@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Overlay } from "@/components/layout/Overlay";
 import { IconChevron } from "@/components/brand/Icons";
-import { EASE } from "@/components/motion/Reveal";
+import { DUR, EASE, EASE_EXIT } from "@/components/motion/tokens";
 import { categories, type CategorySlug, type Piece } from "@/lib/data/catalogue";
 import {
   activeCount,
@@ -173,14 +173,28 @@ export function FilterBar({ selection, onChange, base, count, category = null, h
         <AnimatePresence initial={false}>
           {open && (
             <motion.div
-              key={open}
               initial={reduced ? false : { height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={reduced ? undefined : { height: 0, opacity: 0 }}
-              transition={{ duration: reduced ? 0 : 0.45, ease: EASE }}
+              animate={{
+                height: "auto",
+                opacity: 1,
+                transition: { duration: reduced ? 0 : DUR.normal, ease: EASE },
+              }}
+              exit={{
+                height: 0,
+                opacity: 0,
+                transition: { duration: reduced ? 0 : 0.26, ease: EASE_EXIT },
+              }}
               className="absolute inset-x-0 top-full hidden overflow-hidden border-b border-[var(--color-rule)] bg-[rgba(255,255,255,0.96)] backdrop-blur-[18px] lg:block"
             >
-              <div className="shell-plp flex flex-wrap gap-x-9 gap-y-3 py-5">
+              {/* O painel abre uma vez; ao trocar de filtro só o conteúdo
+                  se renova, com um fade e 4 px de deslocamento. */}
+              <motion.div
+                key={open}
+                initial={reduced ? false : { opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: reduced ? 0 : DUR.normal, ease: EASE }}
+                className="shell-plp flex flex-wrap gap-x-9 gap-y-3 py-5"
+              >
                 {open === "categoria"
                   ? categoryItems.map((item) => (
                       <Link
@@ -210,7 +224,7 @@ export function FilterBar({ selection, onChange, base, count, category = null, h
                           />
                         );
                       })}
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -238,7 +252,7 @@ export function FilterBar({ selection, onChange, base, count, category = null, h
                     href={item.href}
                     onClick={() => setSheet(false)}
                     className={cn(
-                      "t-label-sm flex h-10 items-center border px-3.5",
+                      "t-label-sm flex h-10 items-center border px-3.5 transition-colors duration-(--dur-fast)",
                       item.slug === category
                         ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]"
                         : "border-[var(--color-rule)]",
@@ -266,7 +280,7 @@ export function FilterBar({ selection, onChange, base, count, category = null, h
                       disabled={!checked && n === 0}
                       onClick={() => toggle(facet.key, option.value)}
                       className={cn(
-                        "t-label-sm flex h-10 items-center border px-3.5 transition-colors duration-300 disabled:opacity-30",
+                        "t-label-sm flex h-10 items-center border px-3.5 transition-colors duration-(--dur-fast) disabled:opacity-30",
                         checked
                           ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]"
                           : "border-[var(--color-rule)]",
@@ -331,7 +345,7 @@ function Trigger({
         size={10}
         strokeWidth={1.4}
         className={cn(
-          "transition-transform duration-500 [transition-timing-function:var(--ease-editorial)]",
+          "transition-transform duration-(--dur-normal)",
           open ? "-rotate-90" : "rotate-90",
         )}
       />
@@ -364,7 +378,7 @@ function Check({
       <span
         aria-hidden="true"
         className={cn(
-          "h-[11px] w-[11px] border transition-colors duration-300",
+          "h-[11px] w-[11px] border transition-colors duration-(--dur-fast)",
           checked
             ? "border-[var(--color-ink)] bg-[var(--color-ink)]"
             : "border-[var(--color-ink)]/40",

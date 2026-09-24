@@ -241,3 +241,26 @@ a altura desconta a barra superior azul; a composição empilhada (anel sob o
 nome) vale até 1024 px, para o tablet de pé; a grelha do rodapé do hero passou
 a explícita. O cabeçalho sobre ele fica em azul-marinho. A fotografia de
 campanha anterior foi retirada do projecto.
+
+## 6. Movimento — passada de refinamento
+
+Sem mudar composição, tipografia, imagens ou textos. Um só sistema de tokens,
+espelhado no CSS (`app/globals.css`, `:root` e `@theme`) e no JS
+(`components/motion/tokens.ts`):
+
+| Token | Valor | Uso |
+| --- | --- | --- |
+| `--dur-fast` / `DUR.fast` | 200 ms | hover, foco, contador, esmaecer ao clique |
+| `--dur-normal` / `DUR.normal` | 340 ms | acordeões, filtros, trocas de conteúdo, entrada de página |
+| `--dur-slow` / `DUR.slow` | 560 ms | crossfade do tile, fade de imagem, cabeçalho, reveals |
+| `--ease-editorial` / `EASE` | cubic-bezier(0.22, 1, 0.36, 1) | todas as entradas |
+| `--ease-exit` / `EASE_EXIT` | cubic-bezier(0.4, 0, 0.2, 1) | saídas (sempre mais curtas) |
+
+Os utilitários `transition-*` do Tailwind herdam 340 ms e a curva da casa
+(`--default-transition-*`). Painéis (menu, sacola, filtros no móvel): véu
+260/200 ms, painel 440/300 ms (entrada/saída); itens do menu 8 px, 30 ms entre
+cada. Transição de página: `app/template.tsx`, 340 ms, opacidade + 6 px, só em
+mudança de caminho e nunca na primeira página servida. Imagens fora do primeiro
+ecrã assentam num fade quando chegam (`FadeImage`); as prioritárias não.
+O hero da `main` mantém as suas curvas e durações originais (`EASE_HERO`).
+`prefers-reduced-motion` desliga tudo.

@@ -35,7 +35,7 @@ export default function CollectionsPage() {
         </p>
       </div>
 
-      <EditorialPair chapters={[a, b]} mobile="stack" />
+      <EditorialPair chapters={[a, b]} mobile="stack" priority />
       <EditorialPair chapters={[c, d]} mobile="stack" />
 
       <ProductRail id="todas-as-pecas" title="Todas as peças" pieces={pieces} />

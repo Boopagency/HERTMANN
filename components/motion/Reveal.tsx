@@ -9,21 +9,26 @@ import {
   type MotionValue,
 } from "motion/react";
 import { useRef } from "react";
+import { DUR, EASE, EASE_IN_OUT } from "@/components/motion/tokens";
 import { cn } from "@/lib/utils";
 
 /* ============================================================================
    Movimento HERTMANN
    ----------------------------------------------------------------------------
-   Apenas opacity, transform e clip-path. Durações de 0,6 a 1,4 s.
-   Curva única: expo-out. Nada salta, nada gira, nada pisca.
+   Apenas opacity, transform e clip-path, com os tokens de
+   components/motion/tokens.ts. Entradas curtas e deslocamentos pequenos:
+   o conteúdo assenta, não viaja. Nada salta, nada gira, nada pisca.
    `prefers-reduced-motion` desliga tudo — o conteúdo aparece de imediato.
    ========================================================================== */
 
-export const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-export const EASE_VEIL: [number, number, number, number] = [0.65, 0, 0.35, 1];
+export { DUR, EASE, EASE_EXIT, STAGGER } from "@/components/motion/tokens";
+export const EASE_VEIL = EASE_IN_OUT;
+
+/** A curva expo-out do hero da versão oficial — mantida só para ele. */
+export const EASE_HERO: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /* A margem tem de ser declarada em pixels — percentagens são ignoradas. */
-const VIEWPORT = { once: true, margin: "0px 0px -120px 0px" } as const;
+const VIEWPORT = { once: true, margin: "0px 0px -64px 0px" } as const;
 
 type RevealProps = {
   children: React.ReactNode;
@@ -39,8 +44,8 @@ export function Reveal({
   children,
   className,
   delay = 0,
-  duration = 0.95,
-  y = 22,
+  duration = DUR.slow,
+  y = 14,
   as = "div",
 }: RevealProps) {
   const reduced = useReducedMotion();
@@ -65,9 +70,9 @@ export function Reveal({
 export function RevealGroup({
   children,
   className,
-  stagger = 0.09,
+  stagger = 0.06,
   delay = 0,
-  y = 22,
+  y = 14,
   as = "div",
 }: RevealProps & { stagger?: number }) {
   const reduced = useReducedMotion();
@@ -92,7 +97,7 @@ export function RevealGroup({
               key={i}
               variants={{
                 hidden: { opacity: 0, y },
-                shown: { opacity: 1, y: 0, transition: { duration: 0.95, ease: EASE } },
+                shown: { opacity: 1, y: 0, transition: { duration: DUR.slow, ease: EASE } },
               }}
             >
               {child}
@@ -117,8 +122,8 @@ export function RevealLines({
   className,
   lineClassName,
   delay = 0,
-  stagger = 0.085,
-  duration = 1.05,
+  stagger = 0.06,
+  duration = 0.65,
   as: Tag = "p",
   ...rest
 }: {
@@ -181,7 +186,7 @@ export function RevealVeil({
   children,
   className,
   delay = 0,
-  duration = 1.4,
+  duration = 0.9,
 }: {
   children: React.ReactNode;
   className?: string;
@@ -209,8 +214,8 @@ export function RevealVeil({
       <motion.div
         className="h-full w-full"
         variants={{
-          hidden: { scale: 1.14 },
-          shown: { scale: 1, transition: { duration: duration + 0.35, ease: EASE, delay } },
+          hidden: { scale: 1.06 },
+          shown: { scale: 1, transition: { duration: duration + 0.2, ease: EASE, delay } },
         }}
       >
         {children}

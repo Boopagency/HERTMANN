@@ -5,6 +5,7 @@ import { IconChevron, IconChevronLeft } from "@/components/brand/Icons";
 import { ProductTile } from "@/components/product/ProductTile";
 import type { Piece } from "@/lib/data/catalogue";
 import { cn } from "@/lib/utils";
+import { Reveal } from "@/components/motion/Reveal";
 
 /* ============================================================================
    Vitrine — uma faixa horizontal de peças
@@ -64,16 +65,18 @@ export function ProductRail({
 
   const arrow =
     "absolute z-10 hidden w-[var(--rail-pad)] -translate-y-1/2 place-items-center lg:grid " +
-    "h-16 transition-opacity duration-500 [transition-timing-function:var(--ease-editorial)]";
+    "h-16 transition-opacity duration-(--dur-normal)";
 
   return (
     <section
       aria-labelledby={id}
       className={cn("rail pb-[var(--spacing-commerce)] pt-[var(--spacing-title)]", className)}
     >
-      <h2 id={id} className="t-rail px-[var(--spacing-gutter)] text-center">
-        {title}
-      </h2>
+      <Reveal y={10}>
+        <h2 id={id} className="t-rail px-[var(--spacing-gutter)] text-center">
+          {title}
+        </h2>
+      </Reveal>
 
       <div className="relative mt-[clamp(1.25rem,2.2vw,2.5rem)]">
         <button

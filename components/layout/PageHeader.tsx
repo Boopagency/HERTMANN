@@ -1,10 +1,11 @@
-import { Reveal } from "@/components/motion/Reveal";
 import { cn } from "@/lib/utils";
 
 /* ============================================================================
    Abertura de página interna — o mesmo gesto das páginas de catálogo:
    rótulo, título de tamanho médio, e a linha de voz à direita. Pouca
-   altura: o conteúdo começa logo a seguir.
+   altura: o conteúdo começa logo a seguir. Sem animação de entrada: está
+   no primeiro ecrã (o título é candidato a LCP) e a transição de página
+   já o faz assentar nas navegações.
    ========================================================================== */
 
 export function PageHeader({
@@ -28,7 +29,7 @@ export function PageHeader({
       )}
       style={{ paddingTop: "calc(var(--header-h) + clamp(1.75rem, 3.3vw, 3rem))" }}
     >
-      <Reveal className="md:col-span-7">
+      <div className="md:col-span-7">
         <p className="t-label-sm muted">{label}</p>
         <h1 className="t-h1 mt-2">
           {title.map((line) => (
@@ -37,13 +38,13 @@ export function PageHeader({
             </span>
           ))}
         </h1>
-      </Reveal>
+      </div>
 
       {(lead || aside) && (
-        <Reveal delay={0.15} className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9">
+        <div className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9">
           {lead && <p className="t-body max-w-[46ch]">{lead}</p>}
           {aside}
-        </Reveal>
+        </div>
       )}
     </header>
   );

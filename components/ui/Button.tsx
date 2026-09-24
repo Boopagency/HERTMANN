@@ -15,8 +15,7 @@ type Size = "sm" | "md";
 
 const base =
   "relative inline-flex items-center justify-center gap-3 t-label select-none " +
-  "transition-[background-color,color,border-color,opacity] duration-500 " +
-  "[transition-timing-function:var(--ease-editorial)] " +
+  "transition-[background-color,color,border-color,opacity] duration-(--dur-normal) " +
   "disabled:pointer-events-none disabled:opacity-35 aria-disabled:pointer-events-none aria-disabled:opacity-35";
 
 const sizes: Record<Size, string> = {
@@ -54,7 +53,7 @@ function Body({
               aria-hidden="true"
               className={cn(
                 "absolute inset-x-0 bottom-0 h-px origin-left bg-current",
-                "transition-transform duration-[650ms] [transition-timing-function:var(--ease-editorial)]",
+                "transition-transform duration-(--dur-normal)",
                 "scale-x-100 group-hover/cta:scale-x-0 group-focus-visible/cta:scale-x-0",
               )}
             />
@@ -62,7 +61,7 @@ function Body({
               aria-hidden="true"
               className={cn(
                 "absolute inset-x-0 bottom-0 h-px origin-right scale-x-0 bg-current",
-                "transition-transform delay-[220ms] duration-[650ms] [transition-timing-function:var(--ease-editorial)]",
+                "transition-transform delay-[120ms] duration-(--dur-normal)",
                 "group-hover/cta:origin-left group-hover/cta:scale-x-100",
                 "group-focus-visible/cta:origin-left group-focus-visible/cta:scale-x-100",
               )}
@@ -77,8 +76,8 @@ function Body({
         <IconArrow
           size={16}
           className={cn(
-            "shrink-0 transition-transform duration-[650ms] [transition-timing-function:var(--ease-editorial)]",
-            "group-hover/cta:translate-x-1.5 group-hover:translate-x-1.5",
+            "shrink-0 transition-transform duration-(--dur-normal)",
+            "group-hover/cta:translate-x-[3px] group-hover:translate-x-[3px]",
             loading && "opacity-0",
           )}
         />

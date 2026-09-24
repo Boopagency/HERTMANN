@@ -100,8 +100,16 @@ const organisation = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${display.variable} ${text.variable} ${sans.variable}`}>
+    <html
+      lang="pt-BR"
+      className={`${display.variable} ${text.variable} ${sans.variable}`}
+      suppressHydrationWarning
+    >
       <body>
+        {/* Marca o documento como tendo JS antes da primeira pintura: só então
+            as imagens fora do primeiro ecrã esperam pelo carregamento para
+            assentar num fade. Sem JS, aparecem normalmente. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.dataset.js=''" }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organisation) }}

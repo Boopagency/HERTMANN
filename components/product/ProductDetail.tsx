@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { IconHeart } from "@/components/brand/Icons";
 import { useStore } from "@/components/commerce/StoreProvider";
 import { MetalDot } from "@/components/product/ProductMedia";
+import { Ticker } from "@/components/motion/Ticker";
 import { categoryName, collectionName, type Piece } from "@/lib/data/catalogue";
 import { price } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -83,8 +84,7 @@ export function ProductDetail({ piece }: { piece: Piece }) {
                 aria-pressed={option === value}
                 className={cn(
                   "t-label-sm h-11 min-w-11 border px-4",
-                  "transition-[background-color,color,border-color] duration-500",
-                  "[transition-timing-function:var(--ease-editorial)]",
+                  "transition-[background-color,color,border-color] duration-(--dur-normal)",
                   option === value
                     ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]"
                     : "border-[var(--color-rule)] hover:border-[var(--color-ink)]",
@@ -105,19 +105,19 @@ export function ProductDetail({ piece }: { piece: Piece }) {
             type="button"
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
             disabled={quantity <= 1}
-            className="grid h-11 w-11 place-items-center transition-opacity duration-300 hover:opacity-55 disabled:opacity-25"
+            className="grid h-11 w-11 place-items-center transition-opacity duration-(--dur-fast) hover:opacity-55 disabled:opacity-25"
             aria-label="Reduzir quantidade"
           >
             <span aria-hidden="true">−</span>
           </button>
-          <span className="t-num w-8 text-center" aria-live="polite">
-            {quantity}
+          <span className="t-num grid w-8 place-items-center" aria-live="polite">
+            <Ticker value={quantity} />
           </span>
           <button
             type="button"
             onClick={() => setQuantity((q) => Math.min(9, q + 1))}
             disabled={quantity >= 9}
-            className="grid h-11 w-11 place-items-center transition-opacity duration-300 hover:opacity-55 disabled:opacity-25"
+            className="grid h-11 w-11 place-items-center transition-opacity duration-(--dur-fast) hover:opacity-55 disabled:opacity-25"
             aria-label="Aumentar quantidade"
           >
             <span aria-hidden="true">+</span>
@@ -127,8 +127,10 @@ export function ProductDetail({ piece }: { piece: Piece }) {
 
       {/* — Acções — */}
       <div className="mt-7 flex items-stretch gap-3">
+        {/* O rótulo troca no lugar — "Adicionado" entra por baixo do
+            anterior; a largura do botão não muda. */}
         <Button onClick={add} loading={state === "loading"} className="flex-1">
-          {state === "done" ? "Adicionado" : "Adicionar à sacola"}
+          <Ticker value={state === "done" ? "Adicionado" : "Adicionar à sacola"} distance={4} />
         </Button>
 
         <button
@@ -138,7 +140,7 @@ export function ProductDetail({ piece }: { piece: Piece }) {
           aria-label={
             favourite ? `Remover ${piece.name} dos favoritos` : `Guardar ${piece.name} nos favoritos`
           }
-          className="grid h-[3.4rem] w-[3.4rem] shrink-0 place-items-center border border-[var(--color-rule)] transition-colors duration-500 [transition-timing-function:var(--ease-editorial)] hover:border-[var(--color-ink)]"
+          className="grid h-[3.4rem] w-[3.4rem] shrink-0 place-items-center border border-[var(--color-rule)] transition-colors duration-(--dur-normal) hover:border-[var(--color-ink)]"
         >
           <IconHeart size={18} filled={favourite} />
         </button>

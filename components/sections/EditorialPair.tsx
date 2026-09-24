@@ -1,6 +1,7 @@
-import Image from "next/image";
+import { FadeImage } from "@/components/ui/FadeImage";
 import Link from "next/link";
 import { AutoVideo } from "@/components/sections/AutoVideo";
+import { Reveal } from "@/components/motion/Reveal";
 import type { Chapter, Media } from "@/lib/data/editorial";
 import { cn } from "@/lib/utils";
 
@@ -22,11 +23,14 @@ export function EditorialPair({
   mobile = "stack",
   className,
   headingLevel = "h2",
+  priority,
 }: {
   chapters: [Chapter, Chapter];
   mobile?: "stack" | "split";
   className?: string;
   headingLevel?: "h2" | "h3";
+  /** No primeiro ecrã: as imagens carregam já, sem fade. */
+  priority?: boolean;
 }) {
   return (
     <section className={cn("grid md:grid-cols-2", mobile === "split" && "grid-cols-2", className)}>
@@ -38,6 +42,7 @@ export function EditorialPair({
           sizes={mobile === "split" ? "50vw" : "(max-width: 768px) 100vw, 50vw"}
           headingLevel={headingLevel}
           index={i}
+          priority={priority}
         />
       ))}
     </section>
@@ -51,6 +56,7 @@ export function ChapterPanel({
   headingLevel: Heading = "h2",
   className,
   index = 0,
+  priority,
 }: {
   chapter: Chapter;
   compact?: boolean;
@@ -58,6 +64,7 @@ export function ChapterPanel({
   headingLevel?: "h2" | "h3";
   className?: string;
   index?: number;
+  priority?: boolean;
 }) {
   const place = chapter.place ?? "top";
   const light = (chapter.tone ?? "light") === "light";
@@ -75,7 +82,7 @@ export function ChapterPanel({
       )}
       data-index={index}
     >
-      <PanelMedia media={chapter.media} sizes={sizes} />
+      <PanelMedia media={chapter.media} sizes={sizes} priority={priority} />
 
       {/* Véu de leitura — só no canto do texto, só sobre fotografia */}
       {!cutout && light && (
@@ -98,16 +105,20 @@ export function ChapterPanel({
           light ? "text-[var(--color-paper)]" : "text-[var(--color-ink)]",
         )}
       >
-        <Heading className={cn("t-edit", compact && "max-md:text-[1.05rem]")}>
-          {chapter.title}
-        </Heading>
-        {/* Nos painéis compactos do telemóvel, só a seta — o título basta. */}
-        <span className={cn("link-edit mt-2", compact && "max-md:mt-1")}>
-          <span className={cn(compact && "max-md:sr-only")}>{chapter.link.label}</span>
-          <span aria-hidden="true" className="arrow">
-            →
+        {/* O texto assenta quando o capítulo entra no ecrã — 12 px, o
+            segundo painel um instante depois do primeiro. */}
+        <Reveal y={12} delay={index * 0.06}>
+          <Heading className={cn("t-edit", compact && "max-md:text-[1.05rem]")}>
+            {chapter.title}
+          </Heading>
+          {/* Nos painéis compactos do telemóvel, só a seta — o título basta. */}
+          <span className={cn("link-edit mt-2", compact && "max-md:mt-1")}>
+            <span className={cn(compact && "max-md:sr-only")}>{chapter.link.label}</span>
+            <span aria-hidden="true" className="arrow">
+              →
+            </span>
           </span>
-        </span>
+        </Reveal>
       </div>
     </Link>
   );
@@ -125,7 +136,7 @@ export function PanelMedia({
   if (media.kind === "video") {
     return (
       <>
-        <Image
+        <FadeImage
           src={media.poster}
           alt={media.alt}
           fill
@@ -144,7 +155,7 @@ export function PanelMedia({
 
   if (media.kind === "cutout") {
     return (
-      <Image
+      <FadeImage
         src={media.src}
         alt={media.alt}
         fill
@@ -156,7 +167,7 @@ export function PanelMedia({
   }
 
   return (
-    <Image
+    <FadeImage
       src={media.src}
       alt={media.alt}
       fill

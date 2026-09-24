@@ -35,7 +35,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Peça, coleção, material ou referência"
             autoComplete="off"
-            className="mt-2 w-full appearance-none border-0 border-b border-[var(--color-rule)] bg-transparent pb-3 font-[family-name:var(--font-text)] text-[clamp(1.35rem,2.4vw,2.1rem)] italic leading-tight outline-none transition-colors duration-500 placeholder:text-[var(--color-ink-30)] focus:border-[var(--color-ink)] [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
+            className="mt-2 w-full appearance-none border-0 border-b border-[var(--color-rule)] bg-transparent pb-3 font-[family-name:var(--font-text)] text-[clamp(1.35rem,2.4vw,2.1rem)] italic leading-tight outline-none transition-colors duration-(--dur-normal) placeholder:text-[var(--color-ink-30)] focus:border-[var(--color-ink)] [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
             style={{ transitionTimingFunction: "var(--ease-editorial)" }}
           />
         </label>

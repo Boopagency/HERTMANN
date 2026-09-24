@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, type Variants } from "motion/react";
+import { EASE } from "@/components/motion/tokens";
 
 /* ============================================================================
    Marcas desenhadas — estilo "Fine Line" do Manual de Marca (p.15):
@@ -9,16 +10,14 @@ import { motion, useReducedMotion, type Variants } from "motion/react";
    Todas as marcas se desenham ao entrar em cena.
    ========================================================================== */
 
-const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-
 const draw: Variants = {
   hidden: { pathLength: 0, opacity: 0 },
   shown: (i: number) => ({
     pathLength: 1,
     opacity: 1,
     transition: {
-      pathLength: { delay: 0.1 + i * 0.08, duration: 1.25, ease: EASE },
-      opacity: { delay: 0.1 + i * 0.08, duration: 0.35 },
+      pathLength: { delay: 0.1 + i * 0.06, duration: 1, ease: EASE },
+      opacity: { delay: 0.1 + i * 0.06, duration: 0.34 },
     },
   }),
 };
