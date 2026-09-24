@@ -18,19 +18,30 @@ O Manual de Marca é a fonte de verdade. As decisões que dele decorrem:
 | Elemento | Decisão |
 | --- | --- |
 | Paleta | `#051D41` azul-marinho, `#000000`, `#EBEBEB`, `#FFFFFF`. Nenhuma cor fora destas. As derivadas (`--color-ink-70`, `--color-rule`, …) são opacidades do azul-marinho, não cores novas. |
-| Azul-marinho | Usado em três momentos apenas: a campanha Noturno, o bloco "O traço" do ateliê e o rodapé. Tudo o resto é branco e cinza. |
+| Azul-marinho | O coração da marca. Superfície da barra superior, do menu aberto, do rodapé e do bloco "O traço" do ateliê; cor do texto, dos fios e dos botões em tudo o resto; e presente na fotografia (hero, Noturno). Texto sobre azul: branco, e nunca abaixo de 62 % de opacidade (≈ 7:1). |
 | Tipografia | **Cormorant SC** para a marca, títulos, manifestos e nomes de coleções. **Inter** para navegação, preços, rótulos e informação técnica. Duas famílias, nada mais. |
 | Logotipo | Monograma HM servido como máscara CSS (`/public/brand/monogram-white.png`), pelo que herda a cor do contexto. A assinatura "Hertmann" é **texto vivo** em Cormorant SC — nítida em qualquer densidade e legível por leitores de ecrã. Restrições da p.14 respeitadas: sem rotação, recorte, sombra ou alteração de cor. |
 | Ícones | "Linha Heritage" (p.15): traço fino de espessura constante, geometria sóbria, vazados, grid de 24×24. Ver `components/brand/Icons.tsx`. |
 | Ilustrações | Estilo *Fine Line* (p.15): desenhos técnicos de traço fino. Ver `components/brand/Marks.tsx`. |
 
-### Grelha e ritmo
+### Grelha e ritmo — densidade de loja
 
-12 colunas (6 em ecrãs até 900 px), margens `clamp(1.25rem, 4.2vw, 4.5rem)`,
-contentor máximo de 1680 px. Intervalos verticais entre secções de
-`clamp(6.5rem, 13vw, 14rem)`. A grelha é invisível — mas nada é colocado fora dela,
-com uma excepção deliberada: o título da campanha Noturno, que atravessa a sua
-coluna uma única vez em todo o site.
+A estrutura segue a escola de e-commerce de alta joalharia documentada em
+[`docs/REDESIGN.md`](docs/REDESIGN.md): **o respiro vive à volta da joia, não
+entre secções**.
+
+| Token | Valor | Uso |
+| --- | --- | --- |
+| `--spacing-gutter` | `clamp(16px, 2.2vw, 44px)` | cabeçalho, textos editoriais, catálogo |
+| `--spacing-rail` | `clamp(16px, 6.2vw, 124px)` | vitrines e rodapé (as setas vivem nesta margem) |
+| `--spacing-commerce` | `clamp(40px, 4.4vw, 80px)` | respiro das secções comerciais — nunca mais de 80 px |
+| `--spacing-title` | `clamp(28px, 3.1vw, 56px)` | do topo da vitrine ao título |
+
+Os capítulos editoriais (`EditorialPair`) são pares 50/50 em sangria, sem
+intervalo, cada um um quadrado de meia largura limitado à altura útil do ecrã.
+O catálogo tem 3 colunas a partir de 768 px e 2 no telemóvel. As vitrines
+mostram 5 tiles a partir de 1280 px, 4 a partir de 1024, 3¼ no tablet e 2¼ no
+telemóvel.
 
 ### Movimento
 
@@ -52,21 +63,53 @@ Primitivas em `components/motion/Reveal.tsx`: `Reveal`, `RevealGroup`, `RevealLi
 
 ## Fotografia
 
-Toda a imagem servida vem do próprio Manual de Marca — mockups, embalagem, boutique
-e campanha da HERTMANN. Foram recortadas com uma chave suave que preserva as sombras
-de contacto, para assentarem sobre as superfícies brancas e cinzentas da marca.
+Toda a imagem servida vem do próprio Manual de Marca — campanha, peças usadas,
+embalagem e boutique. Nenhuma imagem foi gerada ou inventada no redesign; os
+cartazes dos filmes (`public/images/posters/`) são fotogramas dos próprios filmes.
+
+### O slot `packshot`
+
+Cada peça do catálogo pode declarar três imagens:
+
+```ts
+image: { src, cutout: false, alt, focus: "50% 40%" },   // a peça usada — sempre
+packshot: { src, cutout: true, alt },                    // a peça isolada — quando existir
+imageAlt: { src, cutout: false, alt },                   // segunda vista — opcional
+```
+
+- Com `packshot`, as vitrines e a grelha mostram a joia centrada, com respiro,
+  sobre a névoa de estúdio (`--color-studio`, `#F5F5F5`), e a fotografia usada
+  revela-se no hover — o comportamento completo da loja.
+- Sem `packshot` (o estado actual das 12 peças), a fotografia usada ocupa o tile
+  em sangria, enquadrada pela joia através de `focus` (`object-position`), e o
+  hover aproxima 3,5 %.
+
+Nenhum componente precisa de mudar quando os packshots chegarem: basta
+preencher o campo em `lib/data/catalogue.ts`. A especificação de produção está
+em `docs/REDESIGN.md`.
+
+### Onde cada fotografia aparece
+
+As escolhas editoriais vivem em `lib/data/editorial.ts` (hero, vitrines, pares
+editoriais, aberturas de categoria e de coleção, capítulo da grelha).
 
 | Ficheiro | Onde aparece |
 | --- | --- |
-| `piece-ring-box.png` | Objecto do hero e peça *Perene* |
-| `piece-rings.png` | Peça *Vertente* |
-| `piece-pouch.png` | Campanha Noturno |
+| `hero-ring.png` | Hero da home — o da versão oficial: o nome HERTMANN atravessado pelo anel |
+| `hertmann/editorial/vertente-colar-malha-blazer.jpg` + `use-do-seu-jeito-pulseira-elos.jpg` | Primeiro par editorial |
+| `hertmann/editorial/noturno-anel-safira.jpg` + `hertmann/atelier/sob-encomenda-cravacao-bancada.jpg` | Noturno + Sob encomenda |
+| `hertmann/editorial/brincos-ponto-de-luz.jpg` + `hertmann/boutique/sala-privada.jpg` | Brincos + Atendimento (e Contato) |
+| `hertmann/heritage/maos-bigorna.jpg` + `anel-que-atravessa-geracoes.jpg` | Sobre |
+| `hertmann/atelier/macarico-solda.jpg` | Ateliê |
+| `campaign-portrait.png` · `campaign-hero.jpg` | Capítulo da grelha "Todas as joias", abertura da coleção Vertente, Open Graph |
+| `colar-noturn.jpg` + `hero-ring.png` | Abertura da coleção Noturno |
 | `piece-bag.png` | Vista "Como chega" na página de produto |
-| `set-packaging.png` | Coleção em destaque e abertura do ateliê |
-| `campaign-portrait.jpg` | Coleção em destaque |
-| `campaign-hero.jpg` | Página Sobre e imagem Open Graph |
-| `boutique-wide.jpg` / `boutique-tall.jpg` | Ateliê e página Sobre |
-| `hero-ring.png` | Objecto do Hero — o anel de assinatura, entregue já com canal alfa correto |
+| Fotografias das peças | Tiles, página de produto, aberturas de categoria e de coleção |
+
+As fotografias em `public/images/hertmann/` vêm da curadoria `ASSETS-SHORT`
+(licença Unsplash, uso comercial livre) e são **editoriais**: as joias que
+mostram não são peças do catálogo e nunca aparecem em tiles de produto. Origem,
+autor e licença de cada uma estão em `docs/REDESIGN.md`, secção 5.
 
 ### Recortar uma fotografia nova
 
@@ -107,27 +150,12 @@ im.crop((max(0,box[0]-pad), max(0,box[1]-pad), min(im.width,box[2]+pad), min(im.
 "
 ```
 
-### As pranchas desenhadas
+### Os desenhos de ateliê
 
-Nem todas as peças têm fotografia. As que não têm são apresentadas pelo **desenho de
-ateliê** que lhes deu origem — dez construções distintas (`band`, `solitaire`,
-`pendant`, `pendantGem`, `choker`, `hoop`, `drop`, `stud`, `links`, `bangle`), cada
-uma desenhada no traço definido pelo manual e animada ao entrar em cena.
-
-Não é um marcador de posição: é a forma como o catálogo se apresenta enquanto a
-produção fotográfica decorre, e é coerente com o sistema de ilustração da marca.
-
-**Para colocar uma fotografia real**, basta preencher `image` na peça, em
-`lib/data/catalogue.ts`. Nenhum componente precisa de ser alterado:
-
-```ts
-image: {
-  src: "/images/nome-do-ficheiro.png",
-  cutout: true,   // true = recorte com fundo transparente, assenta na prancha de estúdio
-                  // false = fotografia de enquadramento completo, preenche a prancha
-  alt: "Descrição da peça para quem não vê a imagem",
-},
-```
+Os dez desenhos Fine Line (`band`, `solitaire`, `pendant`, `pendantGem`,
+`choker`, `hoop`, `drop`, `stud`, `links`, `bangle`) acompanham cada peça na
+página de produto ("Desenho de ateliê") e no bloco "O traço" do ateliê. Se uma
+peça não tiver fotografia nenhuma, o desenho ocupa o seu tile.
 
 ---
 
@@ -135,8 +163,9 @@ image: {
 
 ```
 app/
-  page.tsx                    Home — 11 secções, do hero ao rodapé
-  joias/                      Catálogo e catálogo por categoria
+  page.tsx                    Home — hero, vitrine, 50/50, editorial + produto,
+                              vitrine, 50/50, a casa
+  joias/                      Catálogo e catálogo por categoria (filtros na URL)
   colecoes/                   Índice de coleções e página de coleção
   produto/[slug]/             Página de peça
   sobre/  atelie/  contato/   Institucional
@@ -144,14 +173,32 @@ app/
   sitemap.ts  robots.ts
 components/
   brand/      Logotipo, ícones Linha Heritage, desenhos Fine Line
-  layout/     Cabeçalho, menu móvel, busca, rodapé, camada modal, rolagem suave
-  motion/     Primitivas de revelação e parallax
-  sections/   As secções da home e os blocos institucionais
-  product/    Prancha, cartão, grelha, galeria, painel de peça
+  layout/     Barra superior, cabeçalho, menu lateral, busca, rodapé, camada modal
+  motion/     Primitivas de revelação
+  sections/   Hero, pares editoriais, filme, "a casa", newsletter, contacto
+  product/    Tile, vitrine, grelha, barra de filtros, abertura de coleção,
+              galeria, painel de peça
   commerce/   Sacola e favoritos (estado local), gaveta da sacola
-  ui/         Botões e rótulos
-lib/data/     Catálogo, coleções, categorias, configuração do site
+  ui/         Botões
+lib/data/     catalogue.ts (o que a casa faz) · editorial.ts (como a loja o
+              mostra) · site.ts
+lib/          filters.ts (filtros e ordenação) · search.ts (busca)
+docs/         REDESIGN.md — o mapa da referência e a especificação de fotografia
 ```
+
+### Filtros e atalhos
+
+O estado dos filtros vive na URL, para que cada selecção seja partilhável e os
+atalhos do menu sejam endereços simples. As páginas continuam estáticas: o HTML
+servido traz a grelha completa e a selecção é aplicada ao hidratar.
+
+| Endereço | Resultado |
+| --- | --- |
+| `/joias?novidades=1` | Novidades (coleções mais recentes) |
+| `/joias?entrega=pronta` | Disponíveis — pronta-entrega |
+| `/joias?preco=ate-10000` | Presentes — até R$ 10 mil |
+| `?colecao=` `?material=` `?pedra=` `?preco=` `?entrega=` | Filtros combináveis (valores separados por vírgula) |
+| `?ordem=novidades` `preco-asc` `preco-desc` | Ordenação |
 
 ### Estado de loja
 

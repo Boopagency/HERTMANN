@@ -85,7 +85,41 @@ export function IconClose(props: IconProps) {
 export function IconMenu(props: IconProps) {
   return (
     <Svg {...props}>
-      <path d="M3 8.5h18M3 15.5h18" />
+      <path d="M3 7h18M3 12h18M3 17h18" />
+    </Svg>
+  );
+}
+
+export function IconChevronLeft(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M15.5 4.5 8 12l7.5 7.5" />
+    </Svg>
+  );
+}
+
+export function IconInstagram(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" />
+      <circle cx="12" cy="12" r="4" />
+      <path d="M17.2 6.8h.01" strokeWidth={1.6} />
+    </Svg>
+  );
+}
+
+export function IconWhatsApp(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path
+        d="M4.2 19.8 5.3 16A8.2 8.2 0 1 1 8.2 18.8Z"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.2 8.6c.2-.4.5-.4.8-.4h.5c.2 0 .4.1.5.4l.6 1.4c.1.2 0 .5-.1.7l-.5.6c.5 1 1.4 1.9 2.4 2.4l.6-.5c.2-.2.5-.2.7-.1l1.4.6c.3.1.4.3.4.5v.5c0 .3 0 .6-.4.8-.7.4-1.6.5-2.5.1a8.2 8.2 0 0 1-4.3-4.3c-.4-.9-.3-1.8.1-2.5Z"
+        strokeWidth={0.9}
+        strokeLinejoin="round"
+      />
     </Svg>
   );
 }

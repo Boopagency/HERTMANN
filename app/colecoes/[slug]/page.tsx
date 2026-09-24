@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageHeader } from "@/components/layout/PageHeader";
-import { ProductGrid } from "@/components/product/ProductGrid";
-import { Reveal } from "@/components/motion/Reveal";
-import { ButtonLink } from "@/components/ui/Button";
-import { CrystalMark } from "@/components/brand/Marks";
+import { CollectionHero } from "@/components/product/CollectionHero";
+import { Catalogue } from "@/components/product/CatalogueView";
 import { collectionBySlug, collectionPieces, collections } from "@/lib/data/catalogue";
+import { collectionMedia } from "@/lib/data/editorial";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -29,40 +28,35 @@ export default async function CollectionPage({ params }: Params) {
   const collection = collectionBySlug(slug);
   if (!collection) notFound();
 
-  const items = collectionPieces(collection);
-
   return (
     <>
-      <PageHeader
+      <CollectionHero
         label={`Coleção · ${collection.year}`}
-        title={[collection.name]}
-        lead={collection.description}
+        title={collection.name}
+        line={collection.line}
+        media={collectionMedia[collection.slug]}
       />
 
-      <div className="shell pb-[var(--spacing-section)]">
-        <Reveal>
-          <hr className="rule" />
-          <div className="grid12 items-baseline py-5">
-            <p className="t-label-sm col-span-6 md:col-span-4">{collection.line}</p>
-            <p className="t-label-sm muted col-span-6 md:col-span-4 md:col-start-9 md:text-right">
-              {items.length} {items.length === 1 ? "peça" : "peças"}
-            </p>
-          </div>
-          <hr className="rule" />
-        </Reveal>
+      <Catalogue pieces={collectionPieces(collection)} hide={["colecao"]} />
 
-        <ProductGrid pieces={items} columns={3} withIndex className="mt-[clamp(2.5rem,5vw,4.5rem)]" />
-
-        <Reveal delay={0.1}>
-          <div className="mt-[clamp(4rem,9vw,8rem)] flex flex-col items-center text-center">
-            <CrystalMark className="h-[clamp(3rem,5vw,4.5rem)] w-auto opacity-50" />
-            <p className="t-body mt-8 max-w-[46ch]">{collection.note}</p>
-            <ButtonLink href="/contato" variant="line" arrow className="mt-8">
-              Falar com a casa
-            </ButtonLink>
+      {/* A coleção em poucas linhas — depois das peças, nunca antes */}
+      <section
+        aria-label={`Sobre a coleção ${collection.name}`}
+        className="border-t border-[var(--color-rule-soft)] bg-[var(--color-studio)]"
+      >
+        <div className="shell-plp grid gap-y-5 py-[var(--spacing-commerce)] md:grid-cols-12 md:gap-x-8">
+          <p className="t-label-sm muted md:col-span-3">{collection.note}</p>
+          <p className="t-lead text-[var(--color-ink)] md:col-span-6">{collection.description}</p>
+          <div className="md:col-span-3 md:text-right">
+            <Link href="/contato" className="link-edit">
+              <span>Falar com a casa</span>
+              <span aria-hidden="true" className="arrow">
+                →
+              </span>
+            </Link>
           </div>
-        </Reveal>
-      </div>
+        </div>
+      </section>
     </>
   );
 }

@@ -69,8 +69,7 @@ export function ContactForm() {
               aria-pressed={subject === value}
               className={cn(
                 "t-label-sm h-11 border px-4",
-                "transition-[background-color,color,border-color] duration-500",
-                "[transition-timing-function:var(--ease-editorial)]",
+                "transition-[background-color,color,border-color] duration-(--dur-normal)",
                 subject === value
                   ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]"
                   : "border-[var(--color-rule)] hover:border-[var(--color-ink)]",
@@ -83,7 +82,7 @@ export function ContactForm() {
       </fieldset>
       <input type="hidden" name="subject" value={subject} />
 
-      <div className="mt-10 space-y-8">
+      <div className="mt-7 space-y-6">
         <Field id="name" label="Nome" autoComplete="name" error={errors.name} />
         <Field id="email" label="E-mail" type="email" autoComplete="email" error={errors.email} />
 
@@ -96,7 +95,7 @@ export function ContactForm() {
             required
             aria-invalid={Boolean(errors.message)}
             aria-describedby={errors.message ? "message-error" : undefined}
-            className="mt-2 w-full resize-none border-0 border-b border-[var(--color-rule)] bg-transparent pb-3 pt-2 text-sm font-light outline-none transition-colors duration-500 hover:border-[var(--color-ink-50)] focus:border-[var(--color-ink)]"
+            className="mt-2 w-full resize-none border-0 border-b border-[var(--color-rule)] bg-transparent pb-3 pt-2 text-sm font-light outline-none transition-colors duration-(--dur-normal) hover:border-[var(--color-ink-50)] focus:border-[var(--color-ink)]"
             style={{ transitionTimingFunction: "var(--ease-editorial)" }}
           />
           {errors.message && (
@@ -107,7 +106,7 @@ export function ContactForm() {
         </label>
       </div>
 
-      <Button type="submit" loading={status === "loading"} className="mt-10 w-full sm:w-auto">
+      <Button type="submit" loading={status === "loading"} className="mt-8 w-full sm:w-auto">
         Enviar mensagem
       </Button>
     </form>

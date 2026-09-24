@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/layout/PageHeader";
-import { CategoryFilter } from "@/components/product/CategoryFilter";
-import { ProductGrid } from "@/components/product/ProductGrid";
+import { Catalogue } from "@/components/product/CatalogueView";
 import { pieces } from "@/lib/data/catalogue";
+import { catalogueInsert } from "@/lib/data/editorial";
 
 export const metadata: Metadata = {
   title: "Joias",
@@ -13,17 +12,13 @@ export const metadata: Metadata = {
 
 export default function JewelleryPage() {
   return (
-    <>
-      <PageHeader
-        label="Catálogo"
-        title={["Todas as joias"]}
-        lead="Doze peças em produção contínua. Cada uma dimensionada à mão, e cada uma passível de ser refeita, redimensionada ou reparada — sem limite de tempo."
-      />
-
-      <div className="shell pb-[var(--spacing-section)]">
-        <CategoryFilter />
-        <ProductGrid pieces={pieces} columns={3} withIndex className="mt-[clamp(2.5rem,5vw,4.5rem)]" />
-      </div>
-    </>
+    <Catalogue
+      pieces={pieces}
+      label="Catálogo"
+      title="Todas as joias"
+      line="Doze peças em produção contínua, cada uma dimensionada à mão — e refeita, redimensionada ou reparada sem limite de tempo."
+      insert={catalogueInsert}
+      category="todas"
+    />
   );
 }

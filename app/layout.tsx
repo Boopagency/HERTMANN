@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_SC, Cormorant_Garamond, Inter } from "next/font/google";
+import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
@@ -99,8 +100,23 @@ const organisation = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${display.variable} ${text.variable} ${sans.variable}`}>
+    <html
+      lang="pt-BR"
+      className={`${display.variable} ${text.variable} ${sans.variable}`}
+      suppressHydrationWarning
+    >
       <body>
+        {/* Antes da primeira pintura: marca o documento como tendo JS (só então
+            as imagens fora do primeiro ecrã esperam pelo carregamento para
+            assentar num fade) e, se a intro do hero já correu nesta sessão,
+            marca-a como vista para o hero aparecer pronto (chave "hm-intro",
+            a mesma de HomeHero). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(d){d.dataset.js='';try{if(sessionStorage.getItem('hm-intro'))d.dataset.introSeen=''}catch(e){}})(document.documentElement)",
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organisation) }}
@@ -110,6 +126,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <StoreProvider>
           <SmoothScroll />
+          <AnnouncementBar />
           <Header />
           <main id="conteudo">{children}</main>
           <Footer />

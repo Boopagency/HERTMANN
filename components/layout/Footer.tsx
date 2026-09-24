@@ -1,133 +1,155 @@
 import Link from "next/link";
 import { Monogram, Wordmark } from "@/components/brand/Logo";
+import { CrystalMark } from "@/components/brand/Marks";
+import { IconInstagram, IconWhatsApp } from "@/components/brand/Icons";
 import { Newsletter } from "@/components/sections/Newsletter";
 import { categories, collections } from "@/lib/data/catalogue";
 import { nav, site } from "@/lib/data/site";
 
 /* ============================================================================
-   Rodapé — o fecho institucional. Azul-marinho, muito ar, quatro colunas
-   que se recompõem em duas e depois em uma.
+   Rodapé — o fecho em azul-marinho, a cor da casa. Uma assinatura compacta
+   (monograma, nome, o cristal desenhado), colunas de loja e serviço, a
+   newsletter à direita, fios de 1 px, e por baixo as redes e os legais.
+   Denso: a assinatura não é gigante.
    ========================================================================== */
+
+const COLUMNS: { title: string; links: { label: string; href: string; external?: boolean }[] }[] = [
+  {
+    title: "Loja",
+    links: [
+      { label: "Novidades", href: "/joias?novidades=1" },
+      { label: "Pronta-entrega", href: "/joias?entrega=pronta" },
+      ...categories.map((c) => ({ label: c.name, href: `/joias/${c.slug}` })),
+      { label: "Presentes", href: "/joias?preco=ate-10000" },
+    ],
+  },
+  {
+    title: "Coleções",
+    links: [
+      ...collections.map((c) => ({ label: c.name, href: `/colecoes/${c.slug}` })),
+      { label: "Todas as coleções", href: "/colecoes" },
+    ],
+  },
+  {
+    title: "A casa",
+    links: [
+      { label: "Sobre a HERTMANN", href: "/sobre" },
+      { label: "O ateliê", href: "/atelie" },
+      { label: "A boutique", href: "/contato" },
+    ],
+  },
+  {
+    title: "Atendimento",
+    links: [
+      { label: "Contato", href: "/contato" },
+      { label: "WhatsApp", href: site.contact.whatsappUrl, external: true },
+      { label: "Marcar visita", href: "/contato" },
+      { label: "E-mail", href: `mailto:${site.contact.email}` },
+    ],
+  },
+];
 
 export function Footer() {
   return (
     <footer className="on-ink">
-      <div className="shell pb-[clamp(2.5rem,4vw,3.5rem)] pt-[clamp(4.5rem,9vw,8rem)]">
+      <div className="shell-rail pb-[clamp(1.25rem,2vw,2rem)] pt-[clamp(2.25rem,3.3vw,3.25rem)]">
         {/* — Assinatura — */}
-        <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-          <Link href="/" className="inline-flex flex-col" aria-label="HERTMANN — página inicial">
-            <Monogram className="w-[3.4rem]" />
-            <Wordmark className="mt-4 text-[clamp(1.6rem,4.5vw,2.6rem)]" />
+        <div className="flex items-end justify-between gap-6">
+          <Link
+            href="/"
+            className="inline-flex items-end gap-4"
+            aria-label="HERTMANN — página inicial"
+          >
+            <Monogram className="w-11" />
+            <Wordmark className="text-[clamp(1.35rem,2vw,1.9rem)]" />
           </Link>
-          <p className="t-label-sm muted md:text-right">
-            {site.signature}
-            <br />
-            {site.city}, Brasil
-          </p>
+          <div className="flex items-end gap-5">
+            <p className="t-label-sm muted hidden text-right sm:block">
+              {site.signature}
+              <br />
+              {site.city}, Brasil
+            </p>
+            <CrystalMark className="h-12 w-auto shrink-0 opacity-40" />
+          </div>
         </div>
 
-        <hr className="rule mt-[clamp(3rem,6vw,5rem)]" />
+        <hr className="rule mb-[clamp(2rem,3.3vw,3rem)] mt-[clamp(1.5rem,2.4vw,2.25rem)]" />
 
-        {/* — Colunas — */}
-        <div className="mt-[clamp(2.5rem,5vw,4rem)] grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-4">
-          <nav aria-label="Navegação do rodapé">
-            <p className="t-label-sm muted">Navegação</p>
-            <ul className="mt-5 space-y-2.5">
-              {nav.primary.map((item) => (
+        <div className="grid grid-cols-2 gap-x-6 gap-y-9 sm:grid-cols-4 lg:grid-cols-12 lg:gap-x-8">
+          {COLUMNS.map((column) => (
+            <nav key={column.title} aria-label={column.title} className="lg:col-span-2">
+              <p className="t-label-sm muted">{column.title}</p>
+              <ul className="mt-4 space-y-[0.55rem]">
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    {link.external || link.href.startsWith("mailto:") ? (
+                      <a
+                        href={link.href}
+                        {...(link.external ? { target: "_blank", rel: "noreferrer noopener" } : {})}
+                        className="link-nav text-[0.8125rem] leading-snug"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link href={link.href} className="link-nav text-[0.8125rem] leading-snug">
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+
+          <Newsletter className="col-span-2 sm:col-span-4 lg:col-span-4 lg:col-start-9" />
+        </div>
+
+        <hr className="rule mt-[clamp(2.25rem,4vw,3.5rem)]" />
+
+        <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-5">
+            <Link href="/" aria-label="HERTMANN — página inicial">
+              <Monogram className="w-7" />
+            </Link>
+            <span aria-hidden="true" className="h-4 w-px bg-[var(--color-rule-invert)]" />
+            {site.social.map((s) => (
+              <a
+                key={s.href}
+                href={s.href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={s.label}
+                className="opacity-75 transition-opacity duration-(--dur-fast) hover:opacity-100"
+              >
+                <IconInstagram size={16} />
+              </a>
+            ))}
+            <a
+              href={site.contact.whatsappUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="WhatsApp"
+              className="opacity-75 transition-opacity duration-(--dur-fast) hover:opacity-100"
+            >
+              <IconWhatsApp size={16} />
+            </a>
+          </div>
+
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-8">
+            <ul className="flex gap-5">
+              {nav.legal.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="t-label link-nav">
+                  <Link href={item.href} className="t-label-sm muted link-nav">
                     {item.label}
                   </Link>
                 </li>
               ))}
             </ul>
-          </nav>
-
-          <div>
-            <p className="t-label-sm muted">Coleções</p>
-            <ul className="mt-5 space-y-2.5">
-              {collections.map((c) => (
-                <li key={c.slug}>
-                  <Link href={`/colecoes/${c.slug}`} className="t-label link-nav">
-                    {c.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <p className="t-label-sm muted mt-8">Categorias</p>
-            <ul className="mt-5 space-y-2.5">
-              {categories.map((c) => (
-                <li key={c.slug}>
-                  <Link href={`/joias/${c.slug}`} className="t-label link-nav">
-                    {c.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <p className="t-label-sm muted">{site.contact.address}</p>
+            <p className="t-label-sm muted">
+              © {new Date().getFullYear()} {site.name}
+            </p>
           </div>
-
-          <div>
-            <p className="t-label-sm muted">Atendimento</p>
-            <ul className="mt-5 space-y-2.5">
-              <li>
-                <Link href="/contato" className="t-label link-nav">
-                  Contato
-                </Link>
-              </li>
-              <li>
-                <a
-                  href={site.contact.whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="t-label link-nav"
-                >
-                  WhatsApp
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${site.contact.email}`} className="t-label link-nav break-all">
-                  {site.contact.email}
-                </a>
-              </li>
-            </ul>
-
-            <p className="t-label-sm muted mt-8">Redes</p>
-            <ul className="mt-5 space-y-2.5">
-              {site.social.map((s) => (
-                <li key={s.href}>
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="t-label link-nav"
-                  >
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <Newsletter className="col-span-2 md:col-span-1" />
-        </div>
-
-        <hr className="rule mt-[clamp(3rem,6vw,5rem)]" />
-
-        {/* — Legal — */}
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="t-label-sm muted">
-            © {new Date().getFullYear()} {site.name}
-          </p>
-          <ul className="flex gap-6">
-            {nav.legal.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="t-label-sm muted link-nav">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <p className="t-label-sm muted">{site.contact.address}</p>
         </div>
       </div>
     </footer>

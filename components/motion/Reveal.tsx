@@ -9,21 +9,35 @@ import {
   type MotionValue,
 } from "motion/react";
 import { useRef } from "react";
+import { DUR, EASE, EASE_IN_OUT } from "@/components/motion/tokens";
 import { cn } from "@/lib/utils";
 
 /* ============================================================================
    Movimento HERTMANN
    ----------------------------------------------------------------------------
-   Apenas opacity, transform e clip-path. Durações de 0,6 a 1,4 s.
-   Curva única: expo-out. Nada salta, nada gira, nada pisca.
+   Apenas opacity, transform e clip-path, com os tokens de
+   components/motion/tokens.ts. Entradas curtas e deslocamentos pequenos:
+   o conteúdo assenta, não viaja. Nada salta, nada gira, nada pisca.
    `prefers-reduced-motion` desliga tudo — o conteúdo aparece de imediato.
    ========================================================================== */
 
-export const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-export const EASE_VEIL: [number, number, number, number] = [0.65, 0, 0.35, 1];
+export { DUR, EASE, EASE_EXIT, STAGGER } from "@/components/motion/tokens";
+export const EASE_VEIL = EASE_IN_OUT;
+
+/** A curva expo-out do hero da versão oficial — mantida só para ele. */
+export const EASE_HERO: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /* A margem tem de ser declarada em pixels — percentagens são ignoradas. */
-const VIEWPORT = { once: true, margin: "0px 0px -120px 0px" } as const;
+const VIEWPORT = { once: true, margin: "0px 0px -64px 0px" } as const;
+
+/*
+ * Movimento reduzido — o HTML estático chega sempre com o estado inicial
+ * (o servidor não conhece a preferência). Por isso a estrutura nunca muda:
+ * com `prefers-reduced-motion`, o mesmo elemento vai já para o estado final
+ * (duração 0, sem esperar pelo scroll), e o CSS (`[data-reveal]` em
+ * globals.css) mostra-o desde a primeira pintura, antes de o JS chegar.
+ */
+const INSTANT = { duration: 0 } as const;
 
 type RevealProps = {
   children: React.ReactNode;
@@ -39,22 +53,22 @@ export function Reveal({
   children,
   className,
   delay = 0,
-  duration = 0.95,
-  y = 22,
+  duration = DUR.slow,
+  y = 14,
   as = "div",
 }: RevealProps) {
   const reduced = useReducedMotion();
   const Comp = motion[as] as typeof motion.div;
-
-  if (reduced) return <Comp className={className}>{children}</Comp>;
+  const shown = { opacity: 1, y: 0 };
 
   return (
     <Comp
+      data-reveal=""
       className={className}
       initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={VIEWPORT}
-      transition={{ duration, ease: EASE, delay }}
+      {...(reduced
+        ? { animate: shown, transition: INSTANT }
+        : { whileInView: shown, viewport: VIEWPORT, transition: { duration, ease: EASE, delay } })}
     >
       {children}
     </Comp>
@@ -65,34 +79,38 @@ export function Reveal({
 export function RevealGroup({
   children,
   className,
-  stagger = 0.09,
+  stagger = 0.06,
   delay = 0,
-  y = 22,
+  y = 14,
   as = "div",
 }: RevealProps & { stagger?: number }) {
   const reduced = useReducedMotion();
   const Comp = motion[as] as typeof motion.div;
 
-  if (reduced) return <Comp className={className}>{children}</Comp>;
-
   return (
     <Comp
       className={className}
       initial="hidden"
-      whileInView="shown"
-      viewport={VIEWPORT}
+      {...(reduced ? { animate: "shown" } : { whileInView: "shown", viewport: VIEWPORT })}
       variants={{
         hidden: {},
-        shown: { transition: { staggerChildren: stagger, delayChildren: delay } },
+        shown: {
+          transition: reduced ? INSTANT : { staggerChildren: stagger, delayChildren: delay },
+        },
       }}
     >
       {Array.isArray(children)
         ? children.map((child, i) => (
             <motion.div
               key={i}
+              data-reveal=""
               variants={{
                 hidden: { opacity: 0, y },
-                shown: { opacity: 1, y: 0, transition: { duration: 0.95, ease: EASE } },
+                shown: {
+                  opacity: 1,
+                  y: 0,
+                  transition: reduced ? INSTANT : { duration: DUR.slow, ease: EASE },
+                },
               }}
             >
               {child}
@@ -117,8 +135,8 @@ export function RevealLines({
   className,
   lineClassName,
   delay = 0,
-  stagger = 0.085,
-  duration = 1.05,
+  stagger = 0.06,
+  duration = 0.65,
   as: Tag = "p",
   ...rest
 }: {
@@ -135,34 +153,25 @@ export function RevealLines({
   const reduced = useReducedMotion();
   const MotionTag = motion[Tag] as typeof motion.p;
 
-  if (reduced) {
-    return (
-      <Tag className={className} {...rest}>
-        {lines.map((line, i) => (
-          <span key={i} className={cn("block", lineClassName)}>
-            {line}
-          </span>
-        ))}
-      </Tag>
-    );
-  }
-
   return (
     <MotionTag
       className={className}
       initial="hidden"
-      whileInView="shown"
-      viewport={VIEWPORT}
-      variants={{ hidden: {}, shown: { transition: { staggerChildren: stagger, delayChildren: delay } } }}
+      {...(reduced ? { animate: "shown" } : { whileInView: "shown", viewport: VIEWPORT })}
+      variants={{
+        hidden: {},
+        shown: { transition: reduced ? INSTANT : { staggerChildren: stagger, delayChildren: delay } },
+      }}
       {...rest}
     >
       {lines.map((line, i) => (
         <span key={i} className="block overflow-hidden" style={{ paddingBottom: "0.08em" }}>
           <motion.span
+            data-reveal=""
             className={cn("block", lineClassName)}
             variants={{
               hidden: { y: "110%" },
-              shown: { y: "0%", transition: { duration, ease: EASE } },
+              shown: { y: "0%", transition: reduced ? INSTANT : { duration, ease: EASE } },
             }}
           >
             {line}
@@ -181,7 +190,7 @@ export function RevealVeil({
   children,
   className,
   delay = 0,
-  duration = 1.4,
+  duration = 0.9,
 }: {
   children: React.ReactNode;
   className?: string;
@@ -190,27 +199,29 @@ export function RevealVeil({
 }) {
   const reduced = useReducedMotion();
 
-  if (reduced) return <div className={className}>{children}</div>;
-
   return (
     <motion.div
+      data-reveal=""
       className={cn("overflow-hidden", className)}
       initial="hidden"
-      whileInView="shown"
-      viewport={VIEWPORT}
+      {...(reduced ? { animate: "shown" } : { whileInView: "shown", viewport: VIEWPORT })}
       variants={{
         hidden: { clipPath: "inset(100% 0% 0% 0%)" },
         shown: {
           clipPath: "inset(0% 0% 0% 0%)",
-          transition: { duration, ease: EASE, delay },
+          transition: reduced ? INSTANT : { duration, ease: EASE, delay },
         },
       }}
     >
       <motion.div
+        data-reveal=""
         className="h-full w-full"
         variants={{
-          hidden: { scale: 1.14 },
-          shown: { scale: 1, transition: { duration: duration + 0.35, ease: EASE, delay } },
+          hidden: { scale: 1.06 },
+          shown: {
+            scale: 1,
+            transition: reduced ? INSTANT : { duration: duration + 0.2, ease: EASE, delay },
+          },
         }}
       >
         {children}

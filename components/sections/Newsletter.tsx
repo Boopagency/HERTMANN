@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { IconArrow } from "@/components/brand/Icons";
 import { cn } from "@/lib/utils";
 
 /* ============================================================================
-   Newsletter — um fio e uma seta. Estados: repouso, foco, a enviar,
-   enviado, erro. Nenhum deles altera a composição.
+   Newsletter — um fio e um botão rectangular. Estados: repouso, foco,
+   a enviar, enviado, erro. Nenhum deles altera a composição.
    ========================================================================== */
 
 type Status = "idle" | "loading" | "done" | "error";
@@ -33,11 +32,14 @@ export function Newsletter({ className }: { className?: string }) {
 
   return (
     <div className={className}>
-      <p className="t-label-sm muted">Newsletter</p>
-      <p className="t-h4 mt-3 max-w-[24ch]">Receba as novidades da HERTMANN.</p>
+      <p className="t-h4">O círculo HERTMANN</p>
+      <p className="t-body mt-2 max-w-[40ch] !text-[0.8125rem]">
+        Novas peças, coleções e convites para a boutique — antes de chegarem ao
+        catálogo.
+      </p>
 
-      <form onSubmit={onSubmit} noValidate className="mt-6 max-w-[26rem]">
-        <div className="field relative flex items-center">
+      <form onSubmit={onSubmit} noValidate className="mt-5 flex max-w-[26rem] items-end gap-3">
+        <div className="field flex-1">
           <label htmlFor="newsletter-email" className="sr-only">
             O seu e-mail
           </label>
@@ -55,37 +57,35 @@ export function Newsletter({ className }: { className?: string }) {
               setEmail(event.target.value);
               if (status !== "idle") setStatus("idle");
             }}
-            className="pr-12"
             disabled={status === "loading"}
           />
-          <button
-            type="submit"
-            className={cn(
-              "tap absolute right-0 grid h-10 w-10 place-items-center",
-              "transition-[opacity,transform] duration-500 [transition-timing-function:var(--ease-editorial)]",
-              "hover:translate-x-1 disabled:opacity-35",
-            )}
-            disabled={status === "loading"}
-            aria-label="Subscrever"
-          >
-            <IconArrow size={17} />
-          </button>
         </div>
-
-        <p
-          id="newsletter-status"
-          aria-live="polite"
+        <button
+          type="submit"
           className={cn(
-            "t-label-sm mt-3 transition-opacity duration-500",
-            status === "idle" ? "opacity-0" : "opacity-100",
+            "t-label-sm h-10 shrink-0 border border-current px-5",
+            "transition-[background-color,color,opacity] duration-(--dur-normal)",
+            "hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] disabled:opacity-35",
           )}
+          disabled={status === "loading"}
         >
-          {status === "error" && "Verifique o endereço indicado."}
-          {status === "loading" && "A subscrever…"}
-          {status === "done" && "Obrigado. Está subscrito."}
-          {status === "idle" && " "}
-        </p>
+          {status === "loading" ? "A enviar" : "Inscrever"}
+        </button>
       </form>
+
+      <p
+        id="newsletter-status"
+        aria-live="polite"
+        className={cn(
+          "t-label-sm mt-3 transition-opacity duration-(--dur-normal)",
+          status === "idle" ? "opacity-0" : "opacity-100",
+        )}
+      >
+        {status === "error" && "Verifique o endereço indicado."}
+        {status === "loading" && "A subscrever…"}
+        {status === "done" && "Obrigado. Está subscrito."}
+        {status === "idle" && " "}
+      </p>
     </div>
   );
 }
