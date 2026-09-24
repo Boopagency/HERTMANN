@@ -1,89 +1,156 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
-import { Reveal } from "@/components/motion/Reveal";
-import { home } from "@/lib/data/editorial";
-import { cn } from "@/lib/utils";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
+import { ButtonLink } from "@/components/ui/Button";
+import { IconArrowDown } from "@/components/brand/Icons";
+import { EASE } from "@/components/motion/Reveal";
 
 /* ============================================================================
-   Hero
+   HERO — o da versão oficial (main), trazido intacto para esta versão.
    ----------------------------------------------------------------------------
-   Uma fotografia a dominar o ecrã (90 % da altura útil), o cabeçalho por
-   cima, e quase nada escrito: a casa, a coleção, uma linha, um caminho.
-   O hero é impacto — o manifesto vive na página Sobre.
+   Uma composição, não um banner. O nome da casa ocupa a largura inteira da
+   página; a fotografia atravessa-o pelo centro. As letras levantam-se uma a
+   uma sob a máscara, a imagem descobre-se de baixo para cima e assenta da
+   escala. Ao rolar, a fotografia sobe mais devagar do que a página.
    ========================================================================== */
 
+const WORD = "HERTMANN".split("");
+
 export function HomeHero() {
-  const { media, eyebrow, title, line, link, tone } = home.hero;
-  const light = tone === "light";
+  const reduced = useReducedMotion();
+  const ref = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+
+  const plateY = useTransform(scrollYProgress, [0, 1], ["0%", "-14%"]);
+  const plateScale = useTransform(scrollYProgress, [0, 1], [1, 1.09]);
+  const wordY = useTransform(scrollYProgress, [0, 1], ["0%", "26%"]);
+  const fade = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
   return (
     <section
-      className="relative h-[calc(88svh-var(--bar-h))] min-h-[30rem] w-full overflow-hidden bg-[var(--color-mist)] md:h-[calc(92svh-var(--bar-h))] md:min-h-[34rem]"
-      aria-labelledby="hero-titulo"
+      ref={ref}
+      className="relative"
+      aria-labelledby="hero-marca"
+      style={{ paddingTop: "var(--header-h)" }}
     >
-      {media.kind === "image" && (
-        <Image
-          src={media.src}
-          alt={media.alt}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-          style={{ objectPosition: media.focus ?? "50% 50%" }}
-        />
-      )}
-
-      {/* Cabeçalho claro sobre a fotografia: um sopro de sombra no topo,
-          em ecrãs deitados e/ou de pé, conforme o tom definido para cada um. */}
-      {(home.hero.headerTone === "light" || home.hero.headerTonePortrait === "light") && (
-        <span
-          aria-hidden="true"
-          className={cn(
-            "pointer-events-none absolute inset-x-0 top-0 hidden",
-            home.hero.headerTone === "light" && "landscape:block landscape:h-[26%]",
-            home.hero.headerTonePortrait === "light" && "portrait:block portrait:h-[32%]",
-          )}
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.34) 0%, rgba(0,0,0,0.1) 45%, rgba(0,0,0,0) 100%)",
-          }}
-        />
-      )}
-
-      {/* Véu de leitura, só na base, só onde está o texto */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: light
-            ? "linear-gradient(to top, rgba(0,0,0,0.46) 0%, rgba(0,0,0,0.12) 34%, rgba(0,0,0,0) 55%)"
-            : "none",
-        }}
-      />
-
-      <div
-        className={cn(
-          "absolute inset-x-0 bottom-0 px-[var(--spacing-gutter)] pb-[clamp(1.75rem,4.4vw,4rem)]",
-          light ? "text-[var(--color-paper)]" : "text-[var(--color-ink)]",
-        )}
-      >
-        <Reveal y={12} duration={1.1} delay={0.15}>
-          <h1 className="t-label-sm opacity-80">
-            {eyebrow}
-            <span className="sr-only"> — alta joalheria em Curitiba desde 1948</span>
-          </h1>
-          <h2 id="hero-titulo" className="t-hero mt-3">
-            {title}
-          </h2>
-          <p className="t-voice mt-2 max-w-[40ch]">{line}</p>
-          <Link href={link.href} className="link-edit mt-4">
-            <span>{link.label}</span>
-            <span aria-hidden="true" className="arrow">
-              →
+      <div className="shell-wide relative flex min-h-[calc(100svh-var(--header-h)-var(--bar-h))] flex-col justify-between pb-[clamp(1.5rem,3vw,2.5rem)] pt-[clamp(2rem,6vw,5rem)] md:min-h-[calc(94svh-var(--header-h)-var(--bar-h))]">
+        {/* — Nome da casa + fotografia — */}
+        {/* Telemóvel e tablet de pé: a marca em cima, a peça por baixo,
+            encaixada sob as letras. A partir de 1024 px: a peça atravessa
+            o nome pelo centro. */}
+        <div className="relative flex flex-1 flex-col justify-center lg:block lg:flex-row lg:items-center">
+          <motion.h1
+            id="hero-marca"
+            className="t-hero-mark relative z-0 flex w-full justify-center lg:block lg:text-center"
+            style={reduced ? undefined : { y: wordY }}
+            aria-label="HERTMANN"
+          >
+            <span className="inline-flex max-w-full justify-center" aria-hidden="true">
+              {WORD.map((letter, i) => (
+                <span key={i} className="block overflow-hidden" style={{ paddingBottom: "0.08em" }}>
+                  <motion.span
+                    className="block"
+                    initial={reduced ? false : { y: "104%" }}
+                    animate={{ y: "0%" }}
+                    transition={{
+                      duration: 1.25,
+                      ease: EASE,
+                      delay: 0.15 + i * 0.045,
+                    }}
+                  >
+                    {letter}
+                  </motion.span>
+                </span>
+              ))}
             </span>
-          </Link>
-        </Reveal>
+          </motion.h1>
+
+          {/* A peça atravessa o nome — o produto é o protagonista */}
+          <motion.div
+            className="pointer-events-none relative z-10 mx-auto -mt-[7%] w-[62vw] max-w-[20rem] lg:absolute lg:left-1/2 lg:top-1/2 lg:mx-0 lg:mt-0 lg:w-[23vw] lg:max-w-[24rem] lg:-translate-x-1/2 lg:-translate-y-[38%]"
+            style={reduced ? undefined : { y: plateY }}
+          >
+            <motion.div
+              initial={reduced ? false : { opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.8, ease: EASE, delay: 0.5 }}
+            >
+              <motion.div style={reduced ? undefined : { scale: plateScale }}>
+                <div className="relative aspect-[764/1102] w-full">
+                  <Image
+                    src="/images/hero-ring.png"
+                    alt="Anel HERTMANN em ouro branco, com diamante central de talhe oval"
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 64vw, 25rem"
+                    className="object-contain"
+                  />
+                </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* — Rodapé do hero — */}
+        <motion.div
+          className="relative z-20 mt-[clamp(2rem,5vw,3rem)]"
+          style={reduced ? undefined : { opacity: fade }}
+        >
+          <span
+            aria-hidden="true"
+            className="mb-[clamp(1.5rem,3vw,2.25rem)] hidden justify-center text-[var(--color-ink-50)] lg:flex"
+          >
+            <motion.span
+              animate={reduced ? undefined : { y: [0, 7, 0] }}
+              transition={{ duration: 3.4, ease: "easeInOut", repeat: Infinity }}
+            >
+              <IconArrowDown size={18} />
+            </motion.span>
+          </span>
+
+          <hr className="rule" />
+          <div className="mt-5 grid items-start gap-y-5 md:grid-cols-12 md:gap-x-6">
+            <motion.p
+              className="t-label-sm muted md:col-span-3"
+              initial={reduced ? false : { opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: EASE, delay: 1.15 }}
+            >
+              Alta joalheria
+              <br />
+              Curitiba, desde 1948
+            </motion.p>
+
+            <motion.p
+              className="t-lead max-w-[34ch] md:col-span-5 md:col-start-5 lg:col-span-4"
+              initial={reduced ? false : { opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: EASE, delay: 1.25 }}
+            >
+              Peças executadas à mão em ateliê próprio, em ouro 18k e pedras
+              seleccionadas uma a uma.
+            </motion.p>
+
+            <motion.div
+              className="flex items-center justify-start md:col-span-3 md:col-start-10 md:justify-end"
+              initial={reduced ? false : { opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: EASE, delay: 1.35 }}
+            >
+              <ButtonLink href="/colecoes" variant="line" arrow>
+                Ver as coleções
+              </ButtonLink>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
+
     </section>
   );
 }

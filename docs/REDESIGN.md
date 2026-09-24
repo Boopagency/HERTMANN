@@ -231,3 +231,13 @@ jeito"), noturno-01 (Noturno), closeup-earring-07 (Brincos), boutique-interior-0
   no topo e o cristal ao pé) e no rodapé (assinatura com monograma, nome e
   cristal). Texto sobre azul nunca abaixo de 62 % de branco (≈ 7:1).
 - O cristal desenhado (Fine Line) volta ao menu, ao rodapé e ao bloco "a casa".
+
+### Mix com a versão oficial — o hero
+
+O hero volta a ser o da `main`: o nome HERTMANN a toda a largura, atravessado
+pelo anel de assinatura, e por baixo o fio com "Alta joalheria · Curitiba,
+desde 1948", a linha sobre o ateliê e "Ver as coleções". Adaptações mínimas:
+a altura desconta a barra superior azul; a composição empilhada (anel sob o
+nome) vale até 1024 px, para o tablet de pé; a grelha do rodapé do hero passou
+a explícita. O cabeçalho sobre ele fica em azul-marinho. A fotografia de
+campanha anterior foi retirada do projecto.

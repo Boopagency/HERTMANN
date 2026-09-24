@@ -261,6 +261,15 @@
     font-weight: 300;
   }
 
+  /* O nome da casa a toda a largura — o hero da versão oficial */
+  .t-hero-mark {
+    font-family: var(--font-display);
+    font-size: clamp(2.9rem, 13.4vw, 17rem);
+    line-height: 0.82;
+    letter-spacing: 0.005em;
+    font-weight: 400;
+  }
+
   /* Títulos editoriais sobre fotografia */
   .t-edit {
     font-family: var(--font-display);

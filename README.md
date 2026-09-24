@@ -95,7 +95,7 @@ editoriais, aberturas de categoria e de coleção, capítulo da grelha).
 
 | Ficheiro | Onde aparece |
 | --- | --- |
-| `hertmann/hero/campanha-safira-seda.jpg` | Hero da home — fotografia enviada pela HERTMANN |
+| `hero-ring.png` | Hero da home — o da versão oficial: o nome HERTMANN atravessado pelo anel |
 | `hertmann/editorial/vertente-colar-malha-blazer.jpg` + `use-do-seu-jeito-pulseira-elos.jpg` | Primeiro par editorial |
 | `hertmann/editorial/noturno-anel-safira.jpg` + `hertmann/atelier/sob-encomenda-cravacao-bancada.jpg` | Noturno + Sob encomenda |
 | `hertmann/editorial/brincos-ponto-de-luz.jpg` + `hertmann/boutique/sala-privada.jpg` | Brincos + Atendimento (e Contato) |
@@ -106,7 +106,7 @@ editoriais, aberturas de categoria e de coleção, capítulo da grelha).
 | `piece-bag.png` | Vista "Como chega" na página de produto |
 | Fotografias das peças | Tiles, página de produto, aberturas de categoria e de coleção |
 
-As fotografias em `public/images/hertmann/` (excepto o hero) vêm da curadoria `ASSETS-SHORT`
+As fotografias em `public/images/hertmann/` vêm da curadoria `ASSETS-SHORT`
 (licença Unsplash, uso comercial livre) e são **editoriais**: as joias que
 mostram não são peças do catálogo e nunca aparecem em tiles de produto. Origem,
 autor e licença de cada uma estão em `docs/REDESIGN.md`, secção 5.

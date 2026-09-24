@@ -42,12 +42,6 @@ const img = {
      São fotografias editoriais: as joias que mostram NÃO são peças do
      catálogo HERTMANN e por isso nunca aparecem em tiles de produto nem
      são nomeadas como tal. Temporárias até à produção própria. */
-  heroSapphire: {
-    kind: "image",
-    src: "/images/hertmann/hero/campanha-safira-seda.jpg",
-    alt: "Retrato de campanha: brinco em gota e anel com safira, seda azul-marinho em movimento",
-    focus: "82% 30%",
-  },
   herringbone: {
     kind: "image",
     src: "/images/hertmann/editorial/vertente-colar-malha-blazer.jpg",
@@ -174,25 +168,14 @@ const img = {
    -------------------------------------------------------------------------- */
 
 export const home = {
+  /* O hero é o da versão oficial (o nome da casa atravessado pelo anel —
+     ver HomeHero). Aqui fica só o tom do cabeçalho transparente sobre ele. */
   hero: {
-    /* O retrato de campanha em enquadramento largo: rosto, brinco e anel
-       livres; o texto assenta sobre o fundo e o blazer. */
-    media: img.heroSapphire,
-    /** Cor do cabeçalho transparente sobre a fotografia do hero —
-        em ecrãs deitados e em ecrãs de pé (onde o topo da fotografia
-        muda: no retrato, o cabeçalho cai sobre o cabelo). */
+    /** Cor do cabeçalho transparente sobre o hero — em ecrãs deitados e de pé. */
     headerTone: "dark" as "light" | "dark",
-    headerTonePortrait: "light" as "light" | "dark",
-    /** Nos ecrãs deitados, os acessos da direita podem ter tom próprio
-        quando a fotografia muda de claro para escuro a meio (aqui: parede
-        clara à esquerda, cabelo escuro à direita). */
-    headerToneRight: "light" as "light" | "dark" | undefined,
-    /** Cor do texto do hero, no canto inferior esquerdo. */
-    tone: "light" as "light" | "dark",
-    eyebrow: "HERTMANN",
-    title: "Vertente",
-    line: "Uma coleção desenhada pelo movimento.",
-    link: { label: "Descobrir coleção", href: "/colecoes/vertente" },
+    headerTonePortrait: "dark" as "light" | "dark",
+    /** Tom próprio para os acessos da direita, se a imagem o pedir. */
+    headerToneRight: undefined as "light" | "dark" | undefined,
   },
 
   selection: {
