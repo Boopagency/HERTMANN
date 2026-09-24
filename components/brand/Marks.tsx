@@ -71,6 +71,7 @@ function Plate({
       aria-hidden="true"
       focusable="false"
       className={className}
+      data-reveal={still ? undefined : ""}
       {...group}
     >
       {children}

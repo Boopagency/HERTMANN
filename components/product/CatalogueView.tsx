@@ -42,9 +42,10 @@ type Props = {
 const EMPTY: Selection = { values: {}, novidades: false, ordem: "destaques" };
 
 /**
- * Troca de resultados — quando a selecção muda, a nova grelha entra num
- * fade curto no mesmo lugar. Só opacidade: a grelha não se desloca nem
- * salta. A primeira pintura (HTML estático) nunca é animada.
+ * Troca entre grelha e estado vazio — o único momento em que o conteúdo
+ * inteiro muda de natureza entra num fade curto. Dentro da grelha, os tiles
+ * persistem pelas suas chaves (ver CatalogueGrid): filtrar ou ordenar nunca
+ * apaga a área toda. A primeira pintura (HTML estático) nunca é animada.
  */
 function Results({ id, children }: { id: string; children: React.ReactNode }) {
   const reduced = useReducedMotion();
@@ -190,7 +191,7 @@ function CatalogueLayout({
           )}
         </AnimatePresence>
 
-        <Results id={writeSelection(selection)}>
+        <Results id={list.length > 0 ? "grelha" : "vazio"}>
           {list.length > 0 ? (
             <CatalogueGrid
               pieces={list}

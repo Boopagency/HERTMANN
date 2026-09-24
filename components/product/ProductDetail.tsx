@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { IconHeart } from "@/components/brand/Icons";
 import { useStore } from "@/components/commerce/StoreProvider";
@@ -18,19 +18,22 @@ export function ProductDetail({ piece }: { piece: Piece }) {
   const { addToBag, setBagOpen, toggleFavourite, isFavourite, ready } = useStore();
   const [option, setOption] = useState(piece.options?.values[0]);
   const [quantity, setQuantity] = useState(1);
-  const [state, setState] = useState<"idle" | "loading" | "done">("idle");
+  const [state, setState] = useState<"idle" | "done">("idle");
+  const doneTimer = useRef<number | undefined>(undefined);
 
   const favourite = ready && isFavourite(piece.slug);
 
-  async function add() {
-    if (state === "loading") return;
-    setState("loading");
-    await new Promise((resolve) => setTimeout(resolve, 550));
+  // A sacola é local: não há pedido a esperar, por isso nada de loading
+  // simulado — a peça entra e a sacola abre no mesmo gesto.
+  function add() {
     addToBag(piece.slug, option, quantity);
     setState("done");
     setBagOpen(true);
-    window.setTimeout(() => setState("idle"), 2200);
+    window.clearTimeout(doneTimer.current);
+    doneTimer.current = window.setTimeout(() => setState("idle"), 2200);
   }
+
+  useEffect(() => () => window.clearTimeout(doneTimer.current), []);
 
   return (
     <div>
@@ -129,7 +132,7 @@ export function ProductDetail({ piece }: { piece: Piece }) {
       <div className="mt-7 flex items-stretch gap-3">
         {/* O rótulo troca no lugar — "Adicionado" entra por baixo do
             anterior; a largura do botão não muda. */}
-        <Button onClick={add} loading={state === "loading"} className="flex-1">
+        <Button onClick={add} className="flex-1">
           <Ticker value={state === "done" ? "Adicionado" : "Adicionar à sacola"} distance={4} />
         </Button>
 

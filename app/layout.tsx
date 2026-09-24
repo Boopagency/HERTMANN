@@ -106,10 +106,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <body>
-        {/* Marca o documento como tendo JS antes da primeira pintura: só então
+        {/* Antes da primeira pintura: marca o documento como tendo JS (só então
             as imagens fora do primeiro ecrã esperam pelo carregamento para
-            assentar num fade. Sem JS, aparecem normalmente. */}
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.dataset.js=''" }} />
+            assentar num fade) e, se a intro do hero já correu nesta sessão,
+            marca-a como vista para o hero aparecer pronto (chave "hm-intro",
+            a mesma de HomeHero). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(d){d.dataset.js='';try{if(sessionStorage.getItem('hm-intro'))d.dataset.introSeen=''}catch(e){}})(document.documentElement)",
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organisation) }}

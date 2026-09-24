@@ -95,6 +95,12 @@
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: auto; /* rolagem suave é gerida por Lenis */
+    /* Reserva o lugar da barra de rolagem clássica (Windows): quando uma
+       camada bloqueia a rolagem, a barra some mas a largura não muda — nada
+       desliza para o lado. Com barras sobrepostas (macOS, telemóvel) a
+       reserva é zero. Todas as páginas são mais altas do que o ecrã, por
+       isso a barra já lá estava: não há deslocamento permanente. */
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -702,6 +708,14 @@
     }
   }
 
+  /* Hero da home: a intro corre uma vez por sessão. Depois disso os seus
+     elementos ficam no estado final (ver HomeHero). */
+  html[data-intro-seen] .hero-intro {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+
   /* Imagens que carregam fora do primeiro ecrã assentam num fade curto,
      no instante em que chegam — sem atraso artificial. Só com JS activo
      (html[data-js]); as prioritárias nunca esperam. */
@@ -894,6 +908,23 @@
 
   .marquee-track {
     animation: none !important;
+  }
+
+  /* Conteúdo com entrada animada chega do HTML estático no estado inicial
+     (opacity 0, deslocado, recortado). Com movimento reduzido mostra-se já
+     no estado final, desde a primeira pintura e mesmo antes do JS. */
+  [data-reveal],
+  .hero-intro {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+
+  /* Traços desenhados (cristal, pranchas): já completos. */
+  [data-reveal] path {
+    opacity: 1 !important;
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
   }
 }
 

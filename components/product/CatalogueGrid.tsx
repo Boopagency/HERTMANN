@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { ProductTile } from "@/components/product/ProductTile";
 import { PanelMedia } from "@/components/sections/EditorialPair";
 import type { Piece } from "@/lib/data/catalogue";
 import type { Chapter } from "@/lib/data/editorial";
+import { DUR, EASE } from "@/components/motion/tokens";
 import { cn } from "@/lib/utils";
 
 /* ============================================================================
@@ -15,7 +17,27 @@ import { cn } from "@/lib/utils";
    do tile; entre linhas, só o necessário para a legenda. A meio da grelha
    pode entrar um capítulo editorial em toda a largura — a campanha no meio
    da compra, como numa boutique — sem desequilibrar as linhas.
+
+   Ao filtrar ou ordenar, os tiles que ficam persistem (chave = peça) e
+   deslizam para o novo lugar; só os que entram aparecem num fade. A grelha
+   nunca desaparece de uma vez. Os que saem saem logo, sem ocupar espaço.
    ========================================================================== */
+
+function useEntering() {
+  const reduced = useReducedMotion();
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
+
+  return {
+    // Tiles montados depois da primeira pintura entram em fade.
+    initial: mounted.current && !reduced ? { opacity: 0 } : false,
+    animate: { opacity: 1 },
+    layout: reduced ? undefined : ("position" as const),
+    transition: { duration: DUR.normal, ease: EASE },
+  };
+}
 
 export function CatalogueGrid({
   pieces,
@@ -30,6 +52,7 @@ export function CatalogueGrid({
   className?: string;
 }) {
   const showInsert = Boolean(insert) && pieces.length > insertAfter + 1;
+  const entering = useEntering();
 
   return (
     <ul
@@ -40,23 +63,31 @@ export function CatalogueGrid({
     >
       {pieces.map((piece, i) => (
         <Fragment key={piece.slug}>
-          <li>
+          <motion.li {...entering}>
             <ProductTile
               piece={piece}
               priority={i < 3}
               sizes="(max-width: 768px) 48vw, (max-width: 1760px) 32vw, 560px"
             />
-          </li>
-          {showInsert && insert && i === insertAfter && <InsertBand chapter={insert} />}
+          </motion.li>
+          {showInsert && insert && i === insertAfter && (
+            <InsertBand chapter={insert} entering={entering} />
+          )}
         </Fragment>
       ))}
     </ul>
   );
 }
 
-function InsertBand({ chapter }: { chapter: Chapter }) {
+function InsertBand({
+  chapter,
+  entering,
+}: {
+  chapter: Chapter;
+  entering: ReturnType<typeof useEntering>;
+}) {
   return (
-    <li className="col-span-2 md:col-span-3">
+    <motion.li className="col-span-2 md:col-span-3" {...entering}>
       <Link href={chapter.link.href} className="group grid overflow-hidden md:grid-cols-3">
         <div className="relative aspect-[4/3] overflow-hidden bg-[var(--color-ink)] md:col-span-2 md:aspect-[16/9]">
           <PanelMedia media={chapter.media} sizes="(max-width: 1024px) 100vw, 62vw" />
@@ -73,6 +104,6 @@ function InsertBand({ chapter }: { chapter: Chapter }) {
           </span>
         </div>
       </Link>
-    </li>
+    </motion.li>
   );
 }
