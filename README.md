@@ -178,12 +178,19 @@ components/
   sections/   Hero, pares editoriais, filme, "a casa", newsletter, contacto
   product/    Tile, vitrine, grelha, barra de filtros, abertura de coleção,
               galeria, painel de peça
-  commerce/   Sacola e favoritos (estado local), gaveta da sacola
+  commerce/   Sacola e favoritos (StoreProvider), gaveta da sacola, leitura
+              ao vivo da Hostinger (useLiveProducts), preço das vitrines
+              (PiecePrice), checkout hospedado (checkout.ts)
   ui/         Botões
+app/checkout/ sucesso/ e cancelado/ — regresso do checkout da Hostinger
+app/api/      hostinger-status — diagnóstico da ligação à Storefront API
 lib/data/     catalogue.ts (o que a casa faz) · editorial.ts (como a loja o
-              mostra) · site.ts
-lib/          filters.ts (filtros e ordenação) · search.ts (busca)
-docs/         REDESIGN.md — o mapa da referência e a especificação de fotografia
+              mostra) · site.ts · homologation.ts (peça técnica de teste)
+lib/hostinger/ Cliente e tipos da Storefront API V2 (pública, sem token)
+lib/          filters.ts (filtros e ordenação) · search.ts (busca) ·
+              commerce.ts (peça ↔ produto) · site-url.ts (origem e indexação)
+scripts/e2e/  Teste de ponta a ponta contra uma Storefront simulada
+docs/         REDESIGN.md e os documentos da integração Hostinger
 ```
 
 ### Filtros e atalhos
@@ -202,20 +209,61 @@ servido traz a grelha completa e a selecção é aplicada ao hidratar.
 
 ### Estado de loja
 
-Sacola e favoritos vivem em `localStorage`, no dispositivo de quem visita — nunca
-saem do navegador. A escrita está protegida contra armazenamento indisponível
-(janela privada, dados bloqueados): a loja continua a funcionar em memória.
+Sacola e favoritos vivem em `localStorage` (`hertmann:store:v2`), no dispositivo
+de quem visita. Cada linha da sacola é `variantId` (Hostinger) + `quantity`; o
+`slug` acompanha para mostrar nome e fotografia. Preço e estoque nunca são
+guardados: lêem-se ao vivo. Sacolas antigas (`v1`) migram sem perder linhas —
+peças ainda não vendáveis ficam "sob consulta", fora do total e do checkout.
+A escrita está protegida contra armazenamento indisponível (janela privada,
+dados bloqueados): a loja continua a funcionar em memória.
+
+---
+
+## Comércio — Hostinger Ecommerce
+
+A Vercel serve o site; a Hostinger é o backend comercial (produtos, variantes,
+preços, estoque, frete, checkout, pagamentos, pedidos), pela Storefront API V2
+pública — sem token no navegador.
+
+- Uma peça só é vendável quando `lib/data/catalogue.ts` lhe dá `commerce:
+  { productId, variants }` com os IDs de um produto **real**. Hoje nenhuma
+  peça tem: o catálogo é um protótipo visual e os seus preços não são
+  comerciais.
+- Peça ligada: preço, promoção e estoque vêm da Hostinger em todas as
+  superfícies (`PiecePrice`, página de produto, sacola). Peça editorial:
+  preço do catálogo e "Consultar disponibilidade".
+- "Finalizar compra" relê preço e estoque, cria o checkout na Hostinger e
+  segue para ele; o regresso é `/checkout/sucesso` ou `/checkout/cancelado`.
+- Homologação: `/produto/homologacao-hostinger`, ligada ao produto de teste
+  da loja, só com `NEXT_PUBLIC_HOSTINGER_HOMOLOGATION=true` e nunca em produção.
+
+| Variável | Tipo | Uso |
+| --- | --- | --- |
+| `NEXT_PUBLIC_HOSTINGER_SALES_CHANNEL_ID` | Config · pública | canal `custom` da loja |
+| `NEXT_PUBLIC_HOSTINGER_STOREFRONT_API_URL` | Config · pública | opcional; por omissão a API V2 |
+| `NEXT_PUBLIC_HOSTINGER_HOMOLOGATION` | Config · pública | página de homologação (Preview) |
+| `NEXT_PUBLIC_SITE_URL` | Config · pública | domínio definitivo, quando existir |
+| `SITE_INDEXABLE` | Config · servidor | `true` só com domínio definitivo |
+
+Não há Secret nesta etapa. Um token administrativo futuro será Secret: nunca
+`NEXT_PUBLIC_`, nunca commitado, só no servidor. Ver `.env.example` e `docs/`.
+
+```bash
+node scripts/e2e/fluxo-checkout.mjs          # next dev + Storefront simulada
+node scripts/e2e/fluxo-checkout.mjs --prod   # next build + next start
+```
 
 ---
 
 ## Pontos de integração
 
-Três lugares esperam um serviço real; até lá simulam a resposta e mostram os
+Dois lugares esperam um serviço real; até lá simulam a resposta e mostram os
 estados corretos:
 
 - `components/sections/Newsletter.tsx` — subscrição
 - `components/sections/ContactForm.tsx` — envio de mensagem
-- `components/commerce/BagDrawer.tsx` — "Finalizar compra"
+
+A sacola já conclui a compra no checkout da Hostinger (ver acima).
 
 ---
 
@@ -232,3 +280,9 @@ em todas as imagens e áreas de toque de 44 px em ecrãs pequenos.
 Metadados por página com `title` em template, Open Graph e Twitter Card, canónicos,
 `sitemap.xml`, `robots.txt`, e JSON-LD de `JewelryStore` (global), `Product` e
 `BreadcrumbList` (página de peça).
+
+Enquanto não existe domínio definitivo, a origem do site vem de `lib/site-url.ts`
+(`NEXT_PUBLIC_SITE_URL`, senão o domínio da Vercel, senão localhost) e nenhum
+ambiente é indexado: `noindex` em meta e em `X-Robots-Tag`, e o `robots.txt` não
+anuncia o sitemap. Só `SITE_INDEXABLE=true`, em produção, liga a indexação. O
+JSON-LD só declara oferta (preço, disponibilidade) com dados reais da Hostinger.

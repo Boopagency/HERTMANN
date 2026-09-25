@@ -2,6 +2,10 @@
 
 Data: 2026-09-24
 
+> **Substituído** por [`hostinger-storefront-implementacao-2026-09-25.md`](hostinger-storefront-implementacao-2026-09-25.md)
+> (Fases 0 e 1). Em particular, `NEXT_PUBLIC_SITE_URL` deixou de ser necessário: fica vazio até
+> existir domínio definitivo — ver `lib/site-url.ts`.
+
 ## Objetivo
 
 Conectar o front atual da HERTMANN à Hostinger eCommerce usando o Custom Storefront, sem recriar o site no Website Builder e sem alterar o layout aprovado.
