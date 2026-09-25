@@ -10,3 +10,6 @@ npm-debug.log*
 next-env.d.ts
 .vercel
 *.tsbuildinfo
+
+# capturas dos testes de ponta a ponta
+.e2e-capturas

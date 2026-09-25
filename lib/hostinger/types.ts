@@ -1,3 +1,12 @@
+/* ============================================================================
+   Contratos da Storefront API V2 da Hostinger
+   ----------------------------------------------------------------------------
+   Tipos tolerantes de propósito: o formato exato das respostas públicas ainda
+   não foi verificado contra o schema oficial (https://api-ecommerce.hostinger.
+   com/v2/docs.json — inacessível no ambiente de desenvolvimento). Os campos
+   seguem as instruções oficiais de Custom Storefront e a API de gestão.
+   ========================================================================== */
+
 export type HostingerCurrency = {
   code: string;
   symbol?: string;
@@ -6,6 +15,7 @@ export type HostingerCurrency = {
 };
 
 export type HostingerPrice = {
+  /** Unidade mínima da moeda — `12900` são R$ 129,00. */
   amount: number;
   sale_amount?: number | null;
   currency_code?: string;
@@ -13,13 +23,14 @@ export type HostingerPrice = {
 };
 
 export type HostingerVariantOption = {
-  name?: string;
+  name?: string | null;
   value?: string;
 };
 
 export type HostingerVariant = {
   id: string;
-  title?: string;
+  product_id?: string | null;
+  title?: string | null;
   sku?: string | null;
   options?: HostingerVariantOption[];
   prices?: HostingerPrice[];
@@ -38,9 +49,12 @@ export type HostingerProduct = {
   variants?: HostingerVariant[];
 };
 
+/** Leitura normalizada de uma variante: o que a loja precisa para vender. */
 export type VariantSnapshot = {
   variantId: string;
   productId: string | null;
+  title: string | null;
+  sku: string | null;
   amount: number;
   saleAmount: number | null;
   effectiveAmount: number;
@@ -49,6 +63,12 @@ export type VariantSnapshot = {
   manageInventory: boolean;
   inventoryQuantity: number | null;
   available: boolean;
+};
+
+/** Todas as variantes de um produto, lidas numa só consulta. */
+export type ProductSnapshot = {
+  productId: string;
+  variants: Record<string, VariantSnapshot>;
 };
 
 export type CheckoutItem = {

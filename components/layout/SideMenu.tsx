@@ -9,9 +9,15 @@ import { IconSearch } from "@/components/brand/Icons";
 import { Wordmark } from "@/components/brand/Logo";
 import { CrystalMark } from "@/components/brand/Marks";
 import { DUR, EASE, EASE_EXIT, STAGGER } from "@/components/motion/tokens";
-import { categories, categoryName, collections, piecesByCategory } from "@/lib/data/catalogue";
+import { PiecePrice } from "@/components/commerce/PiecePrice";
+import {
+  categories,
+  categoryName,
+  collections,
+  piecesByCategory,
+  type Piece,
+} from "@/lib/data/catalogue";
 import { searchPieces } from "@/lib/search";
-import { price } from "@/lib/format";
 import { site } from "@/lib/data/site";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +33,8 @@ import { cn } from "@/lib/utils";
    painel — sem cascata inversa, para que fechar seja imediato.
    ========================================================================== */
 
-type Child = { label: string; href: string; aside?: string; lead?: boolean };
+/** `piece` mostra o preço da peça à direita; `aside`, um texto fixo (o ano). */
+type Child = { label: string; href: string; aside?: string; piece?: Piece; lead?: boolean };
 type Item = { label: string; href?: string; children?: Child[] };
 
 const byCategory = (slug: (typeof categories)[number]["slug"], all: string): Child[] => [
@@ -35,7 +42,7 @@ const byCategory = (slug: (typeof categories)[number]["slug"], all: string): Chi
   ...piecesByCategory(slug).map((p) => ({
     label: p.name,
     href: `/produto/${p.slug}`,
-    aside: price(p.price),
+    piece: p,
   })),
 ];
 
@@ -145,7 +152,9 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
                           {categoryName(piece.category)} · {piece.line}
                         </span>
                       </span>
-                      <span className="t-price shrink-0">{price(piece.price)}</span>
+                      <span className="t-price shrink-0">
+                        <PiecePrice piece={piece} />
+                      </span>
                     </Link>
                   </li>
                 ))}
@@ -218,8 +227,14 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
                                         >
                                           <span className="link-nav">{child.label}</span>
                                         </span>
-                                        {child.aside && (
-                                          <span className="t-price shrink-0">{child.aside}</span>
+                                        {child.piece ? (
+                                          <span className="t-price shrink-0">
+                                            <PiecePrice piece={child.piece} />
+                                          </span>
+                                        ) : (
+                                          child.aside && (
+                                            <span className="t-price shrink-0">{child.aside}</span>
+                                          )
                                         )}
                                       </Link>
                                     </li>

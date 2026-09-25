@@ -6,8 +6,8 @@ import { Overlay } from "@/components/layout/Overlay";
 import { ProductThumb } from "@/components/product/ProductThumb";
 import { MetalDot } from "@/components/product/ProductMedia";
 import { categories, collections } from "@/lib/data/catalogue";
+import { PiecePrice } from "@/components/commerce/PiecePrice";
 import { searchPieces } from "@/lib/search";
-import { price } from "@/lib/format";
 
 /* ============================================================================
    Busca — uma linha, um fio, e o catálogo que responde enquanto se escreve.
@@ -99,7 +99,9 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
                         <MetalDot piece={piece} />
                         {piece.name}
                       </p>
-                      <p className="t-price mt-0.5 text-center">{price(piece.price)}</p>
+                      <p className="t-price mt-0.5 text-center">
+                        <PiecePrice piece={piece} />
+                      </p>
                     </Link>
                   </li>
                 ))}

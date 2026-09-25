@@ -2,10 +2,10 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { useStore } from "@/components/commerce/StoreProvider";
+import { usePiecePrice } from "@/components/commerce/PiecePrice";
 import { IconHeart } from "@/components/brand/Icons";
 import { MetalDot, PieceImg, PieceSketch, tileImages } from "@/components/product/ProductMedia";
 import type { Piece } from "@/lib/data/catalogue";
-import { price } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 /* ============================================================================
@@ -48,13 +48,14 @@ export function ProductTile({
   const { toggleFavourite, isFavourite, ready } = useStore();
   const favourite = ready && isFavourite(piece.slug);
   const { primary, secondary } = tileImages(piece);
+  const priceLabel = usePiecePrice(piece);
 
   return (
     <article className={cn("group relative", className)}>
       <Link
         href={`/produto/${piece.slug}`}
         className="block"
-        aria-label={`${piece.name} — ${piece.line}, ${price(piece.price)}`}
+        aria-label={`${piece.name} — ${piece.line}, ${priceLabel}`}
       >
         <div className="plate relative aspect-square w-full transition-opacity duration-(--dur-fast) group-active:opacity-80">
           {/* Uma só camada escala — as duas imagens aproximam-se juntas. */}
@@ -81,7 +82,7 @@ export function ProductTile({
             <MetalDot piece={piece} />
             <span>{piece.name}</span>
           </h3>
-          <p className="t-price mt-1">{price(piece.price)}</p>
+          <p className="t-price mt-1">{priceLabel}</p>
         </div>
       </Link>
 

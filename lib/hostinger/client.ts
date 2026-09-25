@@ -4,10 +4,32 @@ import type {
   CheckoutSession,
   HostingerProduct,
   HostingerVariant,
+  ProductSnapshot,
   VariantSnapshot,
 } from "./types";
+import { siteUrl } from "@/lib/site-url";
+
+/* ============================================================================
+   Cliente da Storefront API V2 da Hostinger
+   ----------------------------------------------------------------------------
+   Superfície pública, sem autenticação e com CORS aberto: serve o servidor
+   (página de produto, SEO) e o navegador (sacola, checkout). Nenhum token
+   entra aqui — o canal de venda é um identificador público, não um segredo.
+
+   Os caminhos seguem as instruções oficiais de Custom Storefront e estão
+   reunidos em `endpoints`: se a API divergir, corrige-se num só sítio.
+   ========================================================================== */
 
 const DEFAULT_BASE_URL = "https://api-ecommerce.hostinger.com/v2";
+
+/** Máximo aceite pelas listagens da Storefront API (acima disto, 400). */
+const LIST_LIMIT = 100;
+
+/**
+ * Idioma pedido ao checkout hospedado. O único exemplo oficial usa "en"; os
+ * valores aceites não estão confirmados — ver `createCheckout`.
+ */
+const CHECKOUT_LOCALE = "pt-BR";
 
 export const salesChannelId =
   process.env.NEXT_PUBLIC_HOSTINGER_SALES_CHANNEL_ID ?? "";
@@ -28,15 +50,19 @@ const endpoints = {
 
 export class HostingerApiError extends Error {
   readonly status: number;
+  /** Início do corpo da resposta de erro, para diagnóstico. */
+  readonly detail: string | null;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, detail: string | null = null) {
     super(message);
     this.name = "HostingerApiError";
     this.status = status;
+    this.detail = detail;
   }
 }
 
 type RequestOptions = {
+  /** Segundos de cache no servidor (ISR). Ignorado no navegador. */
   revalidate?: number;
   signal?: AbortSignal;
 };
@@ -94,15 +120,18 @@ async function request<T>(
   const response = await fetch(`${storefrontBaseUrl}${path}${query}`, init);
 
   if (!response.ok) {
+    const detail = await response.text().catch(() => "");
     throw new HostingerApiError(
       `Hostinger respondeu ${response.status} a ${method} ${path}`,
       response.status,
+      detail ? detail.slice(0, 500) : null,
     );
   }
 
   return (await response.json()) as T;
 }
 
+/** As listagens podem vir como lista simples ou embrulhadas em `data`. */
 function unwrap<T>(payload: unknown): T[] {
   if (Array.isArray(payload)) return payload as T[];
 
@@ -114,12 +143,16 @@ function unwrap<T>(payload: unknown): T[] {
   return [];
 }
 
+/* --------------------------------------------------------------------------
+   Catálogo
+   -------------------------------------------------------------------------- */
+
 export async function listProducts(
   options: RequestOptions & { limit?: number } = {},
 ): Promise<HostingerProduct[]> {
-  const { limit = 100, ...rest } = options;
+  const { limit = LIST_LIMIT, ...rest } = options;
   const params = new URLSearchParams({
-    limit: String(Math.min(limit, 100)),
+    limit: String(Math.min(limit, LIST_LIMIT)),
   });
 
   const payload = await request<unknown>(endpoints.products(), {
@@ -130,6 +163,7 @@ export async function listProducts(
   return unwrap<HostingerProduct>(payload);
 }
 
+/** O detalhe resolve por ID. Passar um slug devolve 404. */
 export async function getProduct(
   productId: string,
   options: RequestOptions = {},
@@ -146,11 +180,15 @@ export async function getProduct(
   return (payload as HostingerProduct) ?? null;
 }
 
+/**
+ * Variantes filtradas por produto — a lista sem filtro é eventualmente
+ * consistente logo após edições no catálogo (instruções oficiais).
+ */
 export async function listVariants(
   productIds: string[],
   options: RequestOptions = {},
 ): Promise<HostingerVariant[]> {
-  const params = new URLSearchParams();
+  const params = new URLSearchParams({ limit: String(LIST_LIMIT) });
 
   for (const id of productIds) {
     params.append("product_ids[]", id);
@@ -188,7 +226,9 @@ export function variantSnapshot(
 
   return {
     variantId: variant.id,
-    productId,
+    productId: productId ?? variant.product_id ?? null,
+    title: variant.title ?? null,
+    sku: variant.sku ?? null,
     amount: price.amount,
     saleAmount: sale,
     effectiveAmount: sale ?? price.amount,
@@ -205,32 +245,38 @@ export function variantSnapshot(
   };
 }
 
+/** Todas as variantes de um produto, normalizadas, por `variantId`. */
+export async function getProductSnapshot(
+  productId: string,
+  options: RequestOptions = {},
+): Promise<ProductSnapshot> {
+  const variants = await listVariants([productId], options);
+  const snapshots: ProductSnapshot["variants"] = {};
+
+  for (const variant of variants) {
+    // Pediu-se um só produto; se a API disser que a variante é de outro, sai.
+    if (variant.product_id && variant.product_id !== productId) continue;
+    const snapshot = variantSnapshot(variant, productId);
+    if (snapshot) snapshots[snapshot.variantId] = snapshot;
+  }
+
+  return { productId, variants: snapshots };
+}
+
 export async function getVariantSnapshot(
   productId: string,
   variantId: string,
   options: RequestOptions = {},
 ): Promise<VariantSnapshot | null> {
-  const variants = await listVariants([productId], options);
-  const variant = variants.find((item) => item.id === variantId);
-
-  return variant ? variantSnapshot(variant, productId) : null;
+  const { variants } = await getProductSnapshot(productId, options);
+  return variants[variantId] ?? null;
 }
 
-export async function createCheckout(
-  items: CheckoutItem[],
-  urls: {
-    successUrl: string;
-    cancelUrl: string;
-    locale?: string;
-  },
-): Promise<CheckoutSession> {
-  const body: CheckoutRequest = {
-    items,
-    success_url: urls.successUrl,
-    cancel_url: urls.cancelUrl,
-    locale: urls.locale ?? "pt-BR",
-  };
+/* --------------------------------------------------------------------------
+   Checkout
+   -------------------------------------------------------------------------- */
 
+async function postCheckout(body: CheckoutRequest): Promise<CheckoutSession> {
   const payload = await request<unknown>(endpoints.checkout(), {
     method: "POST",
     body,
@@ -251,19 +297,56 @@ export async function createCheckout(
   return session;
 }
 
-export function checkoutReturnUrls(): {
+export async function createCheckout(
+  items: CheckoutItem[],
+  urls: {
+    successUrl: string;
+    cancelUrl: string;
+    locale?: string;
+  },
+): Promise<CheckoutSession> {
+  const locale = urls.locale ?? CHECKOUT_LOCALE;
+  const body: CheckoutRequest = {
+    items,
+    success_url: urls.successUrl,
+    cancel_url: urls.cancelUrl,
+    locale,
+  };
+
+  try {
+    return await postCheckout(body);
+  } catch (error) {
+    // O `locale` aceite ainda não foi confirmado no schema oficial. Se a API
+    // recusar o pedido por validação, tenta-se uma vez sem ele: o checkout
+    // abre no idioma padrão da loja em vez de não abrir.
+    const rejected =
+      error instanceof HostingerApiError &&
+      (error.status === 400 || error.status === 422);
+    if (!locale || !rejected) throw error;
+
+    return postCheckout({
+      items: body.items,
+      success_url: body.success_url,
+      cancel_url: body.cancel_url,
+    });
+  }
+}
+
+/**
+ * URLs de retorno a partir da origem em que o site está a correr — local,
+ * Preview ou produção — sem configuração. `ref` identifica o checkout que
+ * este navegador criou (ver components/commerce/checkout.ts).
+ */
+export function checkoutReturnUrls(ref?: string): {
   successUrl: string;
   cancelUrl: string;
 } {
   const origin =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : (
-          process.env.NEXT_PUBLIC_SITE_URL ?? ""
-        ).replace(/\/+$/, "");
+    typeof window !== "undefined" ? window.location.origin : siteUrl;
+  const query = ref ? `?ref=${encodeURIComponent(ref)}` : "";
 
   return {
-    successUrl: `${origin}/checkout/sucesso`,
+    successUrl: `${origin}/checkout/sucesso${query}`,
     cancelUrl: `${origin}/checkout/cancelado`,
   };
 }

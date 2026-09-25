@@ -9,21 +9,84 @@ import { Reveal } from "@/components/motion/Reveal";
 import {
   categoryBySlug,
   collectionName,
-  pieceBySlug,
   pieces,
   relatedPieces,
+  type Piece,
 } from "@/lib/data/catalogue";
+import { findPiece, isHomologationPiece } from "@/lib/data/homologation";
 import { site } from "@/lib/data/site";
+import { isSellable } from "@/lib/commerce";
+import { minorUnitsToDecimal } from "@/lib/format";
+import { getProductSnapshot } from "@/lib/hostinger/client";
+import type { ProductSnapshot } from "@/lib/hostinger/types";
+import { siteUrl } from "@/lib/site-url";
 
 type Params = { params: Promise<{ slug: string }> };
+
+/**
+ * Preço e estoque lêem-se em runtime: a página refaz-se no máximo a cada
+ * minuto, sem novo build. As peças editoriais não fazem pedido nenhum.
+ */
+export const revalidate = 60;
 
 export function generateStaticParams() {
   return pieces.map((p) => ({ slug: p.slug }));
 }
 
+/** Sem loja configurada, sem ligação ou sem rede, a página serve o editorial. */
+async function readCommerce(piece: Piece): Promise<ProductSnapshot | null> {
+  if (!isSellable(piece)) return null;
+  try {
+    return await getProductSnapshot(piece.commerce.productId, { revalidate });
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * A oferta do JSON-LD só existe com dados reais da Hostinger. Uma peça
+ * editorial não declara preço a motores de busca — o do catálogo não é um
+ * preço comercial.
+ */
+function offerSchema(piece: Piece, commerce: ProductSnapshot | null) {
+  if (!commerce || !piece.commerce) return undefined;
+
+  const variants = Object.values(piece.commerce.variants)
+    .map((id) => commerce.variants[id])
+    .filter((variant) => variant !== undefined);
+  if (variants.length === 0) return undefined;
+
+  const amounts = variants.map((v) => v.effectiveAmount);
+  const low = variants[amounts.indexOf(Math.min(...amounts))];
+  const high = variants[amounts.indexOf(Math.max(...amounts))];
+  const availability = variants.some((v) => v.available)
+    ? "https://schema.org/InStock"
+    : "https://schema.org/OutOfStock";
+  const common = {
+    priceCurrency: low.currencyCode,
+    availability,
+    url: `${siteUrl}/produto/${piece.slug}`,
+    seller: { "@type": "Organization", name: site.name },
+  };
+
+  return low.effectiveAmount === high.effectiveAmount
+    ? {
+        "@type": "Offer",
+        price: minorUnitsToDecimal(low.effectiveAmount, low.decimalDigits),
+        ...common,
+      }
+    : {
+        "@type": "AggregateOffer",
+        lowPrice: minorUnitsToDecimal(low.effectiveAmount, low.decimalDigits),
+        highPrice: minorUnitsToDecimal(high.effectiveAmount, high.decimalDigits),
+        offerCount: variants.length,
+        ...common,
+      };
+}
+
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const piece = pieceBySlug(decodeURIComponent(slug));
+  const piece = findPiece(decodeURIComponent(slug));
   if (!piece) return {};
   return {
     title: `${piece.name} — ${piece.line}`,
@@ -35,16 +98,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       type: "website",
       images: piece.image ? [{ url: piece.image.src, alt: piece.image.alt }] : undefined,
     },
+    ...(isHomologationPiece(piece) ? { robots: { index: false, follow: false } } : {}),
   };
 }
 
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
-  const piece = pieceBySlug(decodeURIComponent(slug));
+  const piece = findPiece(decodeURIComponent(slug));
   if (!piece) notFound();
 
   const category = categoryBySlug(piece.category)!;
   const related = relatedPieces(piece, 8);
+  const commerce = await readCommerce(piece);
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -55,27 +120,20 @@ export default async function ProductPage({ params }: Params) {
     brand: { "@type": "Brand", name: site.name },
     material: piece.material,
     category: category.name,
-    image: piece.image ? [`${site.url}${piece.image.src}`] : undefined,
-    offers: {
-      "@type": "Offer",
-      price: piece.price,
-      priceCurrency: "BRL",
-      availability: "https://schema.org/InStock",
-      url: `${site.url}/produto/${piece.slug}`,
-      seller: { "@type": "Organization", name: site.name },
-    },
+    image: piece.image ? [`${siteUrl}${piece.image.src}`] : undefined,
+    offers: offerSchema(piece, commerce),
   };
 
   const breadcrumb = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Joias", item: `${site.url}/joias` },
+      { "@type": "ListItem", position: 1, name: "Joias", item: `${siteUrl}/joias` },
       {
         "@type": "ListItem",
         position: 2,
         name: category.name,
-        item: `${site.url}/joias/${category.slug}`,
+        item: `${siteUrl}/joias/${category.slug}`,
       },
       { "@type": "ListItem", position: 3, name: piece.name },
     ],
@@ -125,7 +183,7 @@ export default async function ProductPage({ params }: Params) {
 
           <div className="md:col-span-5 lg:col-span-4 lg:col-start-9">
             <div className="md:sticky md:top-[calc(var(--header-h)+1.5rem)]">
-              <ProductDetail piece={piece} />
+              <ProductDetail piece={piece} initial={commerce} />
             </div>
           </div>
         </div>
@@ -141,10 +199,12 @@ export default async function ProductPage({ params }: Params) {
               <div className="border-t border-[var(--color-rule)]">
                 <Disclosure title="A peça" defaultOpen>
                   <p>{piece.description}</p>
-                  <p className="mt-4">
-                    Coleção {collectionName(piece.collection)}. Referência{" "}
-                    {piece.reference}, registada no arquivo da casa.
-                  </p>
+                  {collectionName(piece.collection) && (
+                    <p className="mt-4">
+                      Coleção {collectionName(piece.collection)}. Referência{" "}
+                      {piece.reference}, registada no arquivo da casa.
+                    </p>
+                  )}
                 </Disclosure>
 
                 <Disclosure title="Materiais">

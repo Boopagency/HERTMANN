@@ -54,6 +54,23 @@ export type Piece = {
   madeToOrder?: boolean;
   options?: { label: string; values: string[] };
   featured?: boolean;
+  /**
+   * Ligação ao catálogo comercial da Hostinger. Sem ela a peça é editorial:
+   * mostra o preço deste ficheiro e remete para o atendimento. Preencher só
+   * com os IDs de um produto real — nunca com dados de protótipo.
+   */
+  commerce?: PieceCommerce;
+};
+
+export type PieceCommerce = {
+  /** `prod_…` na Hostinger. */
+  productId: string;
+  /**
+   * `variant_…` por valor de `options.values` (ex.: `{ "16": "variant_…" }`),
+   * ou pela chave `default` numa peça sem opções. Uma opção sem variante
+   * fica indisponível.
+   */
+  variants: Record<string, string>;
 };
 
 export type Category = {

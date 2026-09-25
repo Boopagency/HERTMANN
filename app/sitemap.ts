@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { categories, collections, pieces } from "@/lib/data/catalogue";
-import { site } from "@/lib/data/site";
+import { siteUrl } from "@/lib/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -9,25 +9,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     ...statics.map((path) => ({
-      url: `${site.url}${path}`,
+      url: `${siteUrl}${path}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: path === "" ? 1 : 0.7,
     })),
     ...categories.map((c) => ({
-      url: `${site.url}/joias/${c.slug}`,
+      url: `${siteUrl}/joias/${c.slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),
     ...collections.map((c) => ({
-      url: `${site.url}/colecoes/${c.slug}`,
+      url: `${siteUrl}/colecoes/${c.slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),
     ...pieces.map((p) => ({
-      url: `${site.url}/produto/${encodeURIComponent(p.slug)}`,
+      url: `${siteUrl}/produto/${encodeURIComponent(p.slug)}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.8,

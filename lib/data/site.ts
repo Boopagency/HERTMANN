@@ -5,7 +5,7 @@ export const site = {
   signature: "Alta joalheria — desde 1948",
   founded: 1948,
   city: "Curitiba",
-  url: "https://hertmann.com.br",
+  // A origem pública do site não vive aqui: ver lib/site-url.ts.
   description:
     "HERTMANN é uma casa de alta joalheria. Peças desenhadas para atravessar gerações, executadas à mão em ateliê próprio, em ouro e pedras selecionadas.",
   contact: {
