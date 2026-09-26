@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { StoreProvider } from "@/components/commerce/StoreProvider";
 import { site } from "@/lib/data/site";
+import { siteIndexable, siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 /* --- Tipografia da marca -------------------------------------------------- */
@@ -35,7 +36,7 @@ const sans = Inter({
 /* --- Metadados ------------------------------------------------------------ */
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  metadataBase: new URL(siteUrl),
   title: {
     default: `${site.name} — Alta joalheria`,
     template: `%s — ${site.name}`,
@@ -56,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: site.url,
+    url: siteUrl,
     siteName: site.name,
     title: `${site.name} — Alta joalheria`,
     description: site.description,
@@ -71,7 +72,8 @@ export const metadata: Metadata = {
   icons: {
     icon: [{ url: "/brand/favicon.svg", type: "image/svg+xml" }],
   },
-  robots: { index: true, follow: true },
+  // Sem domínio definitivo, nenhum ambiente é indexado (ver lib/site-url.ts).
+  robots: siteIndexable ? { index: true, follow: true } : { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
@@ -84,7 +86,7 @@ const organisation = {
   "@type": "JewelryStore",
   name: site.name,
   description: site.description,
-  url: site.url,
+  url: siteUrl,
   telephone: site.contact.phone,
   email: site.contact.email,
   foundingDate: String(site.founded),
