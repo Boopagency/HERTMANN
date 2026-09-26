@@ -279,7 +279,7 @@ export function BagDrawer() {
             />
           </div>
           <p className="t-label-sm muted mt-2">
-            Envio assegurado e embalagem HERTMANN incluídos.
+            Embalagem HERTMANN incluída. O frete é calculado no checkout.
           </p>
           {consult > 0 && (
             <p className="t-label-sm muted mt-2">

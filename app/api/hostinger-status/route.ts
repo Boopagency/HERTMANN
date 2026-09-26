@@ -17,11 +17,26 @@ export const dynamic = "force-dynamic";
    Mostra o catálogo normalizado (preço, promoção, estoque) e uma amostra
    crua da primeira resposta de produto e de variante, para conferir o
    formato real da API no Preview sem adivinhar.
+
+   Só existe onde se homologa: em `next dev`, ou com a homologação ligada
+   (NEXT_PUBLIC_HOSTINGER_HOMOLOGATION=true, só em Preview). Em produção
+   responde 404, sem corpo — nem que a variável lá esteja.
    ========================================================================== */
 
 const headers = { "Cache-Control": "no-store" };
 
+function diagnosticsEnabled(): boolean {
+  return (
+    process.env.VERCEL_ENV !== "production" &&
+    (process.env.NODE_ENV === "development" || homologationEnabled)
+  );
+}
+
 export async function GET() {
+  if (!diagnosticsEnabled()) {
+    return new NextResponse(null, { status: 404, headers });
+  }
+
   if (!isStoreConfigured) {
     return NextResponse.json(
       {

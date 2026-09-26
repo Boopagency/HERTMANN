@@ -192,6 +192,10 @@ async function flow(browser, storefront, label, contextOptions) {
     `${label}: "+" na sacola desactivado no limite do estoque`,
     await bag.getByRole("button", { name: "Aumentar quantidade de Homologação" }).isDisabled(),
   );
+  check(
+    `${label}: sacola informa que o frete é calculado no checkout`,
+    await bag.getByText("Embalagem HERTMANN incluída. O frete é calculado no checkout.").isVisible(),
+  );
   await shot("sacola-mista");
 
   await page.reload();
@@ -366,6 +370,17 @@ async function outageWhileBrowsing(browser, storefront) {
   await context.close();
 }
 
+/** Com a homologação ligada, o diagnóstico responde e mostra a amostra crua. */
+async function diagnostics() {
+  const res = await fetch(`${BASE}/api/hostinger-status`);
+  const body = await res.json().catch(() => null);
+  check(
+    "diagnóstico disponível em homologação, com catálogo e amostra crua",
+    res.status === 200 && body?.ok === true && body?.productCount === 1 && body?.sample?.variant?.id,
+    `HTTP ${res.status}`,
+  );
+}
+
 async function seo() {
   const home = await fetch(`${BASE}/`);
   const html = await home.text();
@@ -435,6 +450,7 @@ async function main() {
       }
     }
     await outageWhileBrowsing(browser, storefront.url);
+    await diagnostics();
     await seo();
   } finally {
     await browser?.close();
