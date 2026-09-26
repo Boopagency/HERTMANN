@@ -184,6 +184,7 @@ components/
   ui/         Botões
 app/checkout/ sucesso/ e cancelado/ — regresso do checkout da Hostinger
 app/api/      hostinger-status — diagnóstico da ligação à Storefront API
+              (só em dev e no Preview com homologação; 404 em produção)
 lib/data/     catalogue.ts (o que a casa faz) · editorial.ts (como a loja o
               mostra) · site.ts · homologation.ts (peça técnica de teste)
 lib/hostinger/ Cliente e tipos da Storefront API V2 (pública, sem token)
@@ -236,6 +237,11 @@ pública — sem token no navegador.
   segue para ele; o regresso é `/checkout/sucesso` ou `/checkout/cancelado`.
 - Homologação: `/produto/homologacao-hostinger`, ligada ao produto de teste
   da loja, só com `NEXT_PUBLIC_HOSTINGER_HOMOLOGATION=true` e nunca em produção.
+  Validada contra a API real no Preview em 2026-09-26, com Test Payment (ver
+  `docs/hostinger-storefront-release-2026-09-26.md`).
+- Diagnóstico: `/api/hostinger-status` mostra o catálogo normalizado e uma
+  amostra crua da API. Responde só em `next dev` e no Preview com a
+  homologação ligada; em produção devolve 404.
 
 | Variável | Tipo | Uso |
 | --- | --- | --- |
@@ -252,6 +258,9 @@ Não há Secret nesta etapa. Um token administrativo futuro será Secret: nunca
 node scripts/e2e/fluxo-checkout.mjs          # next dev + Storefront simulada
 node scripts/e2e/fluxo-checkout.mjs --prod   # next build + next start
 ```
+
+O E2E corre contra uma Storefront **simulada**, não contra a Hostinger: valida
+o comportamento do site. A API real valida-se no Preview, com a homologação.
 
 ---
 

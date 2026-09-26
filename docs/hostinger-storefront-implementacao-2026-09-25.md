@@ -7,6 +7,10 @@ Este documento substitui `hostinger-storefront-current.md` como referência do e
 O diagnóstico somente leitura de 2026-09-24 continua válido para a conta e a loja
 (`hostinger-storefront-diagnostico-2026-09-24.md`).
 
+> **Atualizado em 2026-09-26** com a validação contra a API real e o merge na `main`. O registo
+> completo dessa entrega está em
+> [`hostinger-storefront-release-2026-09-26.md`](hostinger-storefront-release-2026-09-26.md).
+
 ---
 
 ## Resumo
@@ -24,10 +28,14 @@ O diagnóstico somente leitura de 2026-09-24 continua válido para a conta e a l
   - Não é indexada.
 - **SEO sem domínio próprio.** Nada aponta mais para `hertmann.com.br`: a origem vem de
   `lib/site-url.ts`, e nenhum ambiente é indexado até existir domínio definitivo.
-- **Validação da API real: pendente.** A rede do ambiente de desenvolvimento bloqueia
-  `api-ecommerce.hostinger.com`. O comportamento do site foi validado ponta a ponta contra uma
-  Storefront **simulada** (rotulada como tal). A validação real faz-se no Preview, pelo roteiro da
-  secção 11.
+- **Validação contra a API real: concluída em 2026-09-26.**
+  - **Homologação manual no Preview, feita pelo usuário** (commit `058be66`): produto e variante
+    reais, preço e promoção, estoque, sacola, checkout hospedado em português, Test Payment, pedido
+    de teste, regresso de sucesso e de cancelamento. Ver secção 11.
+  - **Leituras somente-leitura da API real**, sem checkout: contrato, preço, estoque e sacola, no
+    servidor e no navegador.
+  - **Os testes automatizados** (E2E) continuam a correr contra uma Storefront **simulada**, rotulada
+    como tal. Validam o comportamento do site, não a API.
 
 ---
 
@@ -107,6 +115,8 @@ Traz ainda o contexto atual do projeto.
   - o catálogo normalizado;
   - uma **amostra crua** da primeira resposta de produto e de variante, para conferir o formato real
     no Preview.
+  - Desde 2026-09-26, só responde em `next dev` e no Preview com a homologação ligada. Em
+    Production devolve 404 sem corpo, mesmo que a variável de homologação exista lá.
 
 ### Validação da Storefront API V2
 
@@ -123,17 +133,17 @@ Fontes oficiais lidas:
 | `GET /channels/{scha}/variants?product_ids[]=…`; `limit` máx. 100 | ✅ confirmado |
 | Preço em `prices[0].amount` / `sale_amount` (centavos), `prices[0].currency` com `decimal_digits` e `template` | ✅ confirmado |
 | `POST /channels/{scha}/checkout` com `items[{variant_id, quantity}]`, `success_url`, `cancel_url` obrigatórios; resposta `{ url, cart_token }` | ✅ confirmado |
-| Envelope das listas (array ou `{ data, meta }`) | ⚠️ não confirmado — o cliente aceita os dois |
-| Campos de estoque na Storefront (`inventory_quantity`, `manage_inventory` na API de gestão) | ⚠️ não confirmado |
-| Formato das opções da variante (`[{ name, value }]` na API de gestão) | ⚠️ não confirmado |
-| Valores aceitos em `locale` (exemplo oficial: `"en"`; o site envia `"pt-BR"`) | ⚠️ não confirmado — com segunda tentativa sem `locale` |
-| Parâmetros acrescentados pela Hostinger ao `success_url` | ⚠️ não confirmado — o site só depende do seu `ref` |
+| Envelope das listas | ✅ confirmado na API real (2026-09-26): `{ count, data, limit, offset }` — o cliente aceita também um array simples |
+| Filtro `product_ids[]` nas variantes | ✅ confirmado na API real: `product_ids[]` e `product_ids=` respeitados; ID inexistente devolve 0 |
+| Campos de estoque na Storefront | ✅ confirmado na API real: `inventory_quantity`, `manage_inventory` e `is_available` na variante |
+| Formato das opções da variante (`[{ name, value }]` na API de gestão) | ⚠️ ainda não confirmado — o produto de teste não tem opções (`options: []`) |
+| `locale` | ✅ o schema oficial (`/v2/docs.json`) define-o como texto livre; na homologação o checkout abriu em português. Não se registou se o `pt-BR` foi aceito à primeira ou pela segunda tentativa sem `locale` |
+| `success_url` com `?ref=` num domínio de Preview, sem domínio no canal | ✅ aceito — o checkout abriu e os regressos funcionaram na homologação |
+| Parâmetros acrescentados pela Hostinger ao `success_url` | ⚠️ não registado — o site só depende do seu `ref` |
 
-**Para validar de verdade, libere na política de rede do ambiente de desenvolvimento** (menu do ambiente
-na barra de título da sessão → *Edit* → *Network access*):
-
-- `api-ecommerce.hostinger.com`: **obrigatório** (API e `docs.json`);
-- `checkout.hostinger.com`: para seguir o redirecionamento até o Test Payment.
+**Rede do ambiente de desenvolvimento:** desde 2026-09-26 alcança `api-ecommerce.hostinger.com`
+(API e `docs.json`, OpenAPI 3.1.0) e `checkout.hostinger.com`. As leituras reais e o schema oficial
+acima vêm daí; nenhuma sessão de checkout foi criada a partir deste ambiente.
 
 ---
 
@@ -204,8 +214,9 @@ na barra de título da sessão → *Edit* → *Network access*):
   5. redireciona para a URL devolvida.
   - Com erro, aviso, e a sacola fica intacta.
 - **Voltar pelo botão do navegador** (página vinda da cache) desfaz o estado de carregamento.
-- **Texto de frete intacto** ("Envio assegurado e embalagem HERTMANN incluídos."): aguarda decisão
-  (secção 9).
+- **Texto de frete** (2026-09-26, proposta A da secção 9): "Embalagem HERTMANN incluída. O frete é
+  calculado no checkout." Substitui "Envio assegurado e embalagem HERTMANN incluídos." A regra Sul
+  ≥ R$ 150 não é mencionada, porque ainda não existe.
 
 ### E. Checkout (`/checkout/sucesso`, `/checkout/cancelado`)
 
@@ -271,7 +282,7 @@ na barra de título da sessão → *Edit* → *Network access*):
 | `components/layout/SearchOverlay.tsx`, `SideMenu.tsx` | preço via `PiecePrice` |
 | `app/produto/[slug]/page.tsx` | ISR 60 s, `findPiece`, JSON-LD real, origem |
 | `app/layout.tsx`, `robots.ts`, `sitemap.ts`, `next.config.mjs` | SEO e indexação |
-| `app/api/hostinger-status/route.ts` | diagnóstico com amostra crua |
+| `app/api/hostinger-status/route.ts` | diagnóstico com amostra crua; 404 em Production desde 2026-09-26 |
 | `.env.example`, `.gitignore`, `README.md` | variáveis classificadas e documentação |
 
 ---
@@ -321,7 +332,9 @@ na barra de título da sessão → *Edit* → *Network access*):
   - o seletor de quantidade deixa de aparecer.
 - **Sacola:**
   - "Sob consulta" nas linhas legadas, com uma nota no rodapé;
-  - estados de carregamento, erro e esgotado.
+  - estados de carregamento, erro e esgotado;
+  - desde 2026-09-26, o texto de frete é "Embalagem HERTMANN incluída. O frete é calculado no
+    checkout."
 - **Páginas novas:** `/checkout/sucesso`, `/checkout/cancelado` e, só no Preview, a homologação.
 
 **Funcional:**
@@ -335,6 +348,13 @@ na barra de título da sessão → *Edit* → *Network access*):
 ---
 
 ## 8. Verificações executadas
+
+Resultados de 2026-09-25. As verificações repetidas antes do merge em 2026-09-26 estão em
+`hostinger-storefront-release-2026-09-26.md`:
+- E2E com 76/76, em desenvolvimento e em produção;
+- Production simulada;
+- leituras da API real;
+- regressão visual.
 
 | Verificação | Resultado |
 |---|---|
@@ -396,8 +416,9 @@ PLAYWRIGHT_CHROMIUM_PATH=/caminho/para/chrome node scripts/e2e/fluxo-checkout.mj
 
 **Atenção — Storefront simulada.** O E2E corre contra `scripts/e2e/storefront-simulada.mjs`, que
 segue o contrato das instruções oficiais e usa os dados reais do produto de teste. **Não é a
-Hostinger.** Valida o comportamento do site, não o formato real da API: isso é o roteiro da
-secção 11.
+Hostinger.** Valida o comportamento do site, não a API. A API real foi validada à parte, na
+homologação manual de 2026-09-26 (secção 11) e em leituras somente-leitura (ver o documento de
+release).
 
 ### Achados durante a verificação
 
@@ -444,8 +465,8 @@ autorização):
 | Região Sul (PR, SC, RS) | Envio padrão | R$ X | valor do pedido < R$ 150,00 |
 | Demais estados | Envio padrão | R$ Y | — |
 
-**Proposta de texto para a sacola** (hoje: "Envio assegurado e embalagem HERTMANN incluídos."):
-- **A (recomendada agora):** "Embalagem HERTMANN incluída. O frete é calculado no checkout."
+**Proposta de texto para a sacola** (antes: "Envio assegurado e embalagem HERTMANN incluídos."):
+- **A (aplicada em 2026-09-26):** "Embalagem HERTMANN incluída. O frete é calculado no checkout."
 - **B (só quando a regra existir):** "Embalagem HERTMANN incluída. Frete grátis para a Região Sul a
   partir de R$ 150; nas demais regiões, calculado no checkout."
 - Evitado de propósito: "faltam R$ X para o frete grátis". O componente da sacola proíbe contagens e
@@ -465,14 +486,17 @@ autorização):
 
 ## 10. Riscos e limitações
 
-**Riscos:**
-- **Formato real da API não verificado.** Mitigação: cliente tolerante e amostra crua em
-  `/api/hostinger-status`.
-- **`locale: "pt-BR"` pode ser recusado.** Mitigação: segunda tentativa automática sem `locale`.
-- **`success_url` com `?ref=`, ou um Preview**, podem ser recusados se a Hostinger exigir o domínio do
-  canal, que não pode ser configurado agora. Só o teste real responde.
-- **Um pedido com Test Payment cria um pedido de teste na loja** e provavelmente desconta o estoque do
-  produto de teste. Está dentro da homologação autorizada.
+**Riscos (revistos em 2026-09-26):**
+- **Formato da API:** confirmado na API real para o produto de teste. Continua por confirmar com
+  produtos que tenham opções ou várias variantes, que ainda não existem. Mitigação mantida: cliente
+  tolerante e amostra crua em `/api/hostinger-status` (Preview).
+- **`locale: "pt-BR"`:** o checkout abriu em português na homologação. A segunda tentativa
+  automática sem `locale` fica como proteção.
+- **`success_url` com `?ref=` num Preview, sem domínio no canal:** aceito na homologação. O checkout
+  abriu e os regressos de sucesso e de cancelamento funcionaram.
+- **Pedido com Test Payment:** a homologação criou um pedido de teste na loja, dentro do que foi
+  autorizado. A API mostra estoque 10 antes e depois. Falta confirmar no hPanel se pedidos com Test
+  Payment descontam estoque.
 - **No merge, a produção passa a `noindex`** até existir domínio e `SITE_INDEXABLE=true`.
 
 **Limitações:**
@@ -494,44 +518,55 @@ autorização):
 
 Depois, um novo deploy do Preview desta branch.
 
-| # | Passo | Esperado |
-|---|---|---|
-| 0 | Abrir `/api/hostinger-status` | `ok: true`, 1 produto; conferir `sample.variant` (formato real da API) |
-| 1 | Abrir `/produto/homologacao-hostinger` | preço R$ 299,90 e R$ 399,90 riscado |
-| 2 | Seleção de variante | produto de teste sem opções: variante `default` resolvida (botão ativo) |
-| 3 | Adicionar à sacola | a sacola abre com a linha e o preço real |
-| 4 | Alterar quantidade | `+`/`−` atualizam o subtotal; `+` para no estoque |
-| 5 | Persistência | recarregar: a sacola mantém-se |
-| 6 | Migração | numa janela com sacola antiga (v1): linhas "Sob consulta", nada apagado |
-| 7 | Preço Hostinger | igual ao do hPanel (alterar a promoção no hPanel só com autorização) |
-| 8 | Estoque | igual ao do hPanel |
-| 9 | Checkout | "Finalizar compra" → `checkout.hostinger.com` |
-| 10 | Test Payment | concluir com Test Payment (cria pedido de teste) |
-| 11 | Retorno de sucesso | `/checkout/sucesso?ref=…`; a linha paga sai da sacola |
-| 12 | Cancelamento | noutro checkout, cancelar → `/checkout/cancelado`; a sacola fica |
-| 13 | Mobile | repetir 1, 3, 4, 9 e 12 no telemóvel |
-| 14 | Desktop | repetir no desktop |
-| 15 | Regressões visuais | home, joias, coleções, produto, menu, busca, sacola iguais à produção, salvo o descrito na secção 7 |
+**Executado em 2026-09-26 pelo usuário**, no Preview `dpl_3xfHFnMCoKqqBXpdj7PYAsJcn8RG` (commit
+`058be66`), contra a API real.
 
-**Anotar em cada passo** o que a Hostinger devolve: formato do `sample`, idioma do checkout,
-parâmetros no regresso e se o pedido aparece na loja.
+A coluna "Resultado" traz o que o usuário relatou. "Não relatado" quer dizer que não há resultado
+registado para esse passo à parte, e não que ele falhou.
+
+| # | Passo | Esperado | Resultado (relatado) |
+|---|---|---|---|
+| 0 | Abrir `/api/hostinger-status` | `ok: true`, 1 produto; conferir `sample.variant` (formato real da API) | ✅ produto e variante reais encontrados |
+| 1 | Abrir `/produto/homologacao-hostinger` | preço R$ 299,90 e R$ 399,90 riscado | ✅ |
+| 2 | Seleção de variante | produto de teste sem opções: variante `default` resolvida (botão ativo) | não relatado à parte (o passo 3 só é possível com a variante resolvida) |
+| 3 | Adicionar à sacola | a sacola abre com a linha e o preço real | ✅ subtotal e total corretos |
+| 4 | Alterar quantidade | `+`/`−` atualizam o subtotal; `+` para no estoque | ✅ quantidade OK |
+| 5 | Persistência | recarregar: a sacola mantém-se | não relatado |
+| 6 | Migração | numa janela com sacola antiga (v1): linhas "Sob consulta", nada apagado | não relatado |
+| 7 | Preço Hostinger | igual ao do hPanel (alterar a promoção no hPanel só com autorização) | ✅ R$ 399,90 e promoção R$ 299,90 lidos corretamente |
+| 8 | Estoque | igual ao do hPanel | ✅ estoque real lido |
+| 9 | Checkout | "Finalizar compra" → `checkout.hostinger.com` | ✅ checkout hospedado abriu, em português |
+| 10 | Test Payment | concluir com Test Payment (cria pedido de teste) | ✅ pedido de teste concluído |
+| 11 | Retorno de sucesso | `/checkout/sucesso?ref=…`; a linha paga sai da sacola | ✅ retorno OK (a saída da linha paga não foi relatada à parte) |
+| 12 | Cancelamento | noutro checkout, cancelar → `/checkout/cancelado`; a sacola fica | ✅ sacola preservada; o produto continuou disponível para novo checkout |
+| 13 | Mobile | repetir 1, 3, 4, 9 e 12 no telemóvel | não relatado à parte |
+| 14 | Desktop | repetir no desktop | não relatado à parte |
+| 15 | Regressões visuais | home, joias, coleções, produto, menu, busca, sacola iguais à produção, salvo o descrito na secção 7 | não relatado; regressão visual automática no documento de release |
+
+**Continuam por registar:**
+- os parâmetros que a Hostinger acrescenta ao regresso;
+- se o `pt-BR` foi aceito à primeira tentativa.
+
+Os passos 5 e 6 e o comportamento do sucesso (passo 11) estão cobertos pelos testes automatizados,
+contra a Storefront simulada. O passo 5 também está coberto pela verificação somente-leitura
+contra a API real.
 
 ---
 
 ## 12. Próximos passos e autorizações
 
-**Ações suas:**
-- liberar `api-ecommerce.hostinger.com` e `checkout.hostinger.com` na rede do ambiente;
-- configurar as variáveis de Preview na Vercel;
-- correr o roteiro da secção 11.
+**Ações suas — feitas até 2026-09-26:**
+- ✅ liberar `api-ecommerce.hostinger.com` e `checkout.hostinger.com` na rede do ambiente;
+- ✅ configurar as variáveis de Preview na Vercel (as duas estão só no Preview);
+- ✅ correr o roteiro da secção 11.
 
 **Decisões suas:**
-- texto de frete (A ou B);
-- e-mail de atendimento (enquanto não houver domínio);
-- revisão dos textos legais.
+- ✅ texto de frete: A, aplicado em 2026-09-26;
+- e-mail de atendimento (enquanto não houver domínio): **pendente**;
+- revisão dos textos legais: pendente.
 
 **Precisam de autorização explícita:**
-- merge na `main`;
+- ~~merge na `main`~~: autorizado em 2026-09-26 (ver o documento de release);
 - cadastrar os produtos reais;
 - estoque;
 - regra de frete no hPanel;

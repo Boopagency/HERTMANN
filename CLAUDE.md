@@ -79,7 +79,18 @@ checkout, pagamentos, pedidos). Estas regras valem para toda sessão.
   recebe o campo `commerce` com IDs de um produto real.
 - Produto de teste da Hostinger: serve só para homologação (página
   `/produto/homologacao-hostinger`, só em Preview e desenvolvimento). Não
-  excluir.
+  excluir. A homologação real (API, checkout, Test Payment) foi concluída em
+  2026-09-26, no Preview do commit `058be66`.
+- Diagnóstico `/api/hostinger-status`: só em `next dev` e no Preview com a
+  homologação ligada. Em Production responde 404.
+- Integração Hostinger (Fases 0 e 1): merge na `main` autorizado em
+  2026-09-26. Em Production nada se vende: nenhuma peça tem `commerce`.
+- Vercel (projeto `hertmann`): `NEXT_PUBLIC_HOSTINGER_SALES_CHANNEL_ID` e
+  `NEXT_PUBLIC_HOSTINGER_HOMOLOGATION` existem só no Preview. Production não
+  tem variáveis, por isso fica `noindex`, sem domínio próprio e sem loja.
+- Deploys: se um push não gerar deployment na Vercel, não criar commits vazios
+  nem mudanças de código para forçá-lo. Avisar o usuário. Em 2026-09-25, pushes
+  na branch não geraram deployment e a causa não foi determinada.
 - Pagamentos: só Test Payment, para homologação. O Stripe está planejado, mas
   não pode ser conectado sem autorização.
 - Frete: a regra "Região Sul grátis a partir de R$ 150" está planejada e ainda
