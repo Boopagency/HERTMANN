@@ -23,6 +23,10 @@ está em [`hostinger-storefront-implementacao-2026-09-25.md`](hostinger-storefro
 - **Proteções de Production:**
   - o site continua `noindex, nofollow`;
   - a página de homologação e o diagnóstico respondem 404.
+- **Resultado** (secção 8):
+  - merge `797322e` na `main`, com o hash local igual ao remoto;
+  - Production `dpl_8eLP3TB4Nhnt7zZY9ySNb1wjmnN6` **READY**;
+  - o smoke test na URL real **não foi executado**: a rede deste ambiente bloqueia `*.vercel.app`.
 - **Dois tipos de validação, que não se confundem:**
   - **testes automatizados** contra uma Storefront **simulada**, que validam o comportamento do site;
   - **homologação manual** e **leituras somente-leitura** contra a **API real**.
@@ -319,7 +323,67 @@ commits sem nova autorização.
 
 ## 8. Resultado do merge, do deploy e do smoke test
 
-_A preencher depois do push, com o que for observado._
+_Preenchido depois do push, com o que foi observado. Este commit é só de documentação e fica na
+branch; a `main` não o recebe sem nova autorização._
+
+### Merge (PASSO 6)
+
+| Ponto | Resultado |
+|---|---|
+| Merge commit | `797322e` — "Merge da branch feature/hostinger-storefront-current na main" |
+| Pais | `28d0419` (`main`) e `546a4de` (branch) |
+| Árvore da `main` | idêntica à da branch (`74eecce`) |
+| Antes do push | `npx tsc --noEmit` ✅; `npm run build` ✅ (35 páginas) |
+| Push | `28d0419..797322e` |
+| Hash local = remoto | ✅ `797322e7d635cb77db77e13ade33e879c146f006` |
+
+O Preview de `546a4de`, que tem a mesma árvore, ficou READY na Vercel antes do push da `main`
+(`dpl_68umY5UKn7TJaurKVpuQGKoQienw`, 22:32 UTC).
+
+### Deploy (PASSO 7)
+
+| Ponto | Resultado |
+|---|---|
+| Deployment | `dpl_8eLP3TB4Nhnt7zZY9ySNb1wjmnN6`, target `production`, commit `797322e` |
+| Criação | automática, pela integração Git, às 22:33:42 UTC (push às 22:33:41) |
+| Estado | **READY** às 22:34:22 UTC (build de ~38 s) |
+| Domínios | `hertmann-tan.vercel.app`, `hertmann-boop10.vercel.app`, `hertmann-git-main-boop10.vercel.app`; sem erro de alias |
+| Bloqueio por autor do commit | nenhum: o Preview de `546a4de` e a Production de `797322e` foram criados sozinhos |
+| Reversão, se precisar | o deployment anterior (`dpl_Biv7S98X6NykMbKVF4j9PTpNFckV`, `28d0419`) está marcado pela Vercel como candidato a *Instant Rollback*, sem mudar código |
+
+### Smoke test em Production (PASSO 8): **não executado — bloqueado**
+
+- **Rede do ambiente:** a política de rede deste ambiente recusa `hertmann-tan.vercel.app` e os
+  outros domínios `*.vercel.app`. O proxy responde 403 ao CONNECT, tanto no `curl` como no
+  WebFetch.
+- **Conector da Vercel:** também não lê o conteúdo nem os logs dos deployments do escopo `boop10`
+  (403 e "Vercel denied access").
+- **O que isso significa:**
+  - nada do smoke test foi observado por mim na URL real;
+  - o equivalente mais próximo é a Production simulada localmente com o mesmo código (secção 4.3);
+  - o que está confirmado é que a Vercel não tem variáveis em Production (secção 3).
+- **Para eu o executar daqui:** liberar `hertmann-tan.vercel.app` no acesso à rede do ambiente.
+  Depois, repito as verificações da secção 4.3 contra a URL real.
+
+**Checklist manual** em `https://hertmann-tan.vercel.app`:
+
+| # | Onde | Esperado |
+|---|---|---|
+| 1 | `/` | carrega como antes do merge |
+| 2 | `/joias` e `/joias/aneis` | grelha com as peças e os preços editoriais |
+| 3 | `/colecoes` e `/colecoes/noturno` | carregam |
+| 4 | `/produto/colar-meridiano` | preço editorial; "Consultar disponibilidade" leva a `/contato`; sem seletor de quantidade |
+| 5 | Menu | abre e fecha |
+| 6 | Busca | "meridiano" devolve a peça; "homolog" não devolve nada |
+| 7 | Sacola | abre vazia: "A sua sacola aguarda." |
+| 8 | `/checkout/sucesso` | "Obrigado." |
+| 9 | `/checkout/cancelado` | "A compra não foi concluída." |
+| 10 | `/produto/homologacao-hostinger` | página 404 |
+| 11 | `/api/hostinger-status` | 404, sem conteúdo |
+| 12 | Código-fonte da home | `<meta name="robots" content="noindex, nofollow">` |
+| 13 | DevTools → Network → documento | cabeçalho `X-Robots-Tag: noindex, nofollow` |
+| 14 | `/robots.txt` | só `User-Agent: *` e `Allow: /`, sem `Sitemap` |
+| 15 | DevTools → Console | sem erros |
 
 ---
 
