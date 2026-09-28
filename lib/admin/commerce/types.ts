@@ -127,6 +127,8 @@ export type AdminOrder = {
 export type ProviderCapabilities = {
   /** Remover uma imagem já anexada ao produto. */
   removeImage: boolean;
+  /** Alterar o SKU de uma variante existente (senão, só na criação). */
+  editSku: boolean;
 };
 
 export interface CommerceAdminProvider {

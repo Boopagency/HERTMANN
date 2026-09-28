@@ -13,3 +13,6 @@
 
 export const simulationEnabled =
   process.env.ADMIN_SIMULATION === "true" && !process.env.VERCEL;
+
+/** Cookie da sessão de teste do modo simulado (lib/admin/auth/simulated.ts). */
+export const SIMULATED_SESSION_COOKIE = "hm-admin-simulado";
