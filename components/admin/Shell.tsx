@@ -110,32 +110,30 @@ export function AdminShell({
   const items = member.role === "admin" ? [...baseNav, ...adminNav] : baseNav;
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      {banner}
-      <div className="flex flex-1">
-        <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 border-r bg-sidebar lg:block">
-          <SidebarBody member={member} items={items} />
-        </aside>
+    <div className="flex min-h-dvh">
+      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 border-r bg-sidebar lg:block">
+        <SidebarBody member={member} items={items} />
+      </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center gap-3 border-b px-4 py-2.5 lg:hidden">
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon-sm" aria-label="Abrir menu">
-                  <MenuIcon />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="bg-sidebar p-0">
-                <SheetTitle className="sr-only">Menu do painel</SheetTitle>
-                <SidebarBody member={member} items={items} onNavigate={() => setOpen(false)} />
-              </SheetContent>
-            </Sheet>
-            <AdminBrand />
-          </div>
-          <main id="conteudo" className="flex-1">
-            {children}
-          </main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        {banner}
+        <div className="flex items-center gap-3 border-b px-4 py-2.5 lg:hidden">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon-sm" aria-label="Abrir menu">
+                <MenuIcon />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="bg-sidebar p-0">
+              <SheetTitle className="sr-only">Menu do painel</SheetTitle>
+              <SidebarBody member={member} items={items} onNavigate={() => setOpen(false)} />
+            </SheetContent>
+          </Sheet>
+          <AdminBrand />
         </div>
+        <main id="conteudo" className="flex-1">
+          {children}
+        </main>
       </div>
     </div>
   );
