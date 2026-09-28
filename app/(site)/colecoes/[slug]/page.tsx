@@ -5,6 +5,7 @@ import { CollectionHero } from "@/components/product/CollectionHero";
 import { Catalogue } from "@/components/product/CatalogueView";
 import { collectionBySlug, collectionPieces, collections } from "@/lib/data/catalogue";
 import { collectionMedia } from "@/lib/data/editorial";
+import { getSiteCatalogue } from "@/lib/catalog/site";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -27,6 +28,7 @@ export default async function CollectionPage({ params }: Params) {
   const { slug } = await params;
   const collection = collectionBySlug(slug);
   if (!collection) notFound();
+  const { pieces } = await getSiteCatalogue();
 
   return (
     <>
@@ -37,7 +39,7 @@ export default async function CollectionPage({ params }: Params) {
         media={collectionMedia[collection.slug]}
       />
 
-      <Catalogue pieces={collectionPieces(collection)} hide={["colecao"]} />
+      <Catalogue pieces={collectionPieces(collection, pieces)} hide={["colecao"]} />
 
       {/* A coleção em poucas linhas — depois das peças, nunca antes */}
       <section

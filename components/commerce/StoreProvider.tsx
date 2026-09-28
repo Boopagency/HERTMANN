@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useReducer, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import type { Piece } from "@/lib/data/catalogue";
-import { findPiece } from "@/lib/data/homologation";
+import { useCatalogue } from "@/components/commerce/CatalogueProvider";
 import { isSellable, variantIdFor } from "@/lib/commerce";
 import type { CheckoutItem } from "@/lib/hostinger/types";
 
@@ -141,7 +141,9 @@ function readQuantity(raw: unknown): number {
  * entretanto ficou ligada à Hostinger, a linha ganha a variante e passa a
  * comprável.
  */
-function readLine(raw: unknown): BagLine[] {
+type FindPiece = (slug: string) => Piece | undefined;
+
+function readLine(raw: unknown, findPiece: FindPiece): BagLine[] {
   if (!raw || typeof raw !== "object") return [];
   const { variantId, slug, option, quantity } = raw as Record<string, unknown>;
   if (typeof slug !== "string" || slug.length === 0) return [];
@@ -178,14 +180,14 @@ function readFavourites(raw: unknown): string[] {
   return Array.isArray(raw) ? raw.filter((s): s is string => typeof s === "string") : [];
 }
 
-function parseState(raw: string | null): State | null {
+function parseState(raw: string | null, findPiece: FindPiece): State | null {
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw) as unknown;
     if (!parsed || typeof parsed !== "object") return null;
     const { bag, favourites } = parsed as Record<string, unknown>;
     return {
-      bag: mergeLines(Array.isArray(bag) ? bag.flatMap(readLine) : []),
+      bag: mergeLines(Array.isArray(bag) ? bag.flatMap((line) => readLine(line, findPiece)) : []),
       favourites: readFavourites(favourites),
     };
   } catch {
@@ -198,11 +200,11 @@ function parseState(raw: string | null): State | null {
  * persistência, depois de a v2 ficar escrita — se saísse já, a segunda
  * montagem do StrictMode leria um estado vazio e a sacola migrada perdia-se.
  */
-function readPersistedState(): State {
+function readPersistedState(findPiece: FindPiece): State {
   try {
     return (
-      parseState(window.localStorage.getItem(KEY)) ??
-      parseState(window.localStorage.getItem(LEGACY_KEY)) ??
+      parseState(window.localStorage.getItem(KEY), findPiece) ??
+      parseState(window.localStorage.getItem(LEGACY_KEY), findPiece) ??
       empty
     );
   } catch {
@@ -240,9 +242,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, empty);
   const [ready, setReady] = useState(false);
   const [bagOpen, setBagOpen] = useState(false);
+  const { find: findPiece } = useCatalogue();
+  // A leitura inicial corre uma vez; o catálogo do site não muda durante a visita.
+  const findRef = useRef(findPiece);
 
   useEffect(() => {
-    dispatch({ type: "hydrate", state: readPersistedState() });
+    dispatch({ type: "hydrate", state: readPersistedState(findRef.current) });
     setReady(true);
   }, []);
 
@@ -278,7 +283,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           },
         ];
       }),
-    [state.bag],
+    [state.bag, findPiece],
   );
 
   const value = useMemo<StoreContext>(() => {

@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductRail } from "@/components/product/ProductRail";
 import { featuredPieces } from "@/lib/data/catalogue";
+import { getSiteCatalogue } from "@/lib/catalog/site";
 
 export const metadata: Metadata = {
   title: "Página não encontrada",
   robots: { index: false, follow: true },
 };
 
-export default function NotFound() {
+export default async function NotFound() {
   return (
     <>
       <section
@@ -40,7 +41,7 @@ export default function NotFound() {
       <ProductRail
         id="talvez"
         title="Talvez procure"
-        pieces={featuredPieces()}
+        pieces={featuredPieces((await getSiteCatalogue()).pieces)}
         className="border-t border-[var(--color-rule-soft)]"
       />
     </>

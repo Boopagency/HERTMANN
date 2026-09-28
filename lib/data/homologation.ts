@@ -46,10 +46,17 @@ export function isHomologationPiece(piece: Piece): boolean {
   return piece.slug === homologationPiece.slug;
 }
 
-/** Peça do catálogo ou, quando a homologação está ligada, a peça técnica. */
-export function findPiece(slug: string): Piece | undefined {
+/**
+ * Peça do catálogo de protótipo ou, quando a homologação está ligada, a peça
+ * técnica. Com `prototypes: false`, só a peça técnica (o catálogo do site já
+ * foi consultado antes — ver lib/catalog/site.ts).
+ */
+export function findPiece(
+  slug: string,
+  { prototypes = true }: { prototypes?: boolean } = {},
+): Piece | undefined {
   return (
-    pieceBySlug(slug) ??
+    (prototypes ? pieceBySlug(slug) : undefined) ??
     (homologationEnabled && slug === homologationPiece.slug ? homologationPiece : undefined)
   );
 }

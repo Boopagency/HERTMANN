@@ -8,6 +8,7 @@ import { MetalDot } from "@/components/product/ProductMedia";
 import { categories, collections } from "@/lib/data/catalogue";
 import { PiecePrice } from "@/components/commerce/PiecePrice";
 import { searchPieces } from "@/lib/search";
+import { useCatalogue } from "@/components/commerce/CatalogueProvider";
 
 /* ============================================================================
    Busca — uma linha, um fio, e o catálogo que responde enquanto se escreve.
@@ -15,7 +16,8 @@ import { searchPieces } from "@/lib/search";
 
 export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [query, setQuery] = useState("");
-  const results = searchPieces(query, 6);
+  const { pieces } = useCatalogue();
+  const results = searchPieces(query, pieces, 6);
   const searching = query.trim().length >= 2;
 
   return (

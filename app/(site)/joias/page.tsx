@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Catalogue } from "@/components/product/CatalogueView";
-import { pieces } from "@/lib/data/catalogue";
+import { getSiteCatalogue } from "@/lib/catalog/site";
 import { catalogueInsert } from "@/lib/data/editorial";
 
 export const metadata: Metadata = {
@@ -10,7 +10,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/joias" },
 };
 
-export default function JewelleryPage() {
+export default async function JewelleryPage() {
+  const { pieces } = await getSiteCatalogue();
+
   return (
     <Catalogue
       pieces={pieces}

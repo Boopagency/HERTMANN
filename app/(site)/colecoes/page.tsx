@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { EditorialPair } from "@/components/sections/EditorialPair";
 import { ProductRail } from "@/components/product/ProductRail";
-import { collections, pieces, type Collection } from "@/lib/data/catalogue";
+import { collections, type Collection } from "@/lib/data/catalogue";
+import { getSiteCatalogue } from "@/lib/catalog/site";
 import { collectionMedia, type Chapter } from "@/lib/data/editorial";
 
 export const metadata: Metadata = {
@@ -19,8 +20,9 @@ const chapter = (collection: Collection): Chapter => ({
   tone: "light",
 });
 
-export default function CollectionsPage() {
+export default async function CollectionsPage() {
   const [a, b, c, d] = collections.map(chapter);
+  const { pieces } = await getSiteCatalogue();
 
   return (
     <>

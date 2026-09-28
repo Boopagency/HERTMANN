@@ -18,6 +18,7 @@ import {
   type Piece,
 } from "@/lib/data/catalogue";
 import { searchPieces } from "@/lib/search";
+import { useCatalogue } from "@/components/commerce/CatalogueProvider";
 import { site } from "@/lib/data/site";
 import { cn } from "@/lib/utils";
 
@@ -76,7 +77,8 @@ export function SideMenu({ open, onClose }: { open: boolean; onClose: () => void
   const reduced = useReducedMotion();
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
-  const results = searchPieces(query, 8);
+  const { pieces } = useCatalogue();
+  const results = searchPieces(query, pieces, 8);
   const searching = query.trim().length >= 2;
 
   function close() {

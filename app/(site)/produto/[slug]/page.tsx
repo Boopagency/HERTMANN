@@ -13,7 +13,8 @@ import {
   relatedPieces,
   type Piece,
 } from "@/lib/data/catalogue";
-import { findPiece, isHomologationPiece } from "@/lib/data/homologation";
+import { isHomologationPiece } from "@/lib/data/homologation";
+import { findSitePiece, getSiteCatalogue } from "@/lib/catalog/site";
 import { site } from "@/lib/data/site";
 import { isSellable } from "@/lib/commerce";
 import { minorUnitsToDecimal } from "@/lib/format";
@@ -29,8 +30,17 @@ type Params = { params: Promise<{ slug: string }> };
  */
 export const revalidate = 60;
 
+/**
+ * As peças de protótipo saem no build. As que vêm do Admin geram-se no
+ * primeiro acesso e seguem a mesma revalidação.
+ */
 export function generateStaticParams() {
   return pieces.map((p) => ({ slug: p.slug }));
+}
+
+/** Endereço absoluto de uma imagem — local (/images/…) ou já absoluta (loja). */
+function absoluteImage(src: string): string {
+  return /^https?:\/\//.test(src) ? src : `${siteUrl}${src}`;
 }
 
 /** Sem loja configurada, sem ligação ou sem rede, a página serve o editorial. */
@@ -86,7 +96,7 @@ function offerSchema(piece: Piece, commerce: ProductSnapshot | null) {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const piece = findPiece(decodeURIComponent(slug));
+  const piece = await findSitePiece(decodeURIComponent(slug));
   if (!piece) return {};
   return {
     title: `${piece.name} — ${piece.line}`,
@@ -104,11 +114,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
-  const piece = findPiece(decodeURIComponent(slug));
+  const piece = await findSitePiece(decodeURIComponent(slug));
   if (!piece) notFound();
 
   const category = categoryBySlug(piece.category)!;
-  const related = relatedPieces(piece, 8);
+  const related = relatedPieces(piece, 8, (await getSiteCatalogue()).pieces);
   const commerce = await readCommerce(piece);
 
   const productSchema = {
@@ -116,11 +126,11 @@ export default async function ProductPage({ params }: Params) {
     "@type": "Product",
     name: `${piece.name} — ${piece.line}`,
     description: piece.description,
-    sku: piece.reference,
+    sku: piece.reference || undefined,
     brand: { "@type": "Brand", name: site.name },
     material: piece.material,
     category: category.name,
-    image: piece.image ? [`${siteUrl}${piece.image.src}`] : undefined,
+    image: piece.image ? [absoluteImage(piece.image.src)] : undefined,
     offers: offerSchema(piece, commerce),
   };
 

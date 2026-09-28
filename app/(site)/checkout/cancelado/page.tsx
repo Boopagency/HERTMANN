@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductRail } from "@/components/product/ProductRail";
 import { featuredPieces } from "@/lib/data/catalogue";
+import { getSiteCatalogue } from "@/lib/catalog/site";
 import { ReopenBag } from "./ReopenBag";
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
    tocada: continua exactamente como estava, pronta a retomar.
    ========================================================================== */
 
-export default function CheckoutCancelledPage() {
+export default async function CheckoutCancelledPage() {
   return (
     <>
       <section
@@ -42,7 +43,7 @@ export default function CheckoutCancelledPage() {
       <ProductRail
         id="depois-do-pagamento"
         title="Também da casa"
-        pieces={featuredPieces()}
+        pieces={featuredPieces((await getSiteCatalogue()).pieces)}
         className="border-t border-[var(--color-rule-soft)]"
         priority
       />

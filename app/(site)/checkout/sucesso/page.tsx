@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductRail } from "@/components/product/ProductRail";
 import { featuredPieces } from "@/lib/data/catalogue";
+import { getSiteCatalogue } from "@/lib/catalog/site";
 import { CheckoutReturn } from "./CheckoutReturn";
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
    caminhos — e a vitrine por baixo.
    ========================================================================== */
 
-export default function CheckoutSuccessPage() {
+export default async function CheckoutSuccessPage() {
   return (
     <>
       <CheckoutReturn />
@@ -50,7 +51,7 @@ export default function CheckoutSuccessPage() {
       <ProductRail
         id="depois-do-pedido"
         title="Também da casa"
-        pieces={featuredPieces()}
+        pieces={featuredPieces((await getSiteCatalogue()).pieces)}
         className="border-t border-[var(--color-rule-soft)]"
         priority
       />

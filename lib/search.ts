@@ -1,4 +1,4 @@
-import { categoryName, collectionName, pieces, type Piece } from "@/lib/data/catalogue";
+import { categoryName, collectionName, type Piece } from "@/lib/data/catalogue";
 
 /* ============================================================================
    Busca no catálogo — partilhada pelo menu lateral e pela camada de busca.
@@ -9,7 +9,8 @@ import { categoryName, collectionName, pieces, type Piece } from "@/lib/data/cat
 export const strip = (value: string) =>
   value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 
-export function searchPieces(query: string, limit = 6): Piece[] {
+/** `pieces` é o catálogo do site (useCatalogue), com as peças vindas do Admin. */
+export function searchPieces(query: string, pieces: Piece[], limit = 6): Piece[] {
   const term = strip(query);
   if (term.length < 2) return [];
   return pieces

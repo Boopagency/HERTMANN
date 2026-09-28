@@ -5,6 +5,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { StoreProvider } from "@/components/commerce/StoreProvider";
+import { CatalogueProvider } from "@/components/commerce/CatalogueProvider";
+import { getSiteCatalogue } from "@/lib/catalog/site";
 import { site } from "@/lib/data/site";
 import { siteIndexable, siteUrl } from "@/lib/site-url";
 import "./globals.css";
@@ -100,7 +102,9 @@ const organisation = {
   sameAs: site.social.map((s) => s.href),
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const catalogue = await getSiteCatalogue();
+
   return (
     <html
       lang="pt-BR"
@@ -126,13 +130,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#conteudo" className="skip-link">
           Saltar para o conteúdo
         </a>
-        <StoreProvider>
-          <SmoothScroll />
-          <AnnouncementBar />
-          <Header />
-          <main id="conteudo">{children}</main>
-          <Footer />
-        </StoreProvider>
+        <CatalogueProvider extra={catalogue.extra} showPrototypes={catalogue.showPrototypes}>
+          <StoreProvider>
+            <SmoothScroll />
+            <AnnouncementBar />
+            <Header />
+            <main id="conteudo">{children}</main>
+            <Footer />
+          </StoreProvider>
+        </CatalogueProvider>
       </body>
     </html>
   );

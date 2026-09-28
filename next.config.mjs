@@ -11,6 +11,11 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Fotografias dos produtos geridas no Admin vêm do CDN da loja Hostinger.
+    // Endereço visto na loja em 2026-09-24 (diagnóstico): cdn.zyrosite.com/cdn-ecommerce/…
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cdn.zyrosite.com', pathname: '/cdn-ecommerce/**' },
+    ],
   },
   async headers() {
     if (indexable) return [];

@@ -38,12 +38,25 @@ export type HostingerVariant = {
   manage_inventory?: boolean;
 };
 
+/**
+ * Imagem de produto. O nome dos campos na Storefront ainda não foi visto numa
+ * resposta real com imagens — aceitam-se as formas plausíveis.
+ */
+export type HostingerImage = {
+  id?: string;
+  url?: string | null;
+  src?: string | null;
+  alt?: string | null;
+};
+
 export type HostingerProduct = {
   id: string;
   title: string;
   description?: string | null;
   status?: string;
   thumbnail?: string | null;
+  images?: HostingerImage[] | null;
+  media?: HostingerImage[] | null;
   type?: string;
   variant_count?: number;
   variants?: HostingerVariant[];

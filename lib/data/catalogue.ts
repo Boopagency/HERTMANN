@@ -455,12 +455,17 @@ export const collections: Collection[] = [
    Acessores
    -------------------------------------------------------------------------- */
 
-export function pieceBySlug(slug: string): Piece | undefined {
-  return pieces.find((p) => p.slug === slug);
+/*
+   Os acessores recebem a lista do catálogo do site (lib/catalog/site.ts), que
+   junta estas peças às que vêm do Admin. Sem lista, usam só as de protótipo.
+*/
+
+export function pieceBySlug(slug: string, list: Piece[] = pieces): Piece | undefined {
+  return list.find((p) => p.slug === slug);
 }
 
-export function piecesByCategory(slug: CategorySlug): Piece[] {
-  return pieces.filter((p) => p.category === slug);
+export function piecesByCategory(slug: CategorySlug, list: Piece[] = pieces): Piece[] {
+  return list.filter((p) => p.category === slug);
 }
 
 export function categoryBySlug(slug: string): Category | undefined {
@@ -471,10 +476,15 @@ export function collectionBySlug(slug: string): Collection | undefined {
   return collections.find((c) => c.slug === slug);
 }
 
-export function collectionPieces(collection: Collection): Piece[] {
-  return collection.pieces
-    .map((slug) => pieceBySlug(slug))
+/** As peças curadas da coleção, pela ordem da curadoria, e depois as do Admin. */
+export function collectionPieces(collection: Collection, list: Piece[] = pieces): Piece[] {
+  const curated = collection.pieces
+    .map((slug) => pieceBySlug(slug, list))
     .filter((p): p is Piece => Boolean(p));
+  const rest = list.filter(
+    (p) => p.collection === collection.slug && !collection.pieces.includes(p.slug),
+  );
+  return [...curated, ...rest];
 }
 
 export function collectionName(slug: string): string {
@@ -485,21 +495,21 @@ export function categoryName(slug: CategorySlug): string {
   return categoryBySlug(slug)?.singular ?? "";
 }
 
-export function featuredPieces(): Piece[] {
-  return pieces.filter((p) => p.featured);
+export function featuredPieces(list: Piece[] = pieces): Piece[] {
+  return list.filter((p) => p.featured);
 }
 
-export function relatedPieces(piece: Piece, count = 3): Piece[] {
-  const sameCollection = pieces.filter(
+export function relatedPieces(piece: Piece, count = 3, list: Piece[] = pieces): Piece[] {
+  const sameCollection = list.filter(
     (p) => p.slug !== piece.slug && p.collection === piece.collection,
   );
-  const sameCategory = pieces.filter(
+  const sameCategory = list.filter(
     (p) =>
       p.slug !== piece.slug &&
       p.category === piece.category &&
       !sameCollection.includes(p),
   );
-  const rest = pieces.filter(
+  const rest = list.filter(
     (p) => p.slug !== piece.slug && !sameCollection.includes(p) && !sameCategory.includes(p),
   );
   return [...sameCollection, ...sameCategory, ...rest].slice(0, count);

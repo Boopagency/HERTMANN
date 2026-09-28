@@ -9,6 +9,7 @@ import {
   type CategorySlug,
 } from "@/lib/data/catalogue";
 import { categoryMedia } from "@/lib/data/editorial";
+import { getSiteCatalogue } from "@/lib/catalog/site";
 
 type Params = { params: Promise<{ categoria: string }> };
 
@@ -33,6 +34,7 @@ export default async function CategoryPage({ params }: Params) {
   if (!category) notFound();
 
   const slug = category.slug as CategorySlug;
+  const { pieces } = await getSiteCatalogue();
 
   return (
     <>
@@ -42,7 +44,7 @@ export default async function CategoryPage({ params }: Params) {
         line={category.line}
         media={categoryMedia[slug]}
       />
-      <Catalogue pieces={piecesByCategory(slug)} category={slug} />
+      <Catalogue pieces={piecesByCategory(slug, pieces)} category={slug} />
     </>
   );
 }
