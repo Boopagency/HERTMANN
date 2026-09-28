@@ -17,6 +17,11 @@ const nextConfig = {
       { protocol: 'https', hostname: 'cdn.zyrosite.com', pathname: '/cdn-ecommerce/**' },
     ],
   },
+  experimental: {
+    // Envio de imagens pelo painel (/admin): até 4 MB por arquivo, mais a
+    // margem do formulário. O site público não usa Server Actions.
+    serverActions: { bodySizeLimit: '5mb' },
+  },
   async headers() {
     if (indexable) return [];
     return [

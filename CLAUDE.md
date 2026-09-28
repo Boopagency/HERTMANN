@@ -95,3 +95,14 @@ checkout, pagamentos, pedidos). Estas regras valem para toda sessão.
   não pode ser conectado sem autorização.
 - Frete: a regra "Região Sul grátis a partir de R$ 150" está planejada e ainda
   não configurada. Só é configurável pelo hPanel; a API só aceita tarifa fixa.
+- Painel administrativo (`/admin`, branch `feature/hertmann-admin`, 2026-09-28):
+  Supabase para Auth e fichas editoriais, Hostinger para o comercial. Sem
+  `SUPABASE_URL`/`SUPABASE_PUBLISHABLE_KEY` o painel responde 404 e o site usa
+  só o catálogo de protótipo. Ainda não existe projeto Supabase da HERTMANN
+  (não usar `boop-admin`, que é da Boop) nem token da Hostinger: ambos
+  dependem de autorização. O modo simulado (`ADMIN_SIMULATION=true`) é só
+  local; a Vercel desliga-o sempre. Detalhes em
+  `docs/admin-implementacao-2026-09-28.md`.
+- Admin: o CSS do site não pode ver os arquivos do painel (`@source not` em
+  `app/(site)/globals.css`). Pedidos são só leitura; enviar/cancelar pedido
+  notifica clientes e fica para uma fase com autorização.

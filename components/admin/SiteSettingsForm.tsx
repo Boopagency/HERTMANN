@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionForm } from "@/components/admin/ActionForm";
 import { useActionState, useState } from "react";
 import { LoaderIcon } from "lucide-react";
 import { saveSiteSettings } from "@/lib/admin/actions/products";
@@ -14,7 +15,7 @@ export function SiteSettingsForm({ showPrototypes }: { showPrototypes: boolean }
   const [value, setValue] = useState(showPrototypes);
 
   return (
-    <form action={action} className="grid gap-4">
+    <ActionForm action={action} className="grid gap-4">
       <div className="flex items-start gap-3">
         <Switch id="showPrototypes" checked={value} onCheckedChange={setValue} className="mt-0.5" />
         <input type="hidden" name="showPrototypes" value={value ? "on" : "off"} />
@@ -33,6 +34,6 @@ export function SiteSettingsForm({ showPrototypes }: { showPrototypes: boolean }
           Salvar
         </Button>
       </div>
-    </form>
+    </ActionForm>
   );
 }

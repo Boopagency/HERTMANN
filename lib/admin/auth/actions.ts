@@ -7,7 +7,7 @@ import { adminAuthMode } from "@/lib/admin/config";
 import { createAdminSupabase } from "@/lib/supabase/server";
 import { getMemberState } from "./member";
 import { isAdminRole } from "./permissions";
-import { allowAttempt, clearAttempts } from "./rate-limit";
+import { clearFailures, isBlocked, recordFailure } from "./rate-limit";
 import { SIMULATED_PASSWORD, SIMULATED_SESSION_COOKIE, simulatedUser } from "./simulated";
 
 /* ============================================================================
@@ -53,13 +53,18 @@ export async function signIn(_: FormState, form: FormData): Promise<FormState> {
   const { email, password } = parsed.data;
 
   const ip = await clientIp();
-  if (!allowAttempt([`ip:${ip}`, `email:${email}`])) {
-    return { ok: false, message: "Muitas tentativas. Aguarde 15 minutos e tente de novo." };
+  const keys = { [`ip:${ip}`]: 30, [`email:${email}`]: 8 };
+  if (isBlocked(keys)) {
+    return { ok: false, message: "Muitas tentativas sem sucesso. Aguarde 15 minutos e tente de novo." };
   }
+  const failed = (): FormState => {
+    recordFailure(Object.keys(keys));
+    return { ok: false, message: GENERIC_LOGIN_ERROR };
+  };
 
   if (adminAuthMode === "simulado") {
     const user = simulatedUser(email);
-    if (!user || password !== SIMULATED_PASSWORD) return { ok: false, message: GENERIC_LOGIN_ERROR };
+    if (!user || password !== SIMULATED_PASSWORD) return failed();
     (await cookies()).set(SIMULATED_SESSION_COOKIE, user.email, {
       httpOnly: true,
       sameSite: "lax",
@@ -70,7 +75,7 @@ export async function signIn(_: FormState, form: FormData): Promise<FormState> {
   } else {
     const supabase = await createAdminSupabase();
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error || !data.user) return { ok: false, message: GENERIC_LOGIN_ERROR };
+    if (error || !data.user) return failed();
 
     // Conta válida mas sem papel no painel: não fica com sessão.
     const { data: member } = await supabase
@@ -84,7 +89,7 @@ export async function signIn(_: FormState, form: FormData): Promise<FormState> {
     }
   }
 
-  clearAttempts(`email:${email}`);
+  clearFailures(`email:${email}`);
   redirect(safeNext(form.get("seguir")));
 }
 
@@ -105,10 +110,11 @@ export async function requestPasswordReset(_: FormState, form: FormData): Promis
   const email = z.string().trim().toLowerCase().email().safeParse(form.get("email"));
   if (!email.success) return { ok: false, message: "Indique um e-mail válido." };
 
+  // Cada pedido conta: o envio de e-mails também tem de ser contido.
   const ip = await clientIp();
-  if (!allowAttempt([`reset-ip:${ip}`, `reset:${email.data}`])) {
-    return { ok: false, message: "Muitos pedidos. Aguarde 15 minutos e tente de novo." };
-  }
+  const keys = { [`reset-ip:${ip}`]: 10, [`reset:${email.data}`]: 3 };
+  if (isBlocked(keys)) return { ok: false, message: "Muitas solicitações. Aguarde 15 minutos e tente de novo." };
+  recordFailure(Object.keys(keys));
 
   if (adminAuthMode === "supabase") {
     const supabase = await createAdminSupabase();

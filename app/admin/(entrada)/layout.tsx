@@ -14,7 +14,7 @@ export default function EntryLayout({ children }: { children: React.ReactNode })
         <div className="w-full max-w-sm">
           <AdminBrand className="mb-8 justify-center" />
           <div className="rounded-xl border bg-card p-6 shadow-xs sm:p-7">{children}</div>
-          <p className="mt-6 text-center text-xs text-muted-foreground">Acesso restrito à equipa HERTMANN.</p>
+          <p className="mt-6 text-center text-xs text-muted-foreground">Acesso restrito à equipe HERTMANN.</p>
         </div>
       </main>
     </div>

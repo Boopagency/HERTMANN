@@ -27,7 +27,7 @@ export type ProductRow = { product: AdminProduct; editorial: EditorialItem | nul
 
 export type CatalogueView = {
   rows: ProductRow[];
-  /** Fichas cujo produto já não existe na loja. */
+  /** Fichas cujo produto não existe mais na loja. */
   orphans: EditorialItem[];
   products: Loaded<AdminProduct[]>;
   editorial: Loaded<EditorialItem[]>;

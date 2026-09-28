@@ -10,13 +10,15 @@ export default async function NewPasswordPage() {
   await requireMember();
   return (
     <>
-      <PageHeader title="Nova senha" description="Escolha uma senha nova para a sua conta." />
-      <PageBody className="max-w-xl">
+      <PageHeader title="Nova senha" description="Escolha uma senha nova para sua conta." />
+      <PageBody>
+        <div className="max-w-xl">
         <Card>
           <CardContent>
             <NewPasswordForm />
           </CardContent>
         </Card>
+        </div>
       </PageBody>
     </>
   );

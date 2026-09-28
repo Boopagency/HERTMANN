@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function AddressBlock({ address }: { address: Address | null }) {
-  if (!address) return <p className="text-sm text-muted-foreground">Sem morada de entrega.</p>;
+  if (!address) return <p className="text-sm text-muted-foreground">Sem endereço de entrega.</p>;
   const lines = [
     address.name,
     address.line1,
@@ -139,16 +139,16 @@ export default async function OrderPage({ params }: Props) {
                 {order.shippingMethod ?? "—"}
               </p>
               {order.fulfillments.length === 0 ? (
-                <p className="text-muted-foreground">Ainda sem envio registado.</p>
+                <p className="text-muted-foreground">Ainda sem envio registrado.</p>
               ) : (
                 <ul className="grid gap-2">
                   {order.fulfillments.map((f, i) => (
                     <li key={i} className="rounded-md border p-3">
-                      <p className="font-medium">{[f.carrier, f.trackingNumber].filter(Boolean).join(" · ") || "Envio registado"}</p>
+                      <p className="font-medium">{[f.carrier, f.trackingNumber].filter(Boolean).join(" · ") || "Envio registrado"}</p>
                       <p className="text-xs text-muted-foreground">{dateTime(f.createdAt)}</p>
                       {f.trackingUrl && (
                         <a href={f.trackingUrl} target="_blank" rel="noreferrer" className="text-xs text-brand hover:underline">
-                          Seguir encomenda
+                          Rastrear envio
                         </a>
                       )}
                     </li>
@@ -158,7 +158,7 @@ export default async function OrderPage({ params }: Props) {
               <Alert variant="info" className="mt-1">
                 <InfoIcon />
                 <AlertDescription>
-                  <p>Registar o envio e o código de rastreio pelo painel chega na próxima etapa. Por enquanto, faça-o no painel da loja.</p>
+                  <p>Registrar o envio e o código de rastreio pelo painel chega na próxima etapa. Por enquanto, faça-o no painel da loja.</p>
                 </AlertDescription>
               </Alert>
             </CardContent>

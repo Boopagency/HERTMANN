@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionForm } from "@/components/admin/ActionForm";
 import { useActionState } from "react";
 import { LoaderIcon } from "lucide-react";
 import { updatePassword, type FormState } from "@/lib/admin/auth/actions";
@@ -14,7 +15,7 @@ export function NewPasswordForm() {
   const [state, action, pending] = useActionState(updatePassword, initial);
 
   return (
-    <form action={action} className="grid max-w-sm gap-4">
+    <ActionForm action={action} className="grid max-w-sm gap-4">
       <div className="grid gap-2">
         <Label htmlFor="password">Nova senha</Label>
         <Input id="password" name="password" type="password" autoComplete="new-password" minLength={10} required />
@@ -27,8 +28,8 @@ export function NewPasswordForm() {
       <FormMessage state={state} />
       <Button type="submit" disabled={pending} className="w-fit">
         {pending && <LoaderIcon className="animate-spin" />}
-        Gravar nova senha
+        Salvar nova senha
       </Button>
-    </form>
+    </ActionForm>
   );
 }

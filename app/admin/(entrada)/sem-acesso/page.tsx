@@ -15,7 +15,7 @@ export default async function NoAccessPage() {
     <>
       <h1 className="text-lg font-semibold">Esta conta não tem acesso</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Entrou como <span className="font-medium text-foreground">{state.email}</span>, mas esta conta não tem um papel no
+        Você entrou como <span className="font-medium text-foreground">{state.email}</span>, mas esta conta não tem um papel no
         painel. Peça a um administrador que lhe dê acesso.
       </p>
       <form action={signOut} className="mt-6">

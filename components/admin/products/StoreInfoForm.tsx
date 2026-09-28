@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionForm } from "@/components/admin/ActionForm";
 import { useActionState, useEffect, useState } from "react";
 import { LoaderIcon } from "lucide-react";
 import { saveStoreInfo } from "@/lib/admin/actions/products";
@@ -27,7 +28,7 @@ export function StoreInfoForm({
   const errors = state.fieldErrors ?? {};
 
   return (
-    <form action={action} className="grid gap-4">
+    <ActionForm action={action} className="grid gap-4">
       <fieldset disabled={!canEdit || pending} className="grid gap-4">
         <Field id="st-title" label="Nome na loja e no checkout" error={errors.title}>
           <Input id="st-title" name="title" value={values.title} onChange={(e) => setValues((v) => ({ ...v, title: e.target.value }))} required maxLength={120} />
@@ -41,10 +42,10 @@ export function StoreInfoForm({
           <FormMessage state={state} />
           <Button type="submit" variant="outline" disabled={pending} className="ml-auto">
             {pending && <LoaderIcon className="animate-spin" />}
-            Gravar informações da loja
+            Salvar informações da loja
           </Button>
         </div>
       )}
-    </form>
+    </ActionForm>
   );
 }

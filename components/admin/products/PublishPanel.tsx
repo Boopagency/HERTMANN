@@ -106,7 +106,7 @@ export function PublishPanel({
             <AlertDialogHeader>
               <AlertDialogTitle>Arquivar este produto?</AlertDialogTitle>
               <AlertDialogDescription>
-                Sai do site e da venda e deixa de aparecer na lista principal. Nada é apagado: pode restaurá-lo depois.
+                Sai do site e da venda e deixa de aparecer na lista principal. Nada é apagado: você pode restaurá-lo depois.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

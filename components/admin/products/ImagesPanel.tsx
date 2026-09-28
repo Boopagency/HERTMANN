@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionForm } from "@/components/admin/ActionForm";
 import { useActionState, useEffect, useRef } from "react";
 import { LoaderIcon, UploadIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -46,7 +47,7 @@ export function ImagesPanel({
         <p className="text-sm text-muted-foreground">Sem imagens. No site, a peça aparece com o desenho de ateliê.</p>
       )}
       {canEdit && (
-        <form ref={form} action={action} className="grid gap-2">
+        <ActionForm ref={form} action={action} className="grid gap-2">
           <input
             ref={input}
             type="file"
@@ -60,14 +61,14 @@ export function ImagesPanel({
           />
           <Button type="button" variant="outline" size="sm" disabled={pending} onClick={() => input.current?.click()} className="w-fit">
             {pending ? <LoaderIcon className="animate-spin" /> : <UploadIcon />}
-            {pending ? "A enviar…" : "Enviar imagem"}
+            {pending ? "Enviando…" : "Enviar imagem"}
           </Button>
           <p className="text-xs text-muted-foreground">
             JPEG, PNG, WebP ou GIF, até 4 MB. A primeira imagem é a principal.
             {!canRemove && " Remover ou reordenar imagens ainda não é possível pela API da loja."}
           </p>
           {!state.ok && <FormMessage state={state} />}
-        </form>
+        </ActionForm>
       )}
     </div>
   );

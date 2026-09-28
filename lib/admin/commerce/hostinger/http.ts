@@ -57,12 +57,12 @@ export function isAllowed(method: Method, path: string): boolean {
   return ALLOWED.some((rule) => rule.method === method && rule.path.test(path));
 }
 
-/** Mensagem para a equipa; o detalhe técnico fica só no registo do servidor. */
+/** Mensagem para a equipe; o detalhe técnico fica só no registo do servidor. */
 function friendly(status: number): string {
   if (status === 401 || status === 403) return "A loja recusou o acesso. O token da Hostinger pode ter expirado.";
   if (status === 404) return "A loja não encontrou este item. Ele pode ter sido removido.";
   if (status === 422 || status === 400) return "A loja recusou os dados enviados. Confira os campos e tente de novo.";
-  if (status === 429) return "A loja está a receber muitos pedidos. Tente de novo em alguns instantes.";
+  if (status === 429) return "A loja está recebendo muitos pedidos. Tente de novo em alguns instantes.";
   if (status >= 500) return "A loja da Hostinger está indisponível no momento. Tente de novo em alguns minutos.";
   return "Não foi possível falar com a loja da Hostinger.";
 }

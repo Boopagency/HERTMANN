@@ -157,14 +157,20 @@ export function ProductDetail({
             <dd className="t-label-sm min-w-0 flex-1">{piece.stone}</dd>
           </div>
         )}
-        <div className="flex gap-6">
-          <dt className="t-label-sm muted w-[5.5rem] shrink-0">Medidas</dt>
-          <dd className="t-label-sm min-w-0 flex-1">{piece.measures}</dd>
-        </div>
-        <div className="flex gap-6">
-          <dt className="t-label-sm muted w-[5.5rem] shrink-0">Referência</dt>
-          <dd className="t-label-sm min-w-0 flex-1">{piece.reference}</dd>
-        </div>
+        {/* Medidas e referência são opcionais nas peças criadas no Admin;
+            as de protótipo têm sempre as duas. */}
+        {piece.measures && (
+          <div className="flex gap-6">
+            <dt className="t-label-sm muted w-[5.5rem] shrink-0">Medidas</dt>
+            <dd className="t-label-sm min-w-0 flex-1">{piece.measures}</dd>
+          </div>
+        )}
+        {piece.reference && (
+          <div className="flex gap-6">
+            <dt className="t-label-sm muted w-[5.5rem] shrink-0">Referência</dt>
+            <dd className="t-label-sm min-w-0 flex-1">{piece.reference}</dd>
+          </div>
+        )}
       </dl>
 
       {/* — Opções — */}

@@ -33,13 +33,13 @@ function friendly(error: { code?: string; message: string }): EditorialError {
     return new EditorialError("Já existe uma peça com este endereço (slug). Escolha outro.", error.message);
   }
   if (error.code === "42501") {
-    return new EditorialError("O seu papel não permite esta alteração.", error.message);
+    return new EditorialError("Seu papel não permite esta alteração.", error.message);
   }
   if (error.code === "23514") {
     return new EditorialError("Algum campo da ficha tem um valor inválido.", error.message);
   }
   console.error("[admin:supabase]", error.code, error.message);
-  return new EditorialError("Não foi possível gravar a ficha do site. Tente de novo.", error.message);
+  return new EditorialError("Não foi possível salvar a ficha do site. Tente de novo.", error.message);
 }
 
 export interface EditorialRepository {
@@ -105,7 +105,7 @@ class SupabaseEditorial implements EditorialRepository {
       .select(CATALOG_ITEM_COLUMNS)
       .maybeSingle();
     if (error) throw friendly(error);
-    if (!data) throw new EditorialError("A ficha não foi gravada: o seu papel não o permite ou ela já não existe.");
+    if (!data) throw new EditorialError("A ficha não foi salva: seu papel não o permite ou ela não existe mais.");
     return itemFromRow(data as CatalogItemRow);
   }
 
@@ -174,7 +174,7 @@ class SimulatedEditorial implements EditorialRepository {
   async update(id: string, patch: Partial<EditorialInput>) {
     const state = simulatedState();
     const item = state.editorial.find((i) => i.id === id);
-    if (!item) throw new EditorialError("A ficha já não existe.");
+    if (!item) throw new EditorialError("A ficha não existe mais.");
     const { hostingerProductId: _ignored, ...rest } = patch;
     if (rest.slug && state.editorial.some((i) => i.slug === rest.slug && i.id !== id)) {
       throw new EditorialError("Já existe uma peça com este endereço (slug). Escolha outro.");
@@ -185,7 +185,7 @@ class SimulatedEditorial implements EditorialRepository {
 
   async setArchived(id: string, archived: boolean) {
     const item = simulatedState().editorial.find((i) => i.id === id);
-    if (!item) throw new EditorialError("A ficha já não existe.");
+    if (!item) throw new EditorialError("A ficha não existe mais.");
     item.archivedAt = archived ? new Date().toISOString() : null;
   }
 

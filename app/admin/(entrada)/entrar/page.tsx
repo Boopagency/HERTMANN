@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: Props) {
   return (
     <>
       <h1 className="text-lg font-semibold">Entrar no painel</h1>
-      <p className="mt-1 mb-6 text-sm text-muted-foreground">Use o e-mail e a senha da sua conta HERTMANN.</p>
+      <p className="mt-1 mb-6 text-sm text-muted-foreground">Use o e-mail e a senha dsua conta HERTMANN.</p>
       <LoginForm
         next={seguir}
         notice={link === "expirado" ? "O link expirou ou já foi usado. Entre ou peça um novo." : null}

@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionForm } from "@/components/admin/ActionForm";
 import { useActionState } from "react";
 import { LoaderIcon } from "lucide-react";
 import { requestPasswordReset, type FormState } from "@/lib/admin/auth/actions";
@@ -14,7 +15,7 @@ export function ResetForm() {
   const [state, action, pending] = useActionState(requestPasswordReset, initial);
 
   return (
-    <form action={action} className="grid gap-4">
+    <ActionForm action={action} className="grid gap-4">
       <div className="grid gap-2">
         <Label htmlFor="email">E-mail</Label>
         <Input id="email" name="email" type="email" autoComplete="username" required autoFocus />
@@ -24,6 +25,6 @@ export function ResetForm() {
         {pending && <LoaderIcon className="animate-spin" />}
         Enviar link
       </Button>
-    </form>
+    </ActionForm>
   );
 }

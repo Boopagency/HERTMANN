@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionForm } from "@/components/admin/ActionForm";
 import { useActionState, useEffect, useState } from "react";
 import { LoaderIcon } from "lucide-react";
 import { saveEditorial } from "@/lib/admin/actions/products";
@@ -86,7 +87,7 @@ export function EditorialForm({
   const invalid = (key: string) => (errors[key] ? { "aria-invalid": true, "aria-describedby": `ed-${key}-erro` } : {});
 
   return (
-    <form action={action} className="grid gap-5">
+    <ActionForm action={action} className="grid gap-5">
       <fieldset disabled={!canEdit || pending} className="grid gap-4 sm:grid-cols-2">
         <Field id="ed-displayName" label="Nome no site" hint={`Nome curto, como nas vitrines. Vazio = “${storeTitle}”.`} error={errors.displayName}>
           <Input id="ed-displayName" name="displayName" value={values.displayName} onChange={set("displayName")} maxLength={80} />
@@ -187,10 +188,10 @@ export function EditorialForm({
           <FormMessage state={state} />
           <Button type="submit" disabled={pending} className="ml-auto">
             {pending && <LoaderIcon className="animate-spin" />}
-            {item ? "Gravar ficha do site" : "Criar ficha do site"}
+            {item ? "Salvar ficha do site" : "Criar ficha do site"}
           </Button>
         </div>
       )}
-    </form>
+    </ActionForm>
   );
 }

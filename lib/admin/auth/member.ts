@@ -31,7 +31,7 @@ export type MemberState =
   | { status: "member"; member: AdminMember };
 
 export class AuthorizationError extends Error {
-  constructor(message = "O seu papel não permite esta operação.") {
+  constructor(message = "Seu papel não permite esta operação.") {
     super(message);
     this.name = "AuthorizationError";
   }
@@ -96,7 +96,7 @@ export async function requireMember(): Promise<AdminMember> {
 export async function requirePermission(permission: Permission): Promise<AdminMember> {
   if (!adminAuthMode) throw new AuthorizationError("Painel indisponível neste ambiente.");
   const state = await getMemberState();
-  if (state.status !== "member") throw new AuthorizationError("A sua sessão terminou. Entre de novo.");
+  if (state.status !== "member") throw new AuthorizationError("Sua sessão terminou. Entre de novo.");
   if (!can(state.member.role, permission)) throw new AuthorizationError();
   return state.member;
 }

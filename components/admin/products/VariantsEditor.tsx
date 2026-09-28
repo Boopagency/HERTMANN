@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionForm } from "@/components/admin/ActionForm";
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import { LoaderIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
@@ -99,7 +100,7 @@ export function VariantsEditor({
 
   return (
     <div className="grid gap-4">
-      <form
+      <ActionForm
         action={action}
         onSubmit={(e) => {
           if (!payload.ok) {
@@ -168,7 +169,7 @@ export function VariantsEditor({
                           className="tabular h-8 w-20"
                         />
                       ) : (
-                        <span className="text-xs text-muted-foreground">sem controlo</span>
+                        <span className="text-xs text-muted-foreground">sem controle</span>
                       )}
                     </div>
                   </TableCell>
@@ -193,12 +194,12 @@ export function VariantsEditor({
               )}
               <Button type="submit" disabled={!dirty || pending}>
                 {pending && <LoaderIcon className="animate-spin" />}
-                Gravar preços e estoque
+                Salvar preços e estoque
               </Button>
             </div>
           </div>
         )}
-      </form>
+      </ActionForm>
       {canEdit && <AddVariant productId={productId} />}
     </div>
   );
@@ -265,7 +266,7 @@ function AddVariant({ productId }: { productId: string }) {
           <DialogTitle>Nova variante</DialogTitle>
           <DialogDescription>Um tamanho ou versão da peça, com preço e estoque próprios.</DialogDescription>
         </DialogHeader>
-        <form action={action} className="grid gap-4 sm:grid-cols-2">
+        <ActionForm action={action} className="grid gap-4 sm:grid-cols-2">
           <Field id="nv-optionName" label="Opção" hint="Ex.: Aro" error={errors.optionName}>
             <Input id="nv-optionName" name="optionName" maxLength={40} />
           </Field>
@@ -300,7 +301,7 @@ function AddVariant({ productId }: { productId: string }) {
               Adicionar
             </Button>
           </div>
-        </form>
+        </ActionForm>
       </DialogContent>
     </Dialog>
   );

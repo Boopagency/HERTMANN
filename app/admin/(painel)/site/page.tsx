@@ -18,7 +18,8 @@ export default async function SiteSettingsPage() {
   return (
     <>
       <PageHeader title="Site" description="Configuração do que o site público mostra." />
-      <PageBody className="max-w-3xl">
+      <PageBody>
+        <div className="max-w-3xl">
         {!settings.ok ? (
           <LoadError title="Não foi possível ler a configuração do site" error={settings.error} />
         ) : (
@@ -32,6 +33,7 @@ export default async function SiteSettingsPage() {
             </CardContent>
           </Card>
         )}
+        </div>
       </PageBody>
     </>
   );

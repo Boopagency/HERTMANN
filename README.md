@@ -162,7 +162,7 @@ peça não tiver fotografia nenhuma, o desenho ocupa o seu tile.
 ## Estrutura
 
 ```
-app/
+app/(site)/                   Site público (route group; URLs iguais)
   page.tsx                    Home — hero, vitrine, 50/50, editorial + produto,
                               vitrine, 50/50, a casa
   joias/                      Catálogo e catálogo por categoria (filtros na URL)
@@ -184,7 +184,12 @@ components/
   ui/         Botões
 app/checkout/ sucesso/ e cancelado/ — regresso do checkout da Hostinger
 app/api/      hostinger-status — diagnóstico da ligação à Storefront API
-              (só em dev e no Preview com homologação; 404 em produção)
+              (só em dev e no Preview com homologação; 404 em produção);
+              simulacao/ — Storefront e imagens do modo simulado (404 fora dele)
+app/admin/    painel administrativo (layout raiz próprio)
+lib/admin/    auth, providers de e-commerce, ações, consultas do painel
+lib/catalog/  catálogo do site: protótipos + fichas (Supabase) + loja
+supabase/     migrações SQL (RLS)
 lib/data/     catalogue.ts (o que a casa faz) · editorial.ts (como a loja o
               mostra) · site.ts · homologation.ts (peça técnica de teste)
 lib/hostinger/ Cliente e tipos da Storefront API V2 (pública, sem token)
@@ -250,9 +255,14 @@ pública — sem token no navegador.
 | `NEXT_PUBLIC_HOSTINGER_HOMOLOGATION` | Config · pública | página de homologação (Preview) |
 | `NEXT_PUBLIC_SITE_URL` | Config · pública | domínio definitivo, quando existir |
 | `SITE_INDEXABLE` | Config · servidor | `true` só com domínio definitivo |
+| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | Config · servidor | painel e fichas do site (sem elas, o painel não existe) |
+| `ADMIN_COMMERCE_PROVIDER`, `HOSTINGER_STORE_ID`, `HOSTINGER_API_URL` | Config · servidor | motor de e-commerce do painel |
+| `HOSTINGER_API_TOKEN` | **Secret** · servidor | API de gestão da Hostinger, só pelo painel |
+| `ADMIN_SIMULATION` | Config · só local | dados simulados; ignorada na Vercel |
 
-Não há Secret nesta etapa. Um token administrativo futuro será Secret: nunca
-`NEXT_PUBLIC_`, nunca commitado, só no servidor. Ver `.env.example` e `docs/`.
+A loja pública não usa Secret. O único é o token da API de gestão, usado só
+pelo painel: nunca `NEXT_PUBLIC_`, nunca commitado, só no servidor. Ver
+`.env.example` e `docs/`.
 
 ```bash
 node scripts/e2e/fluxo-checkout.mjs          # next dev + Storefront simulada
@@ -263,6 +273,34 @@ O E2E corre contra uma Storefront **simulada**, não contra a Hostinger: valida
 o comportamento do site. A API real valida-se no Preview, com a homologação.
 
 ---
+
+## Painel administrativo (`/admin`)
+
+A equipa HERTMANN administra a loja sem abrir a Hostinger: produtos,
+variantes, preços, promoções, estoque, imagens, publicação e a ficha de cada
+peça no site; pedidos em modo leitura. Desenho completo, decisões, riscos e
+verificações em [`docs/admin-implementacao-2026-09-28.md`](docs/admin-implementacao-2026-09-28.md).
+
+- **Hostinger** — verdade comercial (API de gestão, token só no servidor,
+  lista fechada de operações em `lib/admin/commerce/hostinger/`).
+- **Supabase** — login (Supabase Auth em cookies httpOnly, via Server
+  Actions), papéis (`admin`, `editor`, `leitura`) e a ficha editorial de cada
+  produto (`supabase/migrations/`, com RLS).
+- **Site** — `lib/catalog/` compõe protótipos + fichas + produtos publicados;
+  publicar no painel revalida o site, sem commit.
+- Interface em shadcn/ui (`components/admin/ui`), com o azul da casa só como
+  acento. Layout raiz próprio (`app/admin`); o site vive em `app/(site)`.
+
+```bash
+# Painel com dados SIMULADOS (só local; contas de teste na tela de entrada)
+ADMIN_SIMULATION=true \
+NEXT_PUBLIC_HOSTINGER_SALES_CHANNEL_ID=scha_simulado \
+NEXT_PUBLIC_HOSTINGER_STOREFRONT_API_URL=http://localhost:3000/api/simulacao/storefront \
+npm run dev
+
+node scripts/e2e/admin-simulado.mjs             # E2E do painel (dados simulados)
+PGHOST=… scripts/supabase/testar-rls.sh          # RLS num Postgres local
+```
 
 ## Pontos de integração
 

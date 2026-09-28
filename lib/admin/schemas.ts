@@ -7,7 +7,7 @@ import { parseMoney } from "./money";
    Validação no servidor de tudo o que chega dos formulários do painel
    ----------------------------------------------------------------------------
    A interface ajuda, mas só isto conta. Mensagens em português, para a
-   equipa perceber o que corrigir.
+   equipe perceber o que corrigir.
    ========================================================================== */
 
 const text = (max: number) => z.string().trim().max(max, `Máximo de ${max} caracteres.`);
@@ -105,7 +105,7 @@ export const variantFormSchema = z
   .superRefine(checkSale)
   .superRefine(checkOption);
 
-/** Criar produto: o produto e a sua primeira variante, num só formulário. */
+/** Criar produto: o produto e sua primeira variante, num só formulário. */
 export const createProductSchema = z
   .object({
     title: text(120).min(2, "Dê um nome ao produto."),

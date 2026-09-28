@@ -48,7 +48,7 @@ function explain(error: unknown): string {
     return error.message;
   }
   console.error("[admin:acao]", error);
-  return "Algo correu mal. Tente de novo; se persistir, avise a equipa técnica.";
+  return "Algo deu errado. Tente de novo; se persistir, avise a equipe técnica.";
 }
 
 async function context(permission: Permission, productId?: string) {
@@ -172,7 +172,7 @@ export async function saveStoreInfo(productId: string, _: ActionResult, form: Fo
       provider.updateProduct(productId, parsed.data),
     );
     refresh(productId, true);
-    return { ok: true, message: "Informações da loja gravadas." };
+    return { ok: true, message: "Informações da loja salvas." };
   } catch (error) {
     return fail(explain(error));
   }
@@ -200,9 +200,9 @@ export async function saveVariants(productId: string, _: ActionResult, form: For
 
     // Só variantes deste produto — nunca um id vindo de outro.
     const current = await provider.getProduct(productId);
-    if (!current) return fail("O produto já não existe na loja.");
+    if (!current) return fail("O produto não existe mais na loja.");
     const known = new Set(current.variants.map((v) => v.id));
-    if (parsed.data.some((v) => !known.has(v.id))) return fail("Uma das variantes mudou entretanto. Recarregue a página.");
+    if (parsed.data.some((v) => !known.has(v.id))) return fail("Uma das variantes mudou nesse meio-tempo. Recarregue a página.");
 
     await audited(
       member,
@@ -214,7 +214,7 @@ export async function saveVariants(productId: string, _: ActionResult, form: For
         ),
     );
     refresh(productId, true);
-    return { ok: true, message: "Preços e estoque gravados." };
+    return { ok: true, message: "Preços e estoque salvos." };
   } catch (error) {
     return fail(explain(error));
   }
@@ -248,7 +248,7 @@ export async function deleteVariant(productId: string, variantId: string): Promi
   try {
     const { member, provider } = await context("variantes.excluir", productId);
     const product = await provider.getProduct(productId);
-    if (!product?.variants.some((v) => v.id === variantId)) return fail("Esta variante já não existe.");
+    if (!product?.variants.some((v) => v.id === variantId)) return fail("Esta variante não existe mais.");
     if (product.variants.length <= 1) return fail("Um produto precisa de pelo menos uma variante.");
     await audited(member, { action: "variante.excluir", target: `${productId}/${variantId}`, system: "hostinger" }, () =>
       provider.deleteVariant(productId, variantId),
@@ -309,7 +309,7 @@ export async function saveEditorial(productId: string, _: ActionResult, form: Fo
     const v = parsed.data;
 
     const product = await provider.getProduct(productId);
-    if (!product) return fail("O produto já não existe na loja.");
+    if (!product) return fail("O produto não existe mais na loja.");
     const current = await editorial.byProductId(productId);
 
     if (await slugTaken(v.slug, current?.id ?? null, editorial)) {
@@ -344,7 +344,7 @@ export async function saveEditorial(productId: string, _: ActionResult, form: Fo
       current ? editorial.update(current.id, data) : editorial.create({ ...data, hostingerProductId: productId }),
     );
     refresh(productId, true);
-    return { ok: true, message: "Ficha do site gravada." };
+    return { ok: true, message: "Ficha do site salva." };
   } catch (error) {
     return fail(explain(error));
   }
@@ -369,7 +369,7 @@ export async function publishProduct(productId: string): Promise<ActionResult> {
   try {
     const { member, provider, editorial } = await context("produtos.publicar", productId);
     const [product, item] = await Promise.all([provider.getProduct(productId), editorial.byProductId(productId)]);
-    if (!product) return fail("O produto já não existe na loja.");
+    if (!product) return fail("O produto não existe mais na loja.");
     if (product.status === "archived") return fail("Restaure o produto antes de o publicar.");
     const readiness = publishReadiness(product, item);
     if (!canPublish(readiness)) {
@@ -441,7 +441,7 @@ export async function saveSiteSettings(_: ActionResult, form: FormData): Promise
       editorialRepository().updateSettings({ showPrototypes }),
     );
     refresh(undefined, true);
-    return { ok: true, message: "Configuração do site gravada." };
+    return { ok: true, message: "Configuração do site salva." };
   } catch (error) {
     return fail(explain(error));
   }

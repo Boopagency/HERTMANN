@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionForm } from "@/components/admin/ActionForm";
 import Link from "next/link";
 import { useActionState } from "react";
 import { LoaderIcon } from "lucide-react";
@@ -15,7 +16,7 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string | n
   const [state, action, pending] = useActionState(signIn, initial);
 
   return (
-    <form action={action} className="grid gap-4">
+    <ActionForm action={action} className="grid gap-4">
       {next && <input type="hidden" name="seguir" value={next} />}
       {notice && !state.message && <FormMessage state={{ ok: false, message: notice }} />}
       <div className="grid gap-2">
@@ -36,6 +37,6 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string | n
         {pending && <LoaderIcon className="animate-spin" />}
         Entrar
       </Button>
-    </form>
+    </ActionForm>
   );
 }

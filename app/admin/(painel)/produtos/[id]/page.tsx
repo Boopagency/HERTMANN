@@ -95,7 +95,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
               <p>
                 O produto existe na loja, mas não tem ficha do site — por isso não aparece no site.
                 {presence.state === "missing-editorial" && presence.published && " Ele pode ser comprado por quem tiver o endereço direto do checkout; complete a ficha ou despublique-o."}{" "}
-                Preencha a ficha abaixo e grave.
+                Preencha a ficha abaixo e salve.
               </p>
             </AlertDescription>
           </Alert>
@@ -107,7 +107,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
             <Card>
               <CardHeader>
                 <CardTitle>Variantes, preço e estoque</CardTitle>
-                <CardDescription>Gravado na loja. Os preços mudam no site em até um minuto.</CardDescription>
+                <CardDescription>Salvo na loja. Os preços mudam no site em até um minuto.</CardDescription>
               </CardHeader>
               <CardContent>
                 <VariantsEditor

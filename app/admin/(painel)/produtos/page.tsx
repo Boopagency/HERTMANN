@@ -158,7 +158,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                       {range ? (range.min === range.max ? money(range.min, currency) : `${money(range.min, currency)} – ${money(range.max, currency)}`) : "—"}
                     </TableCell>
                     <TableCell className={cn("tabular text-right", stock !== null && stock <= LOW_STOCK && "font-medium text-warning")}>
-                      {stock === null ? <span className="text-muted-foreground">sem controlo</span> : stock}
+                      {stock === null ? <span className="text-muted-foreground">sem controle</span> : stock}
                     </TableCell>
                     <TableCell className="tabular pr-4 text-right">{product.variants.length}</TableCell>
                   </TableRow>
@@ -179,7 +179,7 @@ export default async function ProductsPage({ searchParams }: Props) {
           <section className="grid gap-2">
             <h2 className="text-sm font-semibold">Fichas sem produto na loja</h2>
             <p className="text-sm text-muted-foreground">
-              O produto destas fichas já não existe na loja (foi removido fora do painel). Elas não aparecem no site.
+              O produto destas fichas não existe mais na loja (foi removido fora do painel). Elas não aparecem no site.
             </p>
             <Card className="gap-0 py-0">
               {orphans.map((item) => (

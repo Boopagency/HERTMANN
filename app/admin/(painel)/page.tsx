@@ -157,7 +157,7 @@ export default async function OverviewPage() {
           <Card className="items-center py-12 text-center">
             <PackageIcon className="size-8 text-muted-foreground" />
             <CardTitle>Ainda não há produtos na loja</CardTitle>
-            <CardDescription>Comece por criar o primeiro produto.</CardDescription>
+            <CardDescription>Comece criando o primeiro produto.</CardDescription>
           </Card>
         )}
       </PageBody>

@@ -1,36 +1,36 @@
 import "server-only";
 
 /* ============================================================================
-   Limite de tentativas de login — por IP e por e-mail
+   Limite de tentativas sem sucesso — por IP e por e-mail
    ----------------------------------------------------------------------------
    Complementa os limites do próprio Supabase Auth, que veem todos os pedidos
-   a chegar do mesmo servidor (a Vercel) e não distinguem visitantes.
+   a chegar do mesmo servidor (a Vercel) e não distinguem visitantes. Só as
+   falhas contam: uma equipe no mesmo escritório pode entrar à vontade.
 
    Limitação conhecida: o contador vive na memória de cada instância do
    servidor. Um limite global exige armazenamento partilhado (fase 2).
    ========================================================================== */
 
 const WINDOW_MS = 15 * 60_000;
-const MAX_ATTEMPTS = 8;
+const failures = new Map<string, number[]>();
 
-const attempts = new Map<string, number[]>();
-
-function prune(key: string, now: number): number[] {
-  const recent = (attempts.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
-  if (recent.length === 0) attempts.delete(key);
-  else attempts.set(key, recent);
-  return recent;
+function recent(key: string, now = Date.now()): number[] {
+  const list = (failures.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
+  if (list.length === 0) failures.delete(key);
+  else failures.set(key, list);
+  return list;
 }
 
-/** `true` se ainda pode tentar; regista a tentativa. */
-export function allowAttempt(keys: string[]): boolean {
+/** `limits`: chave → máximo de falhas na janela. */
+export function isBlocked(limits: Record<string, number>): boolean {
+  return Object.entries(limits).some(([key, max]) => recent(key).length >= max);
+}
+
+export function recordFailure(keys: string[]): void {
   const now = Date.now();
-  if (keys.some((key) => prune(key, now).length >= MAX_ATTEMPTS)) return false;
-  for (const key of keys) attempts.set(key, [...(attempts.get(key) ?? []), now]);
-  return true;
+  for (const key of keys) failures.set(key, [...recent(key, now), now]);
 }
 
-/** Depois de um login bem-sucedido, o e-mail recomeça do zero. */
-export function clearAttempts(key: string): void {
-  attempts.delete(key);
+export function clearFailures(key: string): void {
+  failures.delete(key);
 }

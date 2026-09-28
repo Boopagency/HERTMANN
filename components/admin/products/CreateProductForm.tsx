@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionForm } from "@/components/admin/ActionForm";
 import { useActionState, useState } from "react";
 import { LoaderIcon } from "lucide-react";
 import { createProduct } from "@/lib/admin/actions/products";
@@ -47,7 +48,7 @@ export function CreateProductForm({ categories, collections }: { categories: Opt
   const invalid = (key: string) => (errors[key] ? { "aria-invalid": true, "aria-describedby": `${key}-erro` } : {});
 
   return (
-    <form action={action} className="grid gap-6 lg:grid-cols-[1fr_20rem]">
+    <ActionForm action={action} className="grid gap-6 lg:grid-cols-[1fr_20rem]">
       <div className="grid gap-6">
         <Card>
           <CardHeader>
@@ -164,6 +165,6 @@ export function CreateProductForm({ categories, collections }: { categories: Opt
           </CardContent>
         </Card>
       </div>
-    </form>
+    </ActionForm>
   );
 }

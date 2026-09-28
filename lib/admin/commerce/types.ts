@@ -2,7 +2,7 @@
    Modelo comercial do Admin — independente do motor de e-commerce
    ----------------------------------------------------------------------------
    As telas do painel só conhecem estes tipos. Cada motor (hoje a Hostinger,
-   ou o simulado) traduz a sua API para eles no seu adaptador. Trocar de
+   ou o simulado) traduz sua API para eles no seu adaptador. Trocar de
    motor é escrever outro CommerceAdminProvider; as telas não mudam.
 
    Dinheiro sempre em unidades mínimas da moeda (centavos): 39990 = R$ 399,90.
@@ -156,7 +156,7 @@ export interface CommerceAdminProvider {
   getOrder(orderId: string): Promise<AdminOrder | null>;
 }
 
-/** Erro de um motor, com mensagem para a equipa e detalhe só para o registo. */
+/** Erro de um motor, com mensagem para a equipe e detalhe só para o registo. */
 export class CommerceError extends Error {
   readonly status: number;
   readonly detail: string | null;

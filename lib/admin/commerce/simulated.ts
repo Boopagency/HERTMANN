@@ -102,7 +102,7 @@ export class SimulatedProvider implements CommerceAdminProvider {
     const product = this.find(productId);
     for (const update of updates) {
       const current = product.variants.find((v) => v.id === update.id);
-      if (!current) throw new CommerceError("Uma das variantes já não existe. Recarregue a página.", 404);
+      if (!current) throw new CommerceError("Uma das variantes não existe mais. Recarregue a página.", 404);
       Object.assign(current, {
         title: update.title,
         price: update.price,
