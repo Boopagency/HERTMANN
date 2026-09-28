@@ -3,6 +3,10 @@
 /* O painel administrativo tem o seu próprio CSS (app/admin/admin.css). */
 @source not "../admin";
 @source not "../../components/admin";
+@source not "../../lib/admin";
+@source not "../../supabase";
+@source not "../../scripts/supabase";
+@source not "../../docs/admin-*.md";
 
 /* ============================================================================
    HERTMANN — Sistema de Design
